@@ -18,7 +18,7 @@ This project was inspired by the [5 AI Projects for People in a Hurry](https://s
 - **Framework**: Django with Django REST Framework
 - **Database**: PostgreSQL
 - **Asynchronous Processing**: Celery with Redis
-- **AI Integration**: Mistral Small model for summarization and critique
+- **AI Integration**: Mistral Small 3 for summarization and critique
 
 ### Development Environment
 - **Python**: Version 3.9+
