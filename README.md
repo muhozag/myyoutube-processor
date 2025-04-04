@@ -16,12 +16,12 @@ This project was inspired by the [5 AI Projects for People in a Hurry](https://s
 
 ### Backend
 - **Framework**: Django with Django REST Framework
-- **Database**: PostgreSQL
+- **Database**: PostgreSQL (starting with SQLite included in Django by default. Then using psycopg2-binary initially for staging)
 - **Asynchronous Processing**: Celery with Redis
 - **AI Integration**: Mistral Small 3 for summarization and critique
 
 ### Development Environment
-- **Python**: Version 3.9+
+- **Python**: Version 3.9+ (Using 3.13 for dev)
 - **Dependency Management**: Virtual environments with requirements.txt
 - **Version Control**: Git with GitHub
 - **Code Quality**: PEP 8 guidelines, Black formatting, flake8 linting
