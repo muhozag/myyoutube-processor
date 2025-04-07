@@ -12,3 +12,4 @@ db.sqlite3
 .idea/
 .vscode/
 .instructions.md
+.DS_Store
