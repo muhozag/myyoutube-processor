@@ -178,3 +178,16 @@ INFO 2025-04-08 15:24:13,376 basehttp 45223 6134345728 "GET /videos/1/ HTTP/1.1"
 INFO 2025-04-08 15:24:59,605 basehttp 45223 6134345728 "GET /videos/ HTTP/1.1" 200 3386
 INFO 2025-04-08 15:25:16,590 autoreload 45223 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/youtube_utils.py changed, reloading.
 INFO 2025-04-08 15:25:16,905 autoreload 48654 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 16:01:27,250 autoreload 58469 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 16:01:57,380 basehttp 58469 6134788096 "GET /videos/ HTTP/1.1" 200 3386
+INFO 2025-04-08 16:02:00,902 basehttp 58469 6168440832 "GET / HTTP/1.1" 302 0
+INFO 2025-04-08 16:02:00,910 basehttp 58469 6168440832 "GET /videos/ HTTP/1.1" 200 3386
+INFO 2025-04-08 16:02:06,472 basehttp 58469 6168440832 "GET /videos/submit/ HTTP/1.1" 200 4799
+INFO 2025-04-08 16:03:54,849 tasks 58469 6151614464 Starting to process video 2
+INFO 2025-04-08 16:03:54,850 basehttp 58469 6134788096 "POST /videos/submit/ HTTP/1.1" 302 0
+INFO 2025-04-08 16:03:54,851 tasks 58469 6151614464 Processing video: Z-DoGQdlEPY
+INFO 2025-04-08 16:03:54,857 basehttp 58469 6134788096 "GET /videos/ HTTP/1.1" 200 4471
+INFO 2025-04-08 16:03:57,634 tasks 58469 6151614464 Saved transcript for Z-DoGQdlEPY (en, auto-generated: True)
+INFO 2025-04-08 16:03:57,636 tasks 58469 6151614464 Successfully processed video Z-DoGQdlEPY
+INFO 2025-04-08 16:04:36,135 basehttp 58469 6134788096 "GET /videos/ HTTP/1.1" 200 4123
+INFO 2025-04-08 16:04:46,330 basehttp 58469 6134788096 "GET /videos/2/ HTTP/1.1" 200 114858
