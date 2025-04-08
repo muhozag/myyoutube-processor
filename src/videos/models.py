@@ -81,7 +81,7 @@ class Video(models.Model):
     
     def save(self, *args, **kwargs):
         """Extract and validate YouTube ID before saving"""
-        if self.url:
+        if self.url and not self.youtube_id:
             self.youtube_id = extract_youtube_id(self.url)
             if not is_valid_youtube_id(self.youtube_id):
                 raise ValueError("Invalid YouTube URL")
