@@ -20,12 +20,14 @@ class VideoModelTests(TestCase):
         mock_extract.return_value = self.valid_id
         mock_is_valid.return_value = True
 
-        video = Video.objects.create(
+        # Create a Video instance first without saving
+        video = Video(
             url=self.valid_url,
             title="Test Video",
-            description="Test Description",
-            youtube_id=None  # Explicitly set to None to force extraction from URL
+            description="Test Description"
         )
+        # Then save it to trigger the save method properly
+        video.save()
         
         self.assertEqual(video.youtube_id, self.valid_id)
         self.assertEqual(video.status, "pending")
