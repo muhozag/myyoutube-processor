@@ -1,0 +1,169 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ video.title|default:video.youtube_id }} - YouTube Processor{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h1 class="mb-4">{{ video.title|default:"Untitled Video" }}</h1>
+        
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <div class="d-flex mb-3">
+                    <strong class="me-2">Status:</strong>
+                    {% if video.status == 'completed' %}
+                    <span class="badge bg-success">Completed</span>
+                    {% elif video.status == 'processing' %}
+                    <span class="badge bg-primary">Processing</span>
+                    {% elif video.status == 'failed' %}
+                    <span class="badge bg-danger">Failed</span>
+                    {% else %}
+                    <span class="badge bg-secondary">Pending</span>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-3">
+                    <strong>YouTube ID:</strong>
+                    <a href="https://www.youtube.com/watch?v={{ video.youtube_id }}" target="_blank" rel="noopener">
+                        {{ video.youtube_id }}
+                    </a>
+                </div>
+                
+                {% if video.channel_name %}
+                <div class="mb-3">
+                    <strong>Channel:</strong> {{ video.channel_name }}
+                </div>
+                {% endif %}
+                
+                {% if video.duration %}
+                <div class="mb-3">
+                    <strong>Duration:</strong> {{ video.duration }} seconds
+                </div>
+                {% endif %}
+                
+                {% if video.published_at %}
+                <div class="mb-3">
+                    <strong>Published:</strong> {{ video.published_at|date:"F j, Y" }}
+                </div>
+                {% endif %}
+                
+                <div class="mb-3">
+                    <strong>Processed:</strong> {{ video.created_at|date:"F j, Y g:i A" }}
+                </div>
+                
+                {% if video.processing_time %}
+                <div class="mb-3">
+                    <strong>Processing Time:</strong> {{ video.processing_time }} seconds
+                </div>
+                {% endif %}
+            </div>
+            
+            <div class="col-md-6">
+                {% if video.thumbnail_url %}
+                <img src="{{ video.thumbnail_url }}" alt="Video thumbnail" class="img-fluid rounded mb-3">
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if video.description %}
+        <h4>Description</h4>
+        <div class="card mb-4">
+            <div class="card-body">
+                <p class="card-text">{{ video.description|linebreaks }}</p>
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if video.error_message and video.status == 'failed' %}
+        <div class="alert alert-danger">
+            <h5>Error Message</h5>
+            <p>{{ video.error_message }}</p>
+        </div>
+        {% endif %}
+        
+        <div class="mt-4">
+            <a href="{% url 'video_list' %}" class="btn btn-secondary">Back to List</a>
+            
+            {% if video.status == 'pending' or video.status == 'failed' %}
+            <form method="post" action="{% url 'process_video' video.pk %}" class="d-inline">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary">Process Video</button>
+            </form>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Video Preview</h5>
+            </div>
+            <div class="card-body">
+                <div class="ratio ratio-16x9">
+                    <iframe src="https://www.youtube.com/embed/{{ video.youtube_id }}" 
+                            title="YouTube video player" 
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                            allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if video.transcript %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Transcript</h5>
+                <div>
+                    <span class="badge {% if video.transcript.is_auto_generated %}bg-warning{% else %}bg-success{% endif %} me-2">
+                        {% if video.transcript.is_auto_generated %}Auto-generated{% else %}Manual{% endif %}
+                    </span>
+                    <span class="badge bg-info">{{ video.transcript.language }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small mb-2">Word count: {{ video.transcript.word_count }}</p>
+                <div class="transcript-content" style="max-height: 400px; overflow-y: auto;">
+                    {{ video.transcript.content|linebreaks }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% elif video.status == 'completed' %}
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="alert alert-warning">
+            <p>This video was processed successfully, but no transcript was found.</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% if video.status == 'processing' %}
+<script>
+    // Poll for status updates if the video is processing
+    document.addEventListener('DOMContentLoaded', function() {
+        function checkStatus() {
+            fetch('{% url "video_status" video.pk %}')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status !== 'processing') {
+                        // Refresh the page if status has changed
+                        window.location.reload();
+                    } else {
+                        // Check again in 5 seconds
+                        setTimeout(checkStatus, 5000);
+                    }
+                })
+                .catch(error => console.error('Error checking status:', error));
+        }
+        
+        // Start polling
+        setTimeout(checkStatus, 5000);
+    });
+</script>
+{% endif %}
+{% endblock %}

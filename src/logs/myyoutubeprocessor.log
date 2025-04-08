@@ -1,0 +1,180 @@
+INFO 2025-04-08 14:02:55,077 autoreload 28731 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:03:45,622 basehttp 28731 6193065984 "GET / HTTP/1.1" 302 0
+INFO 2025-04-08 14:03:45,637 basehttp 28731 6193065984 "GET /videos/ HTTP/1.1" 200 2384
+INFO 2025-04-08 14:03:53,194 basehttp 28731 6193065984 "GET /videos/submit/ HTTP/1.1" 302 0
+WARNING 2025-04-08 14:03:53,205 log 28731 6193065984 Not Found: /accounts/login/
+WARNING 2025-04-08 14:03:53,206 basehttp 28731 6193065984 "GET /accounts/login/?next=/videos/submit/ HTTP/1.1" 404 2546
+INFO 2025-04-08 14:04:24,700 basehttp 28731 6209892352 "GET / HTTP/1.1" 302 0
+INFO 2025-04-08 14:04:24,705 basehttp 28731 6209892352 "GET /videos/ HTTP/1.1" 200 2384
+WARNING 2025-04-08 14:04:24,803 log 28731 6209892352 Not Found: /favicon.ico
+WARNING 2025-04-08 14:04:24,803 basehttp 28731 6209892352 "GET /favicon.ico HTTP/1.1" 404 2513
+INFO 2025-04-08 14:04:39,308 basehttp 28731 6209892352 "GET /videos/submit/ HTTP/1.1" 302 0
+WARNING 2025-04-08 14:04:39,314 log 28731 6209892352 Not Found: /accounts/login/
+WARNING 2025-04-08 14:04:39,315 basehttp 28731 6209892352 "GET /accounts/login/?next=/videos/submit/ HTTP/1.1" 404 2546
+INFO 2025-04-08 14:04:55,397 basehttp 28731 6209892352 "GET /videos/submit/ HTTP/1.1" 302 0
+WARNING 2025-04-08 14:04:55,408 log 28731 6209892352 Not Found: /accounts/login/
+WARNING 2025-04-08 14:04:55,409 basehttp 28731 6209892352 "GET /accounts/login/?next=/videos/submit/ HTTP/1.1" 404 2546
+INFO 2025-04-08 14:07:12,334 autoreload 30118 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:07:58,271 basehttp 30118 6137655296 "GET / HTTP/1.1" 302 0
+INFO 2025-04-08 14:07:58,288 basehttp 30118 6137655296 "GET /videos/ HTTP/1.1" 200 2384
+INFO 2025-04-08 14:08:00,615 basehttp 30118 6137655296 "GET /videos/submit/ HTTP/1.1" 302 0
+WARNING 2025-04-08 14:08:00,623 log 30118 6137655296 Not Found: /accounts/login/
+WARNING 2025-04-08 14:08:00,624 basehttp 30118 6137655296 "GET /accounts/login/?next=/videos/submit/ HTTP/1.1" 404 2546
+INFO 2025-04-08 14:08:17,308 basehttp 30118 6137655296 "GET /videos/submit/ HTTP/1.1" 302 0
+WARNING 2025-04-08 14:08:17,317 log 30118 6137655296 Not Found: /accounts/login/
+WARNING 2025-04-08 14:08:17,318 basehttp 30118 6137655296 "GET /accounts/login/?next=/videos/submit/ HTTP/1.1" 404 2546
+INFO 2025-04-08 14:10:31,393 autoreload 30118 8643279552 /Users/muhozayekoye/myyoutube-processor/src/videos/views.py changed, reloading.
+INFO 2025-04-08 14:10:31,616 autoreload 30837 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:12:56,463 autoreload 31524 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:14:00,756 autoreload 31974 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:14:34,163 basehttp 31974 6133411840 "GET / HTTP/1.1" 302 0
+INFO 2025-04-08 14:14:34,177 basehttp 31974 6133411840 "GET /videos/ HTTP/1.1" 200 2384
+WARNING 2025-04-08 14:14:34,272 log 31974 6133411840 Not Found: /favicon.ico
+WARNING 2025-04-08 14:14:34,273 basehttp 31974 6133411840 "GET /favicon.ico HTTP/1.1" 404 2513
+INFO 2025-04-08 14:14:35,994 basehttp 31974 6133411840 "GET /videos/submit/ HTTP/1.1" 200 4799
+INFO 2025-04-08 14:29:25,666 autoreload 31974 8643279552 /Users/muhozayekoye/myyoutube-processor/src/videos/views.py changed, reloading.
+INFO 2025-04-08 14:29:25,667 autoreload 30837 8643279552 /Users/muhozayekoye/myyoutube-processor/src/videos/views.py changed, reloading.
+INFO 2025-04-08 14:29:25,983 autoreload 35169 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:29:25,983 autoreload 35170 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:31:23,844 tasks 35170 6215905280 Starting to process video 1
+INFO 2025-04-08 14:31:23,846 basehttp 35170 6199078912 "POST /videos/submit/ HTTP/1.1" 302 0
+INFO 2025-04-08 14:31:23,847 tasks 35170 6215905280 Processing video: hZGG5MzQ3Zw
+INFO 2025-04-08 14:31:23,854 basehttp 35170 6199078912 "GET /videos/ HTTP/1.1" 200 3734
+WARNING 2025-04-08 14:31:26,498 tasks 35170 6215905280 No transcript available for hZGG5MzQ3Zw
+INFO 2025-04-08 14:31:54,301 basehttp 35170 6199078912 "GET /videos/1/ HTTP/1.1" 200 4104
+INFO 2025-04-08 14:32:11,072 tasks 35170 6215905280 Starting to process video 1
+INFO 2025-04-08 14:32:11,074 basehttp 35170 6199078912 "POST /videos/1/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 14:32:11,080 tasks 35170 6215905280 Processing video: hZGG5MzQ3Zw
+INFO 2025-04-08 14:32:11,083 basehttp 35170 6199078912 "GET /videos/1/ HTTP/1.1" 200 4619
+WARNING 2025-04-08 14:32:13,570 tasks 35170 6215905280 No transcript available for hZGG5MzQ3Zw
+INFO 2025-04-08 14:32:15,602 basehttp 35170 6199078912 "GET /videos/ HTTP/1.1" 200 3757
+WARNING 2025-04-08 14:32:15,632 log 35170 6199078912 Not Found: /favicon.ico
+WARNING 2025-04-08 14:32:15,632 basehttp 35170 6199078912 "GET /favicon.ico HTTP/1.1" 404 2513
+INFO 2025-04-08 14:32:15,632 basehttp 35170 6199078912 - Broken pipe from ('127.0.0.1', 58246)
+INFO 2025-04-08 14:32:19,839 tasks 35170 6233305088 Starting to process video 1
+INFO 2025-04-08 14:32:19,841 basehttp 35170 6199078912 "POST /videos/1/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 14:32:19,848 tasks 35170 6233305088 Processing video: hZGG5MzQ3Zw
+INFO 2025-04-08 14:32:19,852 basehttp 35170 6199078912 "GET /videos/1/ HTTP/1.1" 200 4619
+WARNING 2025-04-08 14:32:22,438 tasks 35170 6233305088 No transcript available for hZGG5MzQ3Zw
+INFO 2025-04-08 14:32:25,236 basehttp 35170 6199078912 "GET /videos/1/status/ HTTP/1.1" 200 163
+INFO 2025-04-08 14:32:25,261 basehttp 35170 6199078912 "GET /videos/1/ HTTP/1.1" 200 4105
+INFO 2025-04-08 14:36:26,976 basehttp 35170 6199078912 "GET /videos/submit/ HTTP/1.1" 200 4799
+ERROR 2025-04-08 14:36:33,013 views 35170 6199078912 Error processing video: UNIQUE constraint failed: videos_video.youtube_id
+Traceback (most recent call last):
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+sqlite3.IntegrityError: UNIQUE constraint failed: videos_video.youtube_id
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "/Users/muhozayekoye/myyoutube-processor/src/videos/views.py", line 60, in form_valid
+    response = super().form_valid(form)
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/views/generic/edit.py", line 133, in form_valid
+    self.object = form.save()
+                  ~~~~~~~~~^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/forms/models.py", line 554, in save
+    self.instance.save()
+    ~~~~~~~~~~~~~~~~~~^^
+  File "/Users/muhozayekoye/myyoutube-processor/src/videos/models.py", line 88, in save
+    super().save(*args, **kwargs)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1854, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1881, in execute_sql
+    cursor.execute(sql, params)
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 122, in execute
+    return super().execute(sql, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 79, in execute
+    return self._execute_with_wrappers(
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        sql, params, many=False, executor=self._execute
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 92, in _execute_with_wrappers
+    return executor(sql, params, many, context)
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 100, in _execute
+    with self.db.wrap_database_errors:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/utils.py", line 91, in __exit__
+    raise dj_exc_value.with_traceback(traceback) from exc_value
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/backends/utils.py", line 105, in _execute
+    return self.cursor.execute(sql, params)
+           ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/backends/sqlite3/base.py", line 360, in execute
+    return super().execute(query, params)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+django.db.utils.IntegrityError: UNIQUE constraint failed: videos_video.youtube_id
+INFO 2025-04-08 14:36:33,021 basehttp 35170 6199078912 "POST /videos/submit/ HTTP/1.1" 200 5061
+INFO 2025-04-08 14:40:10,936 autoreload 35169 8643279552 /Users/muhozayekoye/myyoutube-processor/src/videos/views.py changed, reloading.
+INFO 2025-04-08 14:40:10,937 autoreload 35170 8643279552 /Users/muhozayekoye/myyoutube-processor/src/videos/views.py changed, reloading.
+INFO 2025-04-08 14:40:11,148 autoreload 37480 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:40:11,149 autoreload 37481 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:41:18,207 autoreload 37481 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/youtube_utils.py changed, reloading.
+INFO 2025-04-08 14:41:18,208 autoreload 37480 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/youtube_utils.py changed, reloading.
+INFO 2025-04-08 14:41:18,405 autoreload 37738 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:41:18,405 autoreload 37739 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 14:56:08,333 autoreload 37738 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/youtube_utils.py changed, reloading.
+INFO 2025-04-08 14:56:08,620 autoreload 40912 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 15:02:44,511 autoreload 40912 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/youtube_utils.py changed, reloading.
+INFO 2025-04-08 15:02:44,798 autoreload 42646 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 15:11:42,187 autoreload 42646 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/youtube_utils.py changed, reloading.
+INFO 2025-04-08 15:11:42,468 autoreload 44859 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 15:12:44,457 autoreload 44859 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/youtube_utils.py changed, reloading.
+INFO 2025-04-08 15:12:44,659 autoreload 45223 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 15:24:04,573 basehttp 45223 6134345728 "GET / HTTP/1.1" 302 0
+INFO 2025-04-08 15:24:04,594 basehttp 45223 6134345728 "GET /videos/ HTTP/1.1" 200 3757
+WARNING 2025-04-08 15:24:04,735 log 45223 6134345728 Not Found: /favicon.ico
+WARNING 2025-04-08 15:24:04,736 basehttp 45223 6134345728 "GET /favicon.ico HTTP/1.1" 404 2513
+INFO 2025-04-08 15:24:08,320 tasks 45223 6151172096 Starting to process video 1
+INFO 2025-04-08 15:24:08,321 basehttp 45223 6134345728 "POST /videos/1/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 15:24:08,324 tasks 45223 6151172096 Processing video: hZGG5MzQ3Zw
+INFO 2025-04-08 15:24:08,332 basehttp 45223 6134345728 "GET /videos/1/ HTTP/1.1" 200 4619
+INFO 2025-04-08 15:24:11,003 tasks 45223 6151172096 Saved transcript for hZGG5MzQ3Zw (en, auto-generated: True)
+INFO 2025-04-08 15:24:11,006 tasks 45223 6151172096 Successfully processed video hZGG5MzQ3Zw
+INFO 2025-04-08 15:24:13,349 basehttp 45223 6134345728 "GET /videos/1/status/ HTTP/1.1" 200 130
+INFO 2025-04-08 15:24:13,376 basehttp 45223 6134345728 "GET /videos/1/ HTTP/1.1" 200 26413
+INFO 2025-04-08 15:24:59,605 basehttp 45223 6134345728 "GET /videos/ HTTP/1.1" 200 3386
+INFO 2025-04-08 15:25:16,590 autoreload 45223 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/youtube_utils.py changed, reloading.
+INFO 2025-04-08 15:25:16,905 autoreload 48654 8643279552 Watching for file changes with StatReloader

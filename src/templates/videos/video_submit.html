@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Submit Video - YouTube Processor{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h1 class="mb-4">Submit YouTube Video</h1>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.url.id_for_label }}" class="form-label">{{ form.url.label }}</label>
+                        {{ form.url.errors }}
+                        <input type="url" name="{{ form.url.name }}" id="{{ form.url.id_for_label }}"
+                               class="form-control {% if form.url.errors %}is-invalid{% endif %}"
+                               required placeholder="{{ form.url.field.widget.attrs.placeholder }}">
+                        <div class="form-text">{{ form.url.help_text }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">{{ form.title.label }}</label>
+                        {{ form.title.errors }}
+                        <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}"
+                               class="form-control {% if form.title.errors %}is-invalid{% endif %}"
+                               placeholder="{{ form.title.field.widget.attrs.placeholder }}">
+                        <div class="form-text">{{ form.title.help_text }}</div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">{{ form.description.label }}</label>
+                        {{ form.description.errors }}
+                        <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}"
+                                  class="form-control {% if form.description.errors %}is-invalid{% endif %}"
+                                  rows="{{ form.description.field.widget.attrs.rows }}"
+                                  placeholder="{{ form.description.field.widget.attrs.placeholder }}"></textarea>
+                        <div class="form-text">{{ form.description.help_text }}</div>
+                    </div>
+                    
+                    {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{% url 'video_list' %}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">Supported YouTube URL Formats</h5>
+            </div>
+            <div class="card-body">
+                <ul class="mb-0">
+                    <li>Standard: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code></li>
+                    <li>Short: <code>https://youtu.be/dQw4w9WgXcQ</code></li>
+                    <li>Shorts: <code>https://youtube.com/shorts/dQw4w9WgXcQ</code></li>
+                    <li>With timestamp: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42s</code></li>
+                    <li>From playlist: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLNCRTSKrIMmGtCGFMJyB7pW6q-rYOD8xM</code></li>
+                    <li>Embedded: <code>https://www.youtube.com/embed/dQw4w9WgXcQ</code></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
