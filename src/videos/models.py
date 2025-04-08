@@ -131,6 +131,10 @@ class Transcript(models.Model):
         blank=True,
         verbose_name="Beautified Transcript Content"
     )
+    summary = models.TextField(
+        blank=True,
+        verbose_name="Transcript Summary"
+    )
     raw_transcript_data = models.JSONField(
         null=True,
         blank=True,

@@ -10,9 +10,9 @@ from django.core.exceptions import ValidationError
 import logging
 import threading
 
-from .models import Video
+from .models import Video, Transcript
 from .forms import VideoSubmissionForm
-from .tasks import process_video_async
+from .tasks import process_video_async, generate_summary
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -119,3 +119,29 @@ def video_status(request, pk):
     except Exception as e:
         logger.exception(f"Error getting video status: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
+
+@require_POST
+def generate_transcript_summary(request, pk):
+    """Generate or regenerate a summary for an existing transcript"""
+    video = get_object_or_404(Video, pk=pk)
+    
+    try:
+        # Verify transcript exists
+        if not hasattr(video, 'transcript'):
+            messages.error(request, "Cannot generate summary: No transcript found for this video.")
+            return redirect('video_detail', pk=video.pk)
+        
+        # Start summary generation in background thread
+        thread = threading.Thread(
+            target=generate_summary,
+            args=(video.transcript.pk,),
+            daemon=True
+        )
+        thread.start()
+        
+        messages.success(request, f"Generating summary for '{video.title or video.youtube_id}'. Please refresh in a few moments.")
+    except Exception as e:
+        logger.exception(f"Error generating summary for video {video.pk}: {str(e)}")
+        messages.error(request, f"Error generating summary: {str(e)}")
+    
+    return redirect('video_detail', pk=video.pk)

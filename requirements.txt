@@ -5,3 +5,4 @@ gunicorn==23.0.0
 celery==5.5.0
 youtube-transcript-api==1.0.3
 python-json-logger==3.3.0
+ollama==0.1.5

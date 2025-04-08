@@ -11,6 +11,7 @@ import time
 import json
 from django.utils import timezone
 from myyoutubeprocessor.utils.youtube_utils import extract_transcript
+from myyoutubeprocessor.utils.ai.ollama_utils import get_mistral_summary
 
 from .models import Video, Transcript
 
@@ -94,6 +95,19 @@ def process_video(video_id):
             # Generate beautified content
             transcript.beautify_transcript(raw_data)
             
+            # Generate summary using Ollama Mistral model
+            try:
+                logger.info(f"Generating summary for transcript of {video.youtube_id}")
+                summary = get_mistral_summary(transcript_text)
+                if summary:
+                    transcript.summary = summary
+                    transcript.save(update_fields=['summary', 'updated_at'])
+                    logger.info(f"Summary generated for {video.youtube_id}")
+                else:
+                    logger.warning(f"Failed to generate summary for {video.youtube_id}")
+            except Exception as e:
+                logger.error(f"Error generating summary for {video.youtube_id}: {str(e)}")
+            
             logger.info(f"Saved transcript for {video.youtube_id} ({language_code}, auto-generated: {is_auto_generated})")
             
             # Successfully processed
@@ -129,3 +143,33 @@ def process_video_async(video_id):
         video_id (int): The database ID of the video to process
     """
     return process_video(video_id)
+
+def generate_summary(transcript_id):
+    """
+    Generate a summary for an existing transcript using Ollama.
+    
+    Args:
+        transcript_id (int): The database ID of the transcript
+        
+    Returns:
+        bool: True if summary generation was successful, False otherwise
+    """
+    try:
+        transcript = Transcript.objects.get(pk=transcript_id)
+        logger.info(f"Generating summary for transcript {transcript_id}")
+        
+        summary = get_mistral_summary(transcript.content)
+        if summary:
+            transcript.summary = summary
+            transcript.save(update_fields=['summary', 'updated_at'])
+            logger.info(f"Summary generated for transcript {transcript_id}")
+            return True
+        else:
+            logger.warning(f"Failed to generate summary for transcript {transcript_id}")
+            return False
+    except Transcript.DoesNotExist:
+        logger.error(f"Transcript with ID {transcript_id} not found")
+        return False
+    except Exception as e:
+        logger.exception(f"Error generating summary for transcript {transcript_id}: {str(e)}")
+        return False
