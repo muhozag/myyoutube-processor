@@ -9,6 +9,8 @@ class VideoModelTests(TestCase):
         """Set up test data"""
         self.valid_url = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
         self.valid_id = "dQw4w9WgXcQ"
+        self.valid_id2 = "dQw4w9WgXcD"  # Slightly different ID for second test
+        self.valid_url2 = "https://www.youtube.com/watch?v=dQw4w9WgXcD"  # URL with different ID
         self.invalid_url = "https://www.youtube.com/watch?v=invalid"
 
     @patch('myyoutubeprocessor.utils.youtube_utils.extract_youtube_id')
@@ -21,7 +23,8 @@ class VideoModelTests(TestCase):
         video = Video.objects.create(
             url=self.valid_url,
             title="Test Video",
-            description="Test Description"
+            description="Test Description",
+            youtube_id=None  # Explicitly set to None to force extraction from URL
         )
         
         self.assertEqual(video.youtube_id, self.valid_id)
@@ -152,7 +155,7 @@ class VideoModelTests(TestCase):
         """Test string representation uses title or ID"""
         with patch('myyoutubeprocessor.utils.youtube_utils.extract_youtube_id') as mock_extract:
             with patch('myyoutubeprocessor.utils.youtube_utils.is_valid_youtube_id') as mock_is_valid:
-                mock_extract.return_value = self.valid_id
+                mock_extract.side_effect = [self.valid_id, self.valid_id2]
                 mock_is_valid.return_value = True
                 
                 # With title
@@ -164,9 +167,8 @@ class VideoModelTests(TestCase):
                 
                 # Without title
                 video_without_title = Video.objects.create(
-                    url=self.valid_url,
-                    youtube_id=self.valid_id
+                    url=self.valid_url2
                 )
                 video_without_title.title = ""
                 video_without_title.save()
-                self.assertEqual(str(video_without_title), self.valid_id)
+                self.assertEqual(str(video_without_title), self.valid_id2)
