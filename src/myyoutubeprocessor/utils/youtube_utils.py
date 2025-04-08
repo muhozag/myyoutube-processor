@@ -79,19 +79,19 @@ def is_valid_youtube_id(youtube_id: str) -> bool:
     return bool(re.match(r'^[a-zA-Z0-9_-]{11}$', youtube_id))
 
 
-def extract_transcript(youtube_id: str, language_code: str = 'en') -> Tuple[str, bool, str]:
+def extract_transcript(youtube_id: str, language_code: str = 'en', return_raw: bool = False) -> Union[Tuple[str, bool, str], Tuple[str, bool, str, Union[List, Dict, object]]]:
     """
     Extract transcript for a YouTube video using youtube_transcript_api.
     
     Args:
         youtube_id (str): YouTube video ID
         language_code (str): Preferred language code (default: 'en')
+        return_raw (bool): Whether to return the raw transcript data along with the formatted text
         
     Returns:
-        tuple: (transcript_text, is_auto_generated, language_code)
-            - transcript_text (str): Full transcript text or empty string if not available
-            - is_auto_generated (bool): Whether transcript was auto-generated
-            - language_code (str): Actual language code of the returned transcript
+        Union[Tuple[str, bool, str], Tuple[str, bool, str, object]]: 
+            - If return_raw=False: (transcript_text, is_auto_generated, language_code)
+            - If return_raw=True: (transcript_text, is_auto_generated, language_code, raw_data)
             
     Note:
         If the preferred language is not available, the function will try to get
@@ -99,7 +99,7 @@ def extract_transcript(youtube_id: str, language_code: str = 'en') -> Tuple[str,
     """
     if not is_valid_youtube_id(youtube_id):
         logging.error(f"Invalid YouTube ID: {youtube_id}")
-        return "", False, ""
+        return ("", False, "") if not return_raw else ("", False, "", None)
     
     try:
         # Get a list of all available transcripts
@@ -109,6 +109,11 @@ def extract_transcript(youtube_id: str, language_code: str = 'en') -> Tuple[str,
         available_languages = [t.language_code for t in transcript_list]
         logging.info(f"Available transcript languages for {youtube_id}: {available_languages}")
         
+        transcript = None
+        transcript_data = None
+        is_generated = True
+        actual_language = language_code
+        
         # Try to get manual transcript in preferred language
         try:
             logging.info(f"Trying to find manual transcript in {language_code}")
@@ -116,59 +121,75 @@ def extract_transcript(youtube_id: str, language_code: str = 'en') -> Tuple[str,
             if not transcript.is_generated:
                 logging.info(f"Found manual transcript in {language_code}")
                 transcript_data = transcript.fetch()
-                return _format_transcript(transcript_data), False, transcript.language_code
+                is_generated = False
+                actual_language = transcript.language_code
         except NoTranscriptFound:
             logging.info(f"No manual transcript found in {language_code}")
             pass
             
-        # Try to get auto-generated transcript in preferred language
-        try:
-            logging.info(f"Trying to find auto-generated transcript in {language_code}")
-            transcript = transcript_list.find_transcript([language_code])
-            transcript_data = transcript.fetch()
-            logging.info(f"Found auto-generated transcript in {language_code}")
-            return _format_transcript(transcript_data), transcript.is_generated, transcript.language_code
-        except NoTranscriptFound:
-            logging.info(f"No auto-generated transcript found in {language_code}")
-            pass
+        # If no manual transcript, try to get auto-generated transcript in preferred language
+        if not transcript_data:
+            try:
+                logging.info(f"Trying to find auto-generated transcript in {language_code}")
+                transcript = transcript_list.find_transcript([language_code])
+                transcript_data = transcript.fetch()
+                is_generated = transcript.is_generated
+                actual_language = transcript.language_code
+                logging.info(f"Found auto-generated transcript in {language_code}")
+            except NoTranscriptFound:
+                logging.info(f"No auto-generated transcript found in {language_code}")
+                pass
         
         # If preferred language not found, try any manually created transcript
-        manual_transcripts = [t for t in transcript_list if not t.is_generated]
-        if manual_transcripts:
-            selected = manual_transcripts[0]
-            logging.info(f"Using manual transcript in {selected.language_code} instead of preferred {language_code}")
-            transcript_data = selected.fetch()
-            return _format_transcript(transcript_data), False, selected.language_code
-            
+        if not transcript_data:
+            manual_transcripts = [t for t in transcript_list if not t.is_generated]
+            if manual_transcripts:
+                selected = manual_transcripts[0]
+                logging.info(f"Using manual transcript in {selected.language_code} instead of preferred {language_code}")
+                transcript_data = selected.fetch()
+                is_generated = False
+                actual_language = selected.language_code
+                
         # Last resort: get any auto-generated transcript
-        logging.info("No manual transcripts found, trying any available transcript")
+        if not transcript_data:
+            logging.info("No manual transcripts found, trying any available transcript")
+            
+            # Try English first, then try the first available language
+            try:
+                transcript = transcript_list.find_transcript(['en'])
+                logging.info(f"Found English transcript as fallback")
+                transcript_data = transcript.fetch()
+                is_generated = transcript.is_generated
+                actual_language = transcript.language_code
+            except NoTranscriptFound:
+                # Get the first available transcript from the list
+                available_transcripts = list(transcript_list)
+                if available_transcripts:
+                    transcript = available_transcripts[0]
+                    logging.info(f"Using transcript in {transcript.language_code} as last resort")
+                    transcript_data = transcript.fetch()
+                    is_generated = transcript.is_generated
+                    actual_language = transcript.language_code
+                else:
+                    logging.warning(f"No transcripts found after listing them (unusual situation)")
+                    return ("", False, "") if not return_raw else ("", False, "", None)
         
-        # Try English first, then try the first available language
-        try:
-            transcript = transcript_list.find_transcript(['en'])
-            logging.info(f"Found English transcript as fallback")
-        except NoTranscriptFound:
-            # Get the first available transcript from the list
-            available_transcripts = list(transcript_list)
-            if available_transcripts:
-                transcript = available_transcripts[0]
-                logging.info(f"Using transcript in {transcript.language_code} as last resort")
-            else:
-                logging.warning(f"No transcripts found after listing them (unusual situation)")
-                return "", False, ""
+        formatted_text = _format_transcript(transcript_data)
         
-        transcript_data = transcript.fetch()
-        return _format_transcript(transcript_data), transcript.is_generated, transcript.language_code
+        if return_raw:
+            return formatted_text, is_generated, actual_language, transcript_data
+        else:
+            return formatted_text, is_generated, actual_language
             
     except TranscriptsDisabled as e:
         logging.warning(f"Transcripts are disabled for video {youtube_id}: {str(e)}")
-        return "", False, ""
+        return ("", False, "") if not return_raw else ("", False, "", None)
     except NoTranscriptFound as e:
         logging.warning(f"No transcript found for video {youtube_id}: {str(e)}")
-        return "", False, ""
+        return ("", False, "") if not return_raw else ("", False, "", None)
     except Exception as e:
         logging.error(f"Error extracting transcript for video {youtube_id}: {str(e)}", exc_info=True)
-        return "", False, ""
+        return ("", False, "") if not return_raw else ("", False, "", None)
 
 
 def _format_transcript(transcript_data) -> str:

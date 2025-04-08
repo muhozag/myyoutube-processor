@@ -67,6 +67,11 @@
                         {% csrf_token %}
                         <button type="submit" class="btn btn-sm btn-primary">Process</button>
                     </form>
+                    {% elif video.status == 'completed' %}
+                    <form method="post" action="{% url 'process_video' video.pk %}" class="d-inline">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-sm btn-outline-primary">Reprocess</button>
+                    </form>
                     {% endif %}
                 </td>
             </tr>

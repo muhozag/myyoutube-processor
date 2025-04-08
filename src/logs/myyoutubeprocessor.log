@@ -191,3 +191,236 @@ INFO 2025-04-08 16:03:57,634 tasks 58469 6151614464 Saved transcript for Z-DoGQd
 INFO 2025-04-08 16:03:57,636 tasks 58469 6151614464 Successfully processed video Z-DoGQdlEPY
 INFO 2025-04-08 16:04:36,135 basehttp 58469 6134788096 "GET /videos/ HTTP/1.1" 200 4123
 INFO 2025-04-08 16:04:46,330 basehttp 58469 6134788096 "GET /videos/2/ HTTP/1.1" 200 114858
+INFO 2025-04-08 16:11:10,900 basehttp 58469 6151614464 "GET /videos/submit/ HTTP/1.1" 200 4799
+INFO 2025-04-08 16:11:19,263 basehttp 58469 6151614464 "POST /videos/submit/ HTTP/1.1" 200 4894
+INFO 2025-04-08 16:13:39,183 tasks 58469 6185840640 Starting to process video 3
+INFO 2025-04-08 16:13:39,185 basehttp 58469 6169014272 "POST /videos/submit/ HTTP/1.1" 302 0
+INFO 2025-04-08 16:13:39,188 tasks 58469 6185840640 Processing video: adgUC8ISlqc
+INFO 2025-04-08 16:13:39,195 basehttp 58469 6169014272 "GET /videos/ HTTP/1.1" 200 5208
+WARNING 2025-04-08 16:13:42,156 tasks 58469 6185840640 No transcript available for adgUC8ISlqc
+INFO 2025-04-08 16:13:56,935 basehttp 58469 6169014272 "GET /videos/ HTTP/1.1" 200 5231
+INFO 2025-04-08 16:13:59,716 basehttp 58469 6169014272 "GET /videos/ HTTP/1.1" 200 5231
+INFO 2025-04-08 16:14:01,974 tasks 58469 6134788096 Starting to process video 3
+INFO 2025-04-08 16:14:01,976 basehttp 58469 6169014272 "POST /videos/3/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 16:14:01,980 tasks 58469 6134788096 Processing video: adgUC8ISlqc
+INFO 2025-04-08 16:14:01,987 basehttp 58469 6169014272 "GET /videos/3/ HTTP/1.1" 200 4619
+WARNING 2025-04-08 16:14:04,593 tasks 58469 6134788096 No transcript available for adgUC8ISlqc
+INFO 2025-04-08 16:14:07,008 basehttp 58469 6169014272 "GET /videos/3/status/ HTTP/1.1" 200 163
+INFO 2025-04-08 16:14:07,029 basehttp 58469 6169014272 "GET /videos/3/ HTTP/1.1" 200 4105
+INFO 2025-04-08 16:15:23,782 basehttp 58469 6151614464 "GET /videos/ HTTP/1.1" 200 5231
+INFO 2025-04-08 16:15:28,245 basehttp 58469 6151614464 "GET /videos/submit/ HTTP/1.1" 200 4799
+INFO 2025-04-08 16:15:54,122 tasks 58469 6169014272 Starting to process video 4
+INFO 2025-04-08 16:15:54,124 basehttp 58469 6151614464 "POST /videos/submit/ HTTP/1.1" 302 0
+INFO 2025-04-08 16:15:54,128 tasks 58469 6169014272 Processing video: dlWIZVBT0Tc
+INFO 2025-04-08 16:15:54,133 basehttp 58469 6151614464 "GET /videos/ HTTP/1.1" 200 6316
+INFO 2025-04-08 16:15:56,732 tasks 58469 6169014272 Saved transcript for dlWIZVBT0Tc (en, auto-generated: True)
+INFO 2025-04-08 16:15:56,733 tasks 58469 6169014272 Successfully processed video dlWIZVBT0Tc
+INFO 2025-04-08 16:17:06,940 basehttp 58469 6134788096 "GET /videos/ HTTP/1.1" 200 5968
+INFO 2025-04-08 16:17:12,578 basehttp 58469 6134788096 "GET /videos/4/ HTTP/1.1" 200 52173
+INFO 2025-04-08 16:17:48,597 basehttp 58469 6134788096 "GET /videos/1/ HTTP/1.1" 200 26413
+INFO 2025-04-08 16:43:42,183 autoreload 68760 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 16:44:04,074 basehttp 68760 6160838656 "GET / HTTP/1.1" 302 0
+INFO 2025-04-08 16:44:04,092 basehttp 68760 6160838656 "GET /videos/ HTTP/1.1" 200 5968
+INFO 2025-04-08 16:44:09,621 basehttp 68760 6160838656 "GET /videos/ HTTP/1.1" 200 5968
+INFO 2025-04-08 16:44:15,291 basehttp 68760 6160838656 "GET /videos/1/ HTTP/1.1" 200 51142
+INFO 2025-04-08 16:44:35,617 basehttp 68760 6160838656 "GET /videos/ HTTP/1.1" 200 5968
+INFO 2025-04-08 16:45:13,410 basehttp 68760 6160838656 "GET /videos/1/ HTTP/1.1" 200 51142
+INFO 2025-04-08 16:45:21,141 basehttp 68760 6160838656 "GET /videos/ HTTP/1.1" 200 5968
+INFO 2025-04-08 16:46:23,861 basehttp 68760 6325039104 "GET /videos/submit/ HTTP/1.1" 200 4799
+WARNING 2025-04-08 16:46:23,886 log 68760 6160838656 Not Found: /apple-touch-icon-precomposed.png
+WARNING 2025-04-08 16:46:23,886 basehttp 68760 6160838656 "GET /apple-touch-icon-precomposed.png HTTP/1.1" 404 2576
+WARNING 2025-04-08 16:46:23,888 log 68760 6160838656 Not Found: /apple-touch-icon.png
+WARNING 2025-04-08 16:46:23,889 basehttp 68760 6160838656 "GET /apple-touch-icon.png HTTP/1.1" 404 2540
+INFO 2025-04-08 16:46:31,684 tasks 68760 6341865472 Starting to process video 5
+INFO 2025-04-08 16:46:31,685 basehttp 68760 6325039104 "POST /videos/submit/ HTTP/1.1" 302 0
+INFO 2025-04-08 16:46:31,687 tasks 68760 6341865472 Processing video: Bdb35NoCeUU
+INFO 2025-04-08 16:46:31,693 basehttp 68760 6325039104 "GET /videos/ HTTP/1.1" 200 7053
+ERROR 2025-04-08 16:46:34,538 tasks 68760 6341865472 Error processing video 5: Object of type FetchedTranscript is not JSON serializable
+Traceback (most recent call last):
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/query.py", line 946, in get_or_create
+    return self.get(**kwargs), False
+           ~~~~~~~~^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/query.py", line 633, in get
+    raise self.model.DoesNotExist(
+        "%s matching query does not exist." % self.model._meta.object_name
+    )
+videos.models.Transcript.DoesNotExist: Transcript matching query does not exist.
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/Users/muhozayekoye/myyoutube-processor/src/videos/tasks.py", line 52, in process_video
+    transcript, created = Transcript.objects.update_or_create(
+                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        video=video,
+        ^^^^^^^^^^^^
+    ...<5 lines>...
+        }
+        ^
+    )
+    ^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/query.py", line 988, in update_or_create
+    obj, created = self.select_for_update().get_or_create(
+                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^
+        create_defaults, **kwargs
+        ^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/query.py", line 953, in get_or_create
+    return self.create(**params), True
+           ~~~~~~~~~~~^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/query.py", line 663, in create
+    obj.save(force_insert=True, using=self.db)
+    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/base.py", line 902, in save
+    self.save_base(
+    ~~~~~~~~~~~~~~^
+        using=using,
+        ^^^^^^^^^^^^
+    ...<2 lines>...
+        update_fields=update_fields,
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/base.py", line 1008, in save_base
+    updated = self._save_table(
+        raw,
+    ...<4 lines>...
+        update_fields,
+    )
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/base.py", line 1169, in _save_table
+    results = self._do_insert(
+        cls._base_manager, using, fields, returning_fields, raw
+    )
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/base.py", line 1210, in _do_insert
+    return manager._insert(
+           ~~~~~~~~~~~~~~~^
+        [self],
+        ^^^^^^^
+    ...<3 lines>...
+        raw=raw,
+        ^^^^^^^^
+    )
+    ^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/query.py", line 1854, in _insert
+    return query.get_compiler(using=using).execute_sql(returning_fields)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1880, in execute_sql
+    for sql, params in self.as_sql():
+                       ~~~~~~~~~~~^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1805, in as_sql
+    self.prepare_value(field, self.pre_save_val(field, obj))
+    ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/sql/compiler.py", line 1740, in prepare_value
+    return field.get_db_prep_save(value, connection=self.connection)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/fields/json.py", line 118, in get_db_prep_save
+    return super().get_db_prep_save(value, connection)
+           ~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/fields/__init__.py", line 1012, in get_db_prep_save
+    return self.get_db_prep_value(value, connection=connection, prepared=False)
+           ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/models/fields/json.py", line 102, in get_db_prep_value
+    return connection.ops.adapt_json_value(value, self.encoder)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/db/backends/base/operations.py", line 598, in adapt_json_value
+    return json.dumps(value, cls=encoder)
+           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/json/__init__.py", line 231, in dumps
+    return _default_encoder.encode(obj)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^
+  File "/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/json/encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+  File "/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/json/encoder.py", line 261, in iterencode
+    return _iterencode(o, 0)
+  File "/opt/homebrew/Cellar/python@3.13/3.13.2/Frameworks/Python.framework/Versions/3.13/lib/python3.13/json/encoder.py", line 180, in default
+    raise TypeError(f'Object of type {o.__class__.__name__} '
+                    f'is not JSON serializable')
+TypeError: Object of type FetchedTranscript is not JSON serializable
+INFO 2025-04-08 16:46:55,907 basehttp 68760 6325039104 "GET /videos/ HTTP/1.1" 200 7076
+INFO 2025-04-08 16:47:02,927 basehttp 68760 6325039104 "GET /videos/5/ HTTP/1.1" 200 4122
+INFO 2025-04-08 16:54:45,781 autoreload 71456 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 16:55:02,220 basehttp 71456 6126333952 "GET / HTTP/1.1" 302 0
+INFO 2025-04-08 16:55:02,237 basehttp 71456 6126333952 "GET /videos/ HTTP/1.1" 200 8231
+INFO 2025-04-08 16:55:12,732 tasks 71456 6143160320 Starting to process video 5
+INFO 2025-04-08 16:55:12,734 basehttp 71456 6126333952 "POST /videos/5/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 16:55:12,736 tasks 71456 6143160320 Processing video: Bdb35NoCeUU
+INFO 2025-04-08 16:55:12,744 basehttp 71456 6126333952 "GET /videos/5/ HTTP/1.1" 200 4619
+INFO 2025-04-08 16:55:15,629 tasks 71456 6143160320 Saved transcript for Bdb35NoCeUU (en, auto-generated: False)
+INFO 2025-04-08 16:55:15,630 tasks 71456 6143160320 Successfully processed video Bdb35NoCeUU
+INFO 2025-04-08 16:55:17,761 basehttp 71456 6126333952 "GET /videos/5/status/ HTTP/1.1" 200 128
+INFO 2025-04-08 16:55:17,811 basehttp 71456 6126333952 "GET /videos/5/ HTTP/1.1" 200 661604
+INFO 2025-04-08 16:55:55,166 tasks 71456 6143160320 Starting to process video 3
+INFO 2025-04-08 16:55:55,168 basehttp 71456 6126333952 "POST /videos/3/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 16:55:55,171 tasks 71456 6143160320 Processing video: adgUC8ISlqc
+INFO 2025-04-08 16:55:55,178 basehttp 71456 6126333952 "GET /videos/3/ HTTP/1.1" 200 4619
+INFO 2025-04-08 16:55:57,917 tasks 71456 6143160320 Saved transcript for adgUC8ISlqc (, auto-generated: False)
+INFO 2025-04-08 16:55:57,918 tasks 71456 6143160320 Successfully processed video adgUC8ISlqc
+INFO 2025-04-08 16:56:00,201 basehttp 71456 6126333952 "GET /videos/3/status/ HTTP/1.1" 200 130
+INFO 2025-04-08 16:56:00,221 basehttp 71456 6126333952 "GET /videos/3/ HTTP/1.1" 200 7407
+INFO 2025-04-08 16:56:10,231 basehttp 71456 6126333952 "GET /videos/ HTTP/1.1" 200 8259
+INFO 2025-04-08 16:56:17,302 tasks 71456 6160560128 Starting to process video 3
+INFO 2025-04-08 16:56:17,304 basehttp 71456 6126333952 "POST /videos/3/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 16:56:17,307 tasks 71456 6160560128 Processing video: adgUC8ISlqc
+INFO 2025-04-08 16:56:17,313 basehttp 71456 6126333952 "GET /videos/3/ HTTP/1.1" 200 8064
+INFO 2025-04-08 16:56:20,235 tasks 71456 6160560128 Saved transcript for adgUC8ISlqc (, auto-generated: False)
+INFO 2025-04-08 16:56:20,237 tasks 71456 6160560128 Successfully processed video adgUC8ISlqc
+INFO 2025-04-08 16:56:22,131 basehttp 71456 6126333952 "GET /videos/ HTTP/1.1" 200 8259
+INFO 2025-04-08 16:56:25,698 tasks 71456 13304360960 Starting to process video 1
+INFO 2025-04-08 16:56:25,701 basehttp 71456 6126333952 "POST /videos/1/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 16:56:25,704 tasks 71456 13304360960 Processing video: hZGG5MzQ3Zw
+INFO 2025-04-08 16:56:25,711 basehttp 71456 6126333952 "GET /videos/1/ HTTP/1.1" 200 52143
+INFO 2025-04-08 16:56:28,361 tasks 71456 13304360960 Saved transcript for hZGG5MzQ3Zw (en, auto-generated: True)
+INFO 2025-04-08 16:56:28,362 tasks 71456 13304360960 Successfully processed video hZGG5MzQ3Zw
+INFO 2025-04-08 16:56:30,732 basehttp 71456 6126333952 "GET /videos/1/status/ HTTP/1.1" 200 130
+INFO 2025-04-08 16:56:30,786 basehttp 71456 6126333952 "GET /videos/1/ HTTP/1.1" 200 659286
+INFO 2025-04-08 17:03:30,478 autoreload 73609 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 17:03:48,130 basehttp 73609 6161149952 "GET / HTTP/1.1" 302 0
+INFO 2025-04-08 17:03:48,144 basehttp 73609 6161149952 "GET /videos/ HTTP/1.1" 200 8259
+INFO 2025-04-08 17:03:55,353 tasks 73609 6177976320 Starting to process video 5
+INFO 2025-04-08 17:03:55,354 basehttp 73609 6161149952 "POST /videos/5/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 17:03:55,357 tasks 73609 6177976320 Processing video: Bdb35NoCeUU
+INFO 2025-04-08 17:03:55,370 basehttp 73609 6161149952 "GET /videos/5/ HTTP/1.1" 200 171021
+INFO 2025-04-08 17:03:58,089 tasks 73609 6177976320 Saved transcript for Bdb35NoCeUU (en, auto-generated: False)
+INFO 2025-04-08 17:03:58,089 tasks 73609 6177976320 Successfully processed video Bdb35NoCeUU
+INFO 2025-04-08 17:04:00,400 basehttp 73609 6161149952 "GET /videos/5/status/ HTTP/1.1" 200 130
+INFO 2025-04-08 17:04:00,431 basehttp 73609 6161149952 "GET /videos/5/ HTTP/1.1" 200 170364
+INFO 2025-04-08 17:04:23,652 tasks 73609 6177976320 Starting to process video 4
+INFO 2025-04-08 17:04:23,654 basehttp 73609 6161149952 "POST /videos/4/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 17:04:23,658 tasks 73609 6177976320 Processing video: dlWIZVBT0Tc
+INFO 2025-04-08 17:04:23,667 basehttp 73609 6161149952 "GET /videos/4/ HTTP/1.1" 200 103669
+INFO 2025-04-08 17:04:26,389 tasks 73609 6177976320 Saved transcript for dlWIZVBT0Tc (en, auto-generated: True)
+INFO 2025-04-08 17:04:26,391 tasks 73609 6177976320 Successfully processed video dlWIZVBT0Tc
+INFO 2025-04-08 17:04:28,682 basehttp 73609 6161149952 "GET /videos/4/status/ HTTP/1.1" 200 130
+INFO 2025-04-08 17:04:28,698 basehttp 73609 6161149952 "GET /videos/4/ HTTP/1.1" 200 296393
+INFO 2025-04-08 17:04:47,873 tasks 73609 6177976320 Starting to process video 3
+INFO 2025-04-08 17:04:47,875 basehttp 73609 6161149952 "POST /videos/3/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 17:04:47,879 tasks 73609 6177976320 Processing video: adgUC8ISlqc
+INFO 2025-04-08 17:04:47,885 basehttp 73609 6161149952 "GET /videos/3/ HTTP/1.1" 200 8064
+INFO 2025-04-08 17:04:50,586 tasks 73609 6177976320 Saved transcript for adgUC8ISlqc (, auto-generated: False)
+INFO 2025-04-08 17:04:50,587 tasks 73609 6177976320 Successfully processed video adgUC8ISlqc
+INFO 2025-04-08 17:04:52,905 basehttp 73609 6161149952 "GET /videos/3/status/ HTTP/1.1" 200 130
+INFO 2025-04-08 17:04:52,928 basehttp 73609 6161149952 "GET /videos/3/ HTTP/1.1" 200 7407
+INFO 2025-04-08 17:04:58,094 tasks 73609 6299873280 Starting to process video 2
+INFO 2025-04-08 17:04:58,096 basehttp 73609 6161149952 "POST /videos/2/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 17:04:58,099 tasks 73609 6299873280 Processing video: Z-DoGQdlEPY
+INFO 2025-04-08 17:04:58,111 basehttp 73609 6161149952 "GET /videos/2/ HTTP/1.1" 200 229039
+INFO 2025-04-08 17:05:00,914 tasks 73609 6299873280 Saved transcript for Z-DoGQdlEPY (en, auto-generated: True)
+INFO 2025-04-08 17:05:00,915 tasks 73609 6299873280 Successfully processed video Z-DoGQdlEPY
+INFO 2025-04-08 17:05:03,133 basehttp 73609 6161149952 "GET /videos/2/status/ HTTP/1.1" 200 130
+INFO 2025-04-08 17:05:03,175 basehttp 73609 6161149952 "GET /videos/2/ HTTP/1.1" 200 666908
+INFO 2025-04-08 17:05:19,675 tasks 73609 6177976320 Starting to process video 1
+INFO 2025-04-08 17:05:19,677 basehttp 73609 6161149952 "POST /videos/1/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 17:05:19,681 tasks 73609 6177976320 Processing video: hZGG5MzQ3Zw
+INFO 2025-04-08 17:05:19,693 basehttp 73609 6161149952 "GET /videos/1/ HTTP/1.1" 200 146524
+INFO 2025-04-08 17:05:22,335 tasks 73609 6177976320 Saved transcript for hZGG5MzQ3Zw (en, auto-generated: True)
+INFO 2025-04-08 17:05:22,336 tasks 73609 6177976320 Successfully processed video hZGG5MzQ3Zw
+INFO 2025-04-08 17:05:24,711 basehttp 73609 6161149952 "GET /videos/1/status/ HTTP/1.1" 200 130
+INFO 2025-04-08 17:05:24,730 basehttp 73609 6161149952 "GET /videos/1/ HTTP/1.1" 200 145867
+INFO 2025-04-08 17:06:50,030 basehttp 73609 6161149952 "GET /videos/ HTTP/1.1" 200 8259
