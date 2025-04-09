@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'videos',  # Custom app for video processing
+    'markdown_deux',  # For markdown rendering
 ]
 
 MIDDLEWARE = [

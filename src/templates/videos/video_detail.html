@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load markdown_deux_tags %}
 
 {% block title %}{{ video.title|default:video.youtube_id }} - YouTube Processor{% endblock %}
 
@@ -184,7 +185,7 @@
                                 <div class="card">
                                     <div class="card-body">
                                         <h5 class="card-title">AI-Generated Summary</h5>
-                                        <p class="card-text">{{ video.transcript.summary|linebreaks }}</p>
+                                        <div class="card-text">{{ video.transcript.summary|markdown }}</div>
                                         <p class="text-muted small mt-3">Generated using Mistral-small3.1 LLM</p>
                                         <form method="post" action="{% url 'generate_summary' video.pk %}" class="mt-3">
                                             {% csrf_token %}
