@@ -142,9 +142,6 @@
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="raw-tab" data-bs-toggle="tab" data-bs-target="#raw" type="button" role="tab" aria-controls="raw" aria-selected="false">Raw Transcript</button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="full-text-tab" data-bs-toggle="tab" data-bs-target="#full-text" type="button" role="tab" aria-controls="full-text" aria-selected="false">Full Text</button>
-                    </li>
                 </ul>
                 
                 <div class="tab-content" id="transcriptTabContent">
@@ -211,19 +208,6 @@
                     <div class="tab-pane fade" id="raw" role="tabpanel" aria-labelledby="raw-tab">
                         <div class="transcript-content" style="max-height: 400px; overflow-y: auto;">
                             {{ video.transcript.content|linebreaks }}
-                        </div>
-                    </div>
-                    
-                    <!-- Full text only -->
-                    <div class="tab-pane fade" id="full-text" role="tabpanel" aria-labelledby="full-text-tab">
-                        <div class="transcript-content" style="max-height: 400px; overflow-y: auto;">
-                            {% if video.transcript.beautified_content %}
-                                {% with full_text=video.transcript.beautified_content.split|slice:"-1:"|first %}
-                                    {{ full_text }}
-                                {% endwith %}
-                            {% else %}
-                                {{ video.transcript.content }}
-                            {% endif %}
                         </div>
                     </div>
                 </div>
