@@ -13,8 +13,8 @@ class VideoModelTests(TestCase):
         self.valid_url2 = "https://www.youtube.com/watch?v=dQw4w9WgXcD"  # URL with different ID
         self.invalid_url = "https://www.youtube.com/watch?v=invalid"
 
-    @patch('myyoutubeprocessor.utils.youtube_utils.extract_youtube_id')
-    @patch('myyoutubeprocessor.utils.youtube_utils.is_valid_youtube_id')
+    @patch('videos.models.extract_youtube_id')
+    @patch('videos.models.is_valid_youtube_id')
     def test_video_creation_with_valid_url(self, mock_is_valid, mock_extract):
         """Test creating a video with valid URL"""
         mock_extract.return_value = self.valid_id
