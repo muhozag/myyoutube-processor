@@ -1026,3 +1026,6 @@ INFO 2025-04-09 14:06:52,886 basehttp 50077 6159036416 "GET /videos/8/ HTTP/1.1"
 INFO 2025-04-09 14:07:35,908 basehttp 50077 6159036416 "GET /videos/2/ HTTP/1.1" 200 557477
 INFO 2025-04-09 14:08:17,838 autoreload 50077 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/settings.py changed, reloading.
 INFO 2025-04-09 14:08:18,071 autoreload 50568 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-09 15:19:07,467 basehttp 50568 6137720832 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 15:19:20,911 basehttp 50568 6137720832 "GET /videos/8/ HTTP/1.1" 200 509408
+INFO 2025-04-09 15:23:35,296 basehttp 50568 6137720832 "GET /videos/ HTTP/1.1" 200 12832
