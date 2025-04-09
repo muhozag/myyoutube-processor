@@ -833,3 +833,182 @@ INFO 2025-04-09 02:42:10,954 basehttp 76408 6192934912 "GET /videos/7/ HTTP/1.1"
 INFO 2025-04-09 02:42:37,746 basehttp 76408 6192934912 "GET /videos/7/ HTTP/1.1" 200 1640272
 INFO 2025-04-09 03:49:08,018 autoreload 19195 8643279552 Watching for file changes with StatReloader
 INFO 2025-04-09 03:49:20,952 basehttp 19195 6204239872 "GET /videos/ HTTP/1.1" 200 11625
+INFO 2025-04-09 04:10:03,189 autoreload 23905 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-09 04:10:20,437 basehttp 23905 6199767040 "GET /videos/submit/ HTTP/1.1" 200 4799
+INFO 2025-04-09 04:14:10,387 tasks 23905 6216593408 Starting to process video 9
+INFO 2025-04-09 04:14:10,388 basehttp 23905 6199767040 "POST /videos/submit/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:14:10,390 tasks 23905 6216593408 Processing video: tNZnLkRBYA8
+INFO 2025-04-09 04:14:10,398 basehttp 23905 6199767040 "GET /videos/ HTTP/1.1" 200 12880
+INFO 2025-04-09 04:14:13,422 tasks 23905 6216593408 Generating summary for transcript of tNZnLkRBYA8
+INFO 2025-04-09 04:15:28,873 tasks 23905 6216593408 Summary generated for tNZnLkRBYA8
+INFO 2025-04-09 04:15:28,873 tasks 23905 6216593408 Saved transcript for tNZnLkRBYA8 (en, auto-generated: False)
+INFO 2025-04-09 04:15:28,874 tasks 23905 6216593408 Successfully processed video tNZnLkRBYA8
+INFO 2025-04-09 04:17:40,144 basehttp 23905 6199767040 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:17:44,063 basehttp 23905 6199767040 "GET /videos/9/ HTTP/1.1" 200 6989564
+INFO 2025-04-09 04:18:59,489 basehttp 23905 6199767040 "GET /videos/submit/ HTTP/1.1" 200 4799
+INFO 2025-04-09 04:19:01,819 basehttp 23905 6199767040 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:28:53,451 autoreload 23905 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/ai/ollama_utils.py changed, reloading.
+INFO 2025-04-09 04:28:53,855 autoreload 27844 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-09 04:29:46,541 basehttp 27844 6132543488 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:29:55,457 tasks 27844 6149369856 Starting to process video 1
+INFO 2025-04-09 04:29:55,459 basehttp 27844 6132543488 "POST /videos/1/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:29:55,462 tasks 27844 6149369856 Processing video: hZGG5MzQ3Zw
+INFO 2025-04-09 04:29:55,474 basehttp 27844 6132543488 "GET /videos/1/ HTTP/1.1" 200 147883
+INFO 2025-04-09 04:29:58,083 tasks 27844 6149369856 Generating summary for transcript of hZGG5MzQ3Zw
+ERROR 2025-04-09 04:29:58,092 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+WARNING 2025-04-09 04:29:58,092 tasks 27844 6149369856 Failed to generate summary for hZGG5MzQ3Zw
+INFO 2025-04-09 04:29:58,092 tasks 27844 6149369856 Saved transcript for hZGG5MzQ3Zw (en, auto-generated: True)
+INFO 2025-04-09 04:29:58,093 tasks 27844 6149369856 Successfully processed video hZGG5MzQ3Zw
+INFO 2025-04-09 04:30:00,491 basehttp 27844 6132543488 "GET /videos/1/status/ HTTP/1.1" 200 131
+INFO 2025-04-09 04:30:00,506 basehttp 27844 6132543488 "GET /videos/1/ HTTP/1.1" 200 147227
+INFO 2025-04-09 04:30:23,677 basehttp 27844 6132543488 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:30:36,508 tasks 27844 6149369856 Starting to process video 2
+INFO 2025-04-09 04:30:36,510 basehttp 27844 6132543488 "POST /videos/2/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:30:36,514 tasks 27844 6149369856 Processing video: Z-DoGQdlEPY
+INFO 2025-04-09 04:30:36,537 basehttp 27844 6132543488 "GET /videos/2/ HTTP/1.1" 200 558133
+INFO 2025-04-09 04:30:39,008 tasks 27844 6149369856 Generating summary for transcript of Z-DoGQdlEPY
+ERROR 2025-04-09 04:30:39,010 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+WARNING 2025-04-09 04:30:39,011 tasks 27844 6149369856 Failed to generate summary for Z-DoGQdlEPY
+INFO 2025-04-09 04:30:39,011 tasks 27844 6149369856 Saved transcript for Z-DoGQdlEPY (, auto-generated: False)
+INFO 2025-04-09 04:30:39,012 tasks 27844 6149369856 Successfully processed video Z-DoGQdlEPY
+INFO 2025-04-09 04:30:41,562 basehttp 27844 6132543488 "GET /videos/2/status/ HTTP/1.1" 200 131
+INFO 2025-04-09 04:30:41,606 basehttp 27844 6132543488 "GET /videos/2/ HTTP/1.1" 200 557477
+INFO 2025-04-09 04:30:55,496 basehttp 27844 6132543488 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:31:00,422 tasks 27844 6166196224 Starting to process video 3
+INFO 2025-04-09 04:31:00,424 basehttp 27844 6132543488 "POST /videos/3/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:31:00,428 tasks 27844 6166196224 Processing video: adgUC8ISlqc
+INFO 2025-04-09 04:31:00,434 basehttp 27844 6132543488 "GET /videos/3/ HTTP/1.1" 200 8628
+INFO 2025-04-09 04:31:03,124 tasks 27844 6166196224 Generating summary for transcript of adgUC8ISlqc
+ERROR 2025-04-09 04:31:03,128 ollama_utils 27844 6166196224 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+WARNING 2025-04-09 04:31:03,128 tasks 27844 6166196224 Failed to generate summary for adgUC8ISlqc
+INFO 2025-04-09 04:31:03,128 tasks 27844 6166196224 Saved transcript for adgUC8ISlqc (am, auto-generated: True)
+INFO 2025-04-09 04:31:03,131 tasks 27844 6166196224 Successfully processed video adgUC8ISlqc
+INFO 2025-04-09 04:31:05,451 basehttp 27844 6132543488 "GET /videos/3/status/ HTTP/1.1" 200 131
+INFO 2025-04-09 04:31:05,477 basehttp 27844 6132543488 "GET /videos/3/ HTTP/1.1" 200 36989
+INFO 2025-04-09 04:31:28,699 basehttp 27844 6132543488 "POST /videos/3/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:31:28,699 tasks 27844 12901707776 Generating summary for transcript 5
+ERROR 2025-04-09 04:31:28,701 ollama_utils 27844 12901707776 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+WARNING 2025-04-09 04:31:28,702 tasks 27844 12901707776 Failed to generate summary for transcript 5
+INFO 2025-04-09 04:31:28,714 basehttp 27844 6132543488 "GET /videos/3/ HTTP/1.1" 200 37352
+INFO 2025-04-09 04:31:54,383 basehttp 27844 6132543488 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:32:13,253 tasks 27844 6149369856 Starting to process video 9
+INFO 2025-04-09 04:32:13,255 basehttp 27844 6132543488 "POST /videos/9/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:32:13,260 tasks 27844 6149369856 Processing video: tNZnLkRBYA8
+INFO 2025-04-09 04:32:13,410 basehttp 27844 6132543488 "GET /videos/9/ HTTP/1.1" 200 6990307
+INFO 2025-04-09 04:32:16,060 tasks 27844 6149369856 Generating summary for transcript of tNZnLkRBYA8
+ERROR 2025-04-09 04:32:16,063 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+WARNING 2025-04-09 04:32:16,064 tasks 27844 6149369856 Failed to generate summary for tNZnLkRBYA8
+INFO 2025-04-09 04:32:16,064 tasks 27844 6149369856 Saved transcript for tNZnLkRBYA8 (en, auto-generated: False)
+INFO 2025-04-09 04:32:16,065 tasks 27844 6149369856 Successfully processed video tNZnLkRBYA8
+INFO 2025-04-09 04:32:18,644 basehttp 27844 6132543488 "GET /videos/9/status/ HTTP/1.1" 200 130
+INFO 2025-04-09 04:32:18,809 basehttp 27844 6132543488 "GET /videos/9/ HTTP/1.1" 200 6989565
+INFO 2025-04-09 04:32:56,016 tasks 27844 6149369856 Starting to process video 7
+INFO 2025-04-09 04:32:56,018 basehttp 27844 6132543488 "POST /videos/7/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:32:56,022 tasks 27844 6149369856 Processing video: NSsx6mkiaf8
+INFO 2025-04-09 04:32:56,065 basehttp 27844 6132543488 "GET /videos/7/ HTTP/1.1" 200 1640928
+INFO 2025-04-09 04:32:58,897 tasks 27844 6149369856 Generating summary for transcript of NSsx6mkiaf8
+ERROR 2025-04-09 04:32:58,901 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+WARNING 2025-04-09 04:32:58,902 tasks 27844 6149369856 Failed to generate summary for NSsx6mkiaf8
+INFO 2025-04-09 04:32:58,902 tasks 27844 6149369856 Saved transcript for NSsx6mkiaf8 (en, auto-generated: True)
+INFO 2025-04-09 04:32:58,902 tasks 27844 6149369856 Successfully processed video NSsx6mkiaf8
+INFO 2025-04-09 04:33:01,147 basehttp 27844 6132543488 "GET /videos/7/status/ HTTP/1.1" 200 131
+INFO 2025-04-09 04:33:01,200 basehttp 27844 6132543488 "GET /videos/7/ HTTP/1.1" 200 1640272
+INFO 2025-04-09 04:33:11,150 basehttp 27844 6132543488 "POST /videos/7/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:33:11,155 tasks 27844 6149369856 Generating summary for transcript 7
+ERROR 2025-04-09 04:33:11,160 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+WARNING 2025-04-09 04:33:11,161 tasks 27844 6149369856 Failed to generate summary for transcript 7
+INFO 2025-04-09 04:33:11,201 basehttp 27844 6132543488 "GET /videos/7/ HTTP/1.1" 200 1640635
+INFO 2025-04-09 04:36:50,068 autoreload 27844 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/utils/ai/ollama_utils.py changed, reloading.
+INFO 2025-04-09 04:36:50,462 autoreload 29647 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-09 04:43:20,960 autoreload 31419 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-09 04:43:55,392 basehttp 31419 6166474752 "GET /videos/7/ HTTP/1.1" 200 1640272
+INFO 2025-04-09 04:43:56,950 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:43:57,731 basehttp 31419 6166474752 "GET / HTTP/1.1" 302 0
+INFO 2025-04-09 04:43:57,743 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:44:10,394 tasks 31419 12901707776 Starting to process video 1
+INFO 2025-04-09 04:44:10,396 basehttp 31419 6166474752 "POST /videos/1/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:44:10,399 tasks 31419 12901707776 Processing video: hZGG5MzQ3Zw
+INFO 2025-04-09 04:44:10,408 basehttp 31419 6166474752 "GET /videos/1/ HTTP/1.1" 200 147883
+INFO 2025-04-09 04:44:12,959 tasks 31419 12901707776 Generating summary for transcript of hZGG5MzQ3Zw
+ERROR 2025-04-09 04:44:13,301 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+WARNING 2025-04-09 04:44:13,302 tasks 31419 12901707776 Failed to generate summary for hZGG5MzQ3Zw
+INFO 2025-04-09 04:44:13,302 tasks 31419 12901707776 Saved transcript for hZGG5MzQ3Zw (en, auto-generated: True)
+INFO 2025-04-09 04:44:13,305 tasks 31419 12901707776 Successfully processed video hZGG5MzQ3Zw
+INFO 2025-04-09 04:44:15,423 basehttp 31419 6166474752 "GET /videos/1/status/ HTTP/1.1" 200 131
+INFO 2025-04-09 04:44:15,451 basehttp 31419 6166474752 "GET /videos/1/ HTTP/1.1" 200 147227
+INFO 2025-04-09 04:44:26,992 basehttp 31419 6166474752 "POST /videos/1/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:44:26,993 tasks 31419 12901707776 Generating summary for transcript 1
+INFO 2025-04-09 04:44:27,008 basehttp 31419 6166474752 "GET /videos/1/ HTTP/1.1" 200 147590
+ERROR 2025-04-09 04:44:27,322 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+WARNING 2025-04-09 04:44:27,324 tasks 31419 12901707776 Failed to generate summary for transcript 1
+INFO 2025-04-09 04:44:45,398 basehttp 31419 6166474752 "GET /videos/1/ HTTP/1.1" 200 147227
+INFO 2025-04-09 04:44:55,024 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:45:00,508 basehttp 31419 6166474752 "GET /videos/8/ HTTP/1.1" 200 509329
+INFO 2025-04-09 04:45:11,318 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:45:14,682 tasks 31419 12901707776 Starting to process video 8
+INFO 2025-04-09 04:45:14,684 basehttp 31419 6166474752 "POST /videos/8/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:45:14,687 tasks 31419 12901707776 Processing video: XBQEdtXjlho
+INFO 2025-04-09 04:45:14,711 basehttp 31419 6166474752 "GET /videos/8/ HTTP/1.1" 200 509988
+INFO 2025-04-09 04:45:17,378 tasks 31419 12901707776 Generating summary for transcript of XBQEdtXjlho
+ERROR 2025-04-09 04:45:17,717 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+WARNING 2025-04-09 04:45:17,719 tasks 31419 12901707776 Failed to generate summary for XBQEdtXjlho
+INFO 2025-04-09 04:45:17,719 tasks 31419 12901707776 Saved transcript for XBQEdtXjlho (en, auto-generated: True)
+INFO 2025-04-09 04:45:17,724 tasks 31419 12901707776 Successfully processed video XBQEdtXjlho
+INFO 2025-04-09 04:45:19,735 basehttp 31419 6166474752 "GET /videos/8/status/ HTTP/1.1" 200 130
+INFO 2025-04-09 04:45:19,778 basehttp 31419 6166474752 "GET /videos/8/ HTTP/1.1" 200 509331
+INFO 2025-04-09 04:45:30,312 basehttp 31419 6166474752 "POST /videos/8/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:45:30,314 tasks 31419 12901707776 Generating summary for transcript 8
+INFO 2025-04-09 04:45:30,338 basehttp 31419 6166474752 "GET /videos/8/ HTTP/1.1" 200 509694
+ERROR 2025-04-09 04:45:30,640 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+WARNING 2025-04-09 04:45:30,640 tasks 31419 12901707776 Failed to generate summary for transcript 8
+INFO 2025-04-09 04:45:47,668 basehttp 31419 6166474752 "GET /videos/8/ HTTP/1.1" 200 509331
+INFO 2025-04-09 04:46:00,380 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:46:03,654 basehttp 31419 6166474752 "GET /videos/2/ HTTP/1.1" 200 557477
+INFO 2025-04-09 04:46:27,131 basehttp 31419 6166474752 "POST /videos/2/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:46:27,131 tasks 31419 12901707776 Generating summary for transcript 2
+INFO 2025-04-09 04:46:27,164 basehttp 31419 6166474752 "GET /videos/2/ HTTP/1.1" 200 557840
+ERROR 2025-04-09 04:46:27,461 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+WARNING 2025-04-09 04:46:27,462 tasks 31419 12901707776 Failed to generate summary for transcript 2
+INFO 2025-04-09 04:46:53,801 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:47:01,835 basehttp 31419 6166474752 "GET /videos/7/ HTTP/1.1" 200 1640272
+INFO 2025-04-09 04:47:11,823 basehttp 31419 6166474752 "POST /videos/7/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:47:11,828 tasks 31419 12901707776 Generating summary for transcript 7
+INFO 2025-04-09 04:47:11,857 basehttp 31419 6166474752 "GET /videos/7/ HTTP/1.1" 200 1640635
+ERROR 2025-04-09 04:47:12,155 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+WARNING 2025-04-09 04:47:12,157 tasks 31419 12901707776 Failed to generate summary for transcript 7
+INFO 2025-04-09 04:47:38,700 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:47:44,803 basehttp 31419 6166474752 "GET /videos/6/ HTTP/1.1" 200 136572
+INFO 2025-04-09 04:48:00,060 tasks 31419 12901707776 Starting to process video 6
+INFO 2025-04-09 04:48:00,062 basehttp 31419 6166474752 "POST /videos/6/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:48:00,066 tasks 31419 12901707776 Processing video: JOYSDqJdiro
+INFO 2025-04-09 04:48:00,074 basehttp 31419 6166474752 "GET /videos/6/ HTTP/1.1" 200 137229
+INFO 2025-04-09 04:48:02,736 tasks 31419 12901707776 Generating summary for transcript of JOYSDqJdiro
+ERROR 2025-04-09 04:48:03,070 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+WARNING 2025-04-09 04:48:03,071 tasks 31419 12901707776 Failed to generate summary for JOYSDqJdiro
+INFO 2025-04-09 04:48:03,071 tasks 31419 12901707776 Saved transcript for JOYSDqJdiro (en, auto-generated: True)
+INFO 2025-04-09 04:48:03,075 tasks 31419 12901707776 Successfully processed video JOYSDqJdiro
+INFO 2025-04-09 04:48:05,106 basehttp 31419 6166474752 "GET /videos/6/status/ HTTP/1.1" 200 131
+INFO 2025-04-09 04:48:05,134 basehttp 31419 6166474752 "GET /videos/6/ HTTP/1.1" 200 136573
+INFO 2025-04-09 04:48:44,731 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:48:51,179 basehttp 31419 6166474752 "GET /videos/6/ HTTP/1.1" 200 136573
+INFO 2025-04-09 04:49:17,794 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:49:21,820 basehttp 31419 6166474752 "GET /videos/2/ HTTP/1.1" 200 557477
+INFO 2025-04-09 04:49:32,596 basehttp 31419 6166474752 "GET /videos/3/ HTTP/1.1" 200 36989
+INFO 2025-04-09 04:49:35,542 tasks 31419 12901707776 Starting to process video 3
+INFO 2025-04-09 04:49:35,544 basehttp 31419 6166474752 "POST /videos/3/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 04:49:35,547 tasks 31419 12901707776 Processing video: adgUC8ISlqc
+INFO 2025-04-09 04:49:35,556 basehttp 31419 6166474752 "GET /videos/3/ HTTP/1.1" 200 37645
+INFO 2025-04-09 04:49:38,209 tasks 31419 12901707776 Generating summary for transcript of adgUC8ISlqc
+ERROR 2025-04-09 04:49:38,551 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+WARNING 2025-04-09 04:49:38,553 tasks 31419 12901707776 Failed to generate summary for adgUC8ISlqc
+INFO 2025-04-09 04:49:38,553 tasks 31419 12901707776 Saved transcript for adgUC8ISlqc (am, auto-generated: True)
+INFO 2025-04-09 04:49:38,555 tasks 31419 12901707776 Successfully processed video adgUC8ISlqc
+INFO 2025-04-09 04:49:40,581 basehttp 31419 6166474752 "GET /videos/3/status/ HTTP/1.1" 200 131
+INFO 2025-04-09 04:49:40,605 basehttp 31419 6166474752 "GET /videos/3/ HTTP/1.1" 200 36989
+INFO 2025-04-09 04:49:55,653 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:50:01,648 basehttp 31419 6166474752 "GET /videos/4/ HTTP/1.1" 200 297650
+INFO 2025-04-09 04:50:36,679 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:50:40,052 basehttp 31419 6166474752 "GET /videos/6/ HTTP/1.1" 200 136573
+INFO 2025-04-09 04:51:24,797 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832
+INFO 2025-04-09 04:51:31,377 basehttp 31419 6166474752 "GET /videos/9/ HTTP/1.1" 200 6989565
+INFO 2025-04-09 04:51:55,249 basehttp 31419 6166474752 "GET /videos/ HTTP/1.1" 200 12832

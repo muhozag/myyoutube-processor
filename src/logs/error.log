@@ -193,3 +193,18 @@ Traceback (most recent call last):
     raise TypeError(f'Object of type {o.__class__.__name__} '
                     f'is not JSON serializable')
 TypeError: Object of type FetchedTranscript is not JSON serializable
+ERROR 2025-04-09 04:29:58,092 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+ERROR 2025-04-09 04:30:39,010 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+ERROR 2025-04-09 04:31:03,128 ollama_utils 27844 6166196224 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+ERROR 2025-04-09 04:31:28,701 ollama_utils 27844 12901707776 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+ERROR 2025-04-09 04:32:16,063 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+ERROR 2025-04-09 04:32:58,901 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+ERROR 2025-04-09 04:33:11,160 ollama_utils 27844 6149369856 Error generating summary with Ollama: model "mistral-small3.1" not found, try pulling it first (status code: 404)
+ERROR 2025-04-09 04:44:13,301 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+ERROR 2025-04-09 04:44:27,322 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+ERROR 2025-04-09 04:45:17,717 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+ERROR 2025-04-09 04:45:30,640 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+ERROR 2025-04-09 04:46:27,461 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+ERROR 2025-04-09 04:47:12,155 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+ERROR 2025-04-09 04:48:03,070 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)
+ERROR 2025-04-09 04:49:38,551 ollama_utils 31419 12901707776 Error generating summary with Ollama: llama runner process has terminated: this model is not supported by your version of Ollama. You may need to upgrade (status code: 500)

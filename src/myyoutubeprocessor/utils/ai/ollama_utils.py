@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
     """
-    Generate a summary of the given text using the Ollama Mistral-small model.
+    Generate a summary of the given text using the Ollama Mistral-small3.1 model.
     
     Args:
         text: The text to summarize
@@ -38,9 +38,9 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Call the Ollama API with the mistral-small:22b model
+        # Call the Ollama API with the mistral-small3.1 model
         response = ollama.chat(
-            model='mistral-small:22b',
+            model='mistral-small3.1',
             messages=[{'role': 'user', 'content': prompt}],
             options={
                 'temperature': 0.2,
