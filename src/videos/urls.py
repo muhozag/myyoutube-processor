@@ -8,4 +8,5 @@ urlpatterns = [
     path('<int:pk>/process/', views.process_video, name='process_video'),
     path('<int:pk>/status/', views.video_status, name='video_status'),
     path('<int:pk>/generate-summary/', views.generate_transcript_summary, name='generate_summary'),
+    path('<int:pk>/delete/', views.delete_video, name='delete_video'),
 ]

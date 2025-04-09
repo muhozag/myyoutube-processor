@@ -145,3 +145,19 @@ def generate_transcript_summary(request, pk):
         messages.error(request, f"Error generating summary: {str(e)}")
     
     return redirect('video_detail', pk=video.pk)
+
+@require_POST
+def delete_video(request, pk):
+    """Delete a video and its associated data"""
+    video = get_object_or_404(Video, pk=pk)
+    video_title = video.title or video.youtube_id
+    
+    try:
+        video.delete()
+        messages.success(request, f"Video '{video_title}' has been deleted.")
+        logger.info(f"Video {pk} ({video_title}) was deleted")
+    except Exception as e:
+        logger.exception(f"Error deleting video {pk}: {str(e)}")
+        messages.error(request, f"Error deleting video: {str(e)}")
+    
+    return redirect('video_list')

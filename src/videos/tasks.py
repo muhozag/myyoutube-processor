@@ -9,6 +9,8 @@ easily converted to Celery tasks when needed.
 import logging
 import time
 import json
+import threading
+import concurrent.futures
 from django.utils import timezone
 from myyoutubeprocessor.utils.youtube_utils import extract_transcript
 from myyoutubeprocessor.utils.ai.ollama_utils import get_mistral_summary
@@ -17,9 +19,12 @@ from .models import Video, Transcript
 
 logger = logging.getLogger(__name__)
 
-def process_video(video_id):
+# Maximum allowed processing time in seconds (5 minutes)
+MAX_PROCESSING_TIME = 300
+
+def process_video_with_timeout(video_id):
     """
-    Process a video by retrieving metadata and transcript.
+    Process a video by retrieving metadata and transcript with a timeout.
     
     Args:
         video_id (int): The database ID of the video to process
@@ -107,7 +112,8 @@ def process_video(video_id):
                     logger.warning(f"Failed to generate summary for {video.youtube_id}")
             except Exception as e:
                 logger.error(f"Error generating summary for {video.youtube_id}: {str(e)}")
-            
+                # Continue processing even if summary generation fails
+
             logger.info(f"Saved transcript for {video.youtube_id} ({language_code}, auto-generated: {is_auto_generated})")
             
             # Successfully processed
@@ -126,6 +132,41 @@ def process_video(video_id):
         
     except Exception as e:
         logger.exception(f"Error processing video {video_id}: {str(e)}")
+        try:
+            video = Video.objects.get(pk=video_id)
+            video.mark_failed(str(e))
+        except Exception:
+            pass
+        return False
+
+def process_video(video_id):
+    """
+    Process a video by retrieving metadata and transcript with a timeout of 5 minutes.
+    
+    Args:
+        video_id (int): The database ID of the video to process
+        
+    Returns:
+        bool: True if processing was successful, False otherwise
+    """
+    try:
+        # Use ThreadPoolExecutor to run the processing with a timeout
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future = executor.submit(process_video_with_timeout, video_id)
+            try:
+                # Wait for the result with a timeout
+                return future.result(timeout=MAX_PROCESSING_TIME)
+            except concurrent.futures.TimeoutError:
+                # Processing took too long
+                logger.error(f"Processing timed out after {MAX_PROCESSING_TIME} seconds for video {video_id}")
+                try:
+                    video = Video.objects.get(pk=video_id)
+                    video.mark_failed(f"Processing timed out after {MAX_PROCESSING_TIME} seconds")
+                except Exception as e:
+                    logger.exception(f"Error marking video {video_id} as failed: {str(e)}")
+                return False
+    except Exception as e:
+        logger.exception(f"Error in process_video wrapper for video {video_id}: {str(e)}")
         try:
             video = Video.objects.get(pk=video_id)
             video.mark_failed(str(e))
