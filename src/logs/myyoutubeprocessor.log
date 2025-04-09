@@ -520,3 +520,165 @@ INFO 2025-04-08 22:25:48,201 tasks 47253 13304360960 Saved transcript for JOYSDq
 INFO 2025-04-08 22:25:48,203 tasks 47253 13304360960 Successfully processed video JOYSDqJdiro
 INFO 2025-04-08 22:26:34,410 basehttp 47253 6172438528 "GET /videos/ HTTP/1.1" 200 9381
 INFO 2025-04-08 22:26:38,969 basehttp 47253 6172438528 "GET /videos/6/ HTTP/1.1" 200 137180
+INFO 2025-04-08 22:30:05,736 basehttp 47253 13304360960 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-08 22:57:51,801 basehttp 47253 13321187328 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-08 23:42:35,632 autoreload 64711 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-08 23:42:52,755 basehttp 64711 6168408064 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-08 23:42:58,431 tasks 64711 6185234432 Starting to process video 1
+INFO 2025-04-08 23:42:58,433 basehttp 64711 6168408064 "POST /videos/1/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:42:58,437 tasks 64711 6185234432 Processing video: hZGG5MzQ3Zw
+INFO 2025-04-08 23:42:58,451 basehttp 64711 6168408064 "GET /videos/1/ HTTP/1.1" 200 148344
+INFO 2025-04-08 23:43:00,924 tasks 64711 6185234432 Generating summary for transcript of hZGG5MzQ3Zw
+INFO 2025-04-08 23:43:03,471 basehttp 64711 6168408064 "GET /videos/1/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:43:08,480 basehttp 64711 6168408064 "GET /videos/1/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:43:13,488 basehttp 64711 6168408064 "GET /videos/1/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:43:18,496 basehttp 64711 6168408064 "GET /videos/1/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:43:23,511 basehttp 64711 6168408064 "GET /videos/1/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:43:28,156 basehttp 64711 6168408064 "GET /videos/1/ HTTP/1.1" 200 148012
+INFO 2025-04-08 23:43:33,205 basehttp 64711 6168408064 "GET /videos/1/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:43:35,208 tasks 64711 6185234432 Summary generated for hZGG5MzQ3Zw
+INFO 2025-04-08 23:43:35,208 tasks 64711 6185234432 Saved transcript for hZGG5MzQ3Zw (en, auto-generated: True)
+INFO 2025-04-08 23:43:35,210 tasks 64711 6185234432 Successfully processed video hZGG5MzQ3Zw
+INFO 2025-04-08 23:43:38,211 basehttp 64711 6168408064 "GET /videos/1/status/ HTTP/1.1" 200 131
+INFO 2025-04-08 23:43:38,229 basehttp 64711 6168408064 "GET /videos/1/ HTTP/1.1" 200 147794
+INFO 2025-04-08 23:43:49,110 basehttp 64711 6168408064 "POST /videos/1/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:43:49,111 tasks 64711 6185234432 Generating summary for transcript 1
+INFO 2025-04-08 23:43:49,125 basehttp 64711 6168408064 "GET /videos/1/ HTTP/1.1" 200 148157
+INFO 2025-04-08 23:44:21,092 tasks 64711 6185234432 Summary generated for transcript 1
+INFO 2025-04-08 23:44:26,067 basehttp 64711 6168408064 "GET /videos/1/ HTTP/1.1" 200 147919
+INFO 2025-04-08 23:45:17,699 basehttp 64711 6202060800 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-08 23:45:25,533 basehttp 64711 6202060800 "GET /videos/5/ HTTP/1.1" 200 172555
+INFO 2025-04-08 23:45:31,881 basehttp 64711 6202060800 "POST /videos/5/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:45:31,881 tasks 64711 6168408064 Generating summary for transcript 4
+INFO 2025-04-08 23:45:31,892 basehttp 64711 6202060800 "GET /videos/5/ HTTP/1.1" 200 172918
+INFO 2025-04-08 23:46:08,686 tasks 64711 6168408064 Summary generated for transcript 4
+INFO 2025-04-08 23:46:32,861 basehttp 64711 6185234432 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-08 23:46:53,343 basehttp 64711 6185234432 "GET /videos/2/ HTTP/1.1" 200 668713
+INFO 2025-04-08 23:47:06,176 tasks 64711 6168408064 Starting to process video 2
+INFO 2025-04-08 23:47:06,178 basehttp 64711 6185234432 "POST /videos/2/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:47:06,180 tasks 64711 6168408064 Processing video: Z-DoGQdlEPY
+INFO 2025-04-08 23:47:06,202 basehttp 64711 6185234432 "GET /videos/2/ HTTP/1.1" 200 669370
+INFO 2025-04-08 23:47:08,787 tasks 64711 6168408064 Generating summary for transcript of Z-DoGQdlEPY
+INFO 2025-04-08 23:47:11,225 basehttp 64711 6185234432 "GET /videos/2/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:47:16,234 basehttp 64711 6185234432 "GET /videos/2/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:47:17,890 tasks 64711 6168408064 Summary generated for Z-DoGQdlEPY
+INFO 2025-04-08 23:47:17,891 tasks 64711 6168408064 Saved transcript for Z-DoGQdlEPY (, auto-generated: False)
+INFO 2025-04-08 23:47:17,893 tasks 64711 6168408064 Successfully processed video Z-DoGQdlEPY
+INFO 2025-04-08 23:47:21,246 basehttp 64711 6185234432 "GET /videos/2/status/ HTTP/1.1" 200 131
+INFO 2025-04-08 23:47:21,288 basehttp 64711 6185234432 "GET /videos/2/ HTTP/1.1" 200 558305
+INFO 2025-04-08 23:47:29,344 basehttp 64711 6185234432 "POST /videos/2/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:47:29,345 tasks 64711 6168408064 Generating summary for transcript 2
+INFO 2025-04-08 23:47:29,373 basehttp 64711 6185234432 "GET /videos/2/ HTTP/1.1" 200 558668
+INFO 2025-04-08 23:47:32,281 tasks 64711 6168408064 Summary generated for transcript 2
+INFO 2025-04-08 23:48:01,042 basehttp 64711 6185234432 "POST /videos/2/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:48:01,043 tasks 64711 6202060800 Generating summary for transcript 2
+INFO 2025-04-08 23:48:01,073 basehttp 64711 6185234432 "GET /videos/2/ HTTP/1.1" 200 558488
+INFO 2025-04-08 23:48:07,660 tasks 64711 6202060800 Summary generated for transcript 2
+INFO 2025-04-08 23:48:46,493 basehttp 64711 6185234432 "POST /videos/2/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:48:46,493 tasks 64711 6218887168 Generating summary for transcript 2
+INFO 2025-04-08 23:48:46,522 basehttp 64711 6185234432 "GET /videos/2/ HTTP/1.1" 200 558652
+INFO 2025-04-08 23:48:52,763 tasks 64711 6218887168 Summary generated for transcript 2
+INFO 2025-04-08 23:49:09,383 basehttp 64711 6185234432 "GET /videos/2/ HTTP/1.1" 200 558285
+INFO 2025-04-08 23:49:17,691 tasks 64711 6168408064 Starting to process video 2
+INFO 2025-04-08 23:49:17,693 basehttp 64711 6185234432 "POST /videos/2/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:49:17,696 tasks 64711 6168408064 Processing video: Z-DoGQdlEPY
+INFO 2025-04-08 23:49:17,719 basehttp 64711 6185234432 "GET /videos/2/ HTTP/1.1" 200 558941
+INFO 2025-04-08 23:49:20,265 tasks 64711 6168408064 Generating summary for transcript of Z-DoGQdlEPY
+INFO 2025-04-08 23:49:22,744 basehttp 64711 6185234432 "GET /videos/2/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:49:27,078 tasks 64711 6168408064 Summary generated for Z-DoGQdlEPY
+INFO 2025-04-08 23:49:27,078 tasks 64711 6168408064 Saved transcript for Z-DoGQdlEPY (, auto-generated: False)
+INFO 2025-04-08 23:49:27,080 tasks 64711 6168408064 Successfully processed video Z-DoGQdlEPY
+INFO 2025-04-08 23:49:27,755 basehttp 64711 6185234432 "GET /videos/2/status/ HTTP/1.1" 200 131
+INFO 2025-04-08 23:49:27,802 basehttp 64711 6185234432 "GET /videos/2/ HTTP/1.1" 200 558287
+INFO 2025-04-08 23:49:48,048 basehttp 64711 6185234432 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-08 23:49:57,128 basehttp 64711 6185234432 "GET /videos/3/ HTTP/1.1" 200 8695
+INFO 2025-04-08 23:50:02,053 basehttp 64711 6185234432 "GET /videos/4/ HTTP/1.1" 200 298345
+INFO 2025-04-08 23:50:07,600 basehttp 64711 6185234432 "POST /videos/4/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:50:07,603 tasks 64711 6202060800 Generating summary for transcript 3
+INFO 2025-04-08 23:50:07,614 basehttp 64711 6185234432 "GET /videos/4/ HTTP/1.1" 200 298708
+INFO 2025-04-08 23:50:40,874 basehttp 64711 6185234432 "GET /videos/4/ HTTP/1.1" 200 298345
+INFO 2025-04-08 23:50:41,502 tasks 64711 6202060800 Summary generated for transcript 3
+INFO 2025-04-08 23:50:56,487 basehttp 64711 6185234432 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-08 23:51:05,118 basehttp 64711 6185234432 "GET /videos/4/ HTTP/1.1" 200 298496
+INFO 2025-04-08 23:51:08,377 basehttp 64711 6185234432 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-08 23:51:10,513 basehttp 64711 6185234432 "GET /videos/5/ HTTP/1.1" 200 172726
+INFO 2025-04-08 23:51:14,112 basehttp 64711 6185234432 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-08 23:51:15,961 basehttp 64711 6185234432 "GET /videos/6/ HTTP/1.1" 200 137180
+INFO 2025-04-08 23:51:26,241 tasks 64711 6168408064 Starting to process video 6
+INFO 2025-04-08 23:51:26,242 basehttp 64711 6185234432 "POST /videos/6/process/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:51:26,246 tasks 64711 6168408064 Processing video: JOYSDqJdiro
+INFO 2025-04-08 23:51:26,256 basehttp 64711 6185234432 "GET /videos/6/ HTTP/1.1" 200 137840
+INFO 2025-04-08 23:51:29,038 tasks 64711 6168408064 Generating summary for transcript of JOYSDqJdiro
+INFO 2025-04-08 23:51:31,277 basehttp 64711 6185234432 "GET /videos/6/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:51:36,286 basehttp 64711 6185234432 "GET /videos/6/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:51:41,295 basehttp 64711 6185234432 "GET /videos/6/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:51:46,303 basehttp 64711 6185234432 "GET /videos/6/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:51:51,312 basehttp 64711 6185234432 "GET /videos/6/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:51:56,318 basehttp 64711 6185234432 "GET /videos/6/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:52:01,325 basehttp 64711 6185234432 "GET /videos/6/status/ HTTP/1.1" 200 125
+INFO 2025-04-08 23:52:02,897 tasks 64711 6168408064 Summary generated for JOYSDqJdiro
+INFO 2025-04-08 23:52:02,897 tasks 64711 6168408064 Saved transcript for JOYSDqJdiro (en, auto-generated: True)
+INFO 2025-04-08 23:52:02,899 tasks 64711 6168408064 Successfully processed video JOYSDqJdiro
+INFO 2025-04-08 23:52:06,336 basehttp 64711 6185234432 "GET /videos/6/status/ HTTP/1.1" 200 130
+INFO 2025-04-08 23:52:06,367 basehttp 64711 6185234432 "GET /videos/6/ HTTP/1.1" 200 137404
+INFO 2025-04-08 23:52:16,028 basehttp 64711 6185234432 "POST /videos/6/generate-summary/ HTTP/1.1" 302 0
+INFO 2025-04-08 23:52:16,029 tasks 64711 6202060800 Generating summary for transcript 6
+INFO 2025-04-08 23:52:16,043 basehttp 64711 6185234432 "GET /videos/6/ HTTP/1.1" 200 137767
+INFO 2025-04-08 23:52:58,896 basehttp 64711 6168408064 "GET /videos/6/ HTTP/1.1" 200 137404
+INFO 2025-04-08 23:53:07,766 tasks 64711 6202060800 Summary generated for transcript 6
+INFO 2025-04-09 00:02:46,874 autoreload 69301 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-09 00:02:54,650 basehttp 69301 6196981760 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-09 00:02:58,952 basehttp 69301 6196981760 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-09 00:03:03,040 basehttp 69301 6196981760 "GET /videos/6/ HTTP/1.1" 200 137228
+INFO 2025-04-09 00:03:43,561 basehttp 69301 6196981760 "GET /videos/5/ HTTP/1.1" 200 171927
+INFO 2025-04-09 00:04:05,532 basehttp 69301 6196981760 "GET /videos/4/ HTTP/1.1" 200 297699
+INFO 2025-04-09 00:04:45,245 basehttp 69301 6196981760 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-09 00:04:47,490 basehttp 69301 6196981760 "GET /videos/3/ HTTP/1.1" 200 7971
+INFO 2025-04-09 00:04:59,755 basehttp 69301 6196981760 "GET /videos/2/ HTTP/1.1" 200 557486
+INFO 2025-04-09 00:05:04,783 tasks 69301 6213808128 Starting to process video 2
+INFO 2025-04-09 00:05:04,785 basehttp 69301 6196981760 "POST /videos/2/process/ HTTP/1.1" 302 0
+INFO 2025-04-09 00:05:04,788 tasks 69301 6213808128 Processing video: Z-DoGQdlEPY
+INFO 2025-04-09 00:05:04,813 basehttp 69301 6196981760 "GET /videos/2/ HTTP/1.1" 200 558142
+INFO 2025-04-09 00:05:07,274 tasks 69301 6213808128 Generating summary for transcript of Z-DoGQdlEPY
+INFO 2025-04-09 00:05:09,840 basehttp 69301 6196981760 "GET /videos/2/status/ HTTP/1.1" 200 125
+INFO 2025-04-09 00:05:14,849 basehttp 69301 6196981760 "GET /videos/2/status/ HTTP/1.1" 200 125
+INFO 2025-04-09 00:05:15,437 tasks 69301 6213808128 Summary generated for Z-DoGQdlEPY
+INFO 2025-04-09 00:05:15,437 tasks 69301 6213808128 Saved transcript for Z-DoGQdlEPY (, auto-generated: False)
+INFO 2025-04-09 00:05:15,440 tasks 69301 6213808128 Successfully processed video Z-DoGQdlEPY
+INFO 2025-04-09 00:05:19,861 basehttp 69301 6196981760 "GET /videos/2/status/ HTTP/1.1" 200 131
+INFO 2025-04-09 00:05:19,925 basehttp 69301 6196981760 "GET /videos/2/ HTTP/1.1" 200 557324
+INFO 2025-04-09 00:05:25,037 basehttp 69301 6196981760 "GET /videos/2/ HTTP/1.1" 200 557324
+INFO 2025-04-09 00:05:51,214 basehttp 69301 6196981760 "GET /videos/ HTTP/1.1" 200 9381
+INFO 2025-04-09 00:05:57,790 basehttp 69301 6196981760 "GET /videos/4/ HTTP/1.1" 200 297699
+INFO 2025-04-09 00:06:04,163 tasks 69301 6213808128 Generating summary for transcript 3
+ERROR 2025-04-09 00:06:04,176 log 69301 6196981760 Internal Server Error: /videos/4/generate-summary/
+Traceback (most recent call last):
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/views/decorators/http.py", line 64, in inner
+    return func(request, *args, **kwargs)
+  File "/Users/muhozayekoye/myyoutube-processor/src/videos/views.py", line 148, in generate_transcript_summary
+    return redirect(f"{reverse('video_detail', kwargs={'pk': video.pk})}#summary")
+                       ^^^^^^^
+NameError: name 'reverse' is not defined. Did you mean: 'reversed'?
+ERROR 2025-04-09 00:06:04,179 basehttp 69301 6196981760 "POST /videos/4/generate-summary/ HTTP/1.1" 500 70020
+INFO 2025-04-09 00:06:38,763 tasks 69301 6213808128 Summary generated for transcript 3
+INFO 2025-04-09 00:06:58,114 basehttp 69301 6196981760 "GET /videos/1/ HTTP/1.1" 200 147484
+INFO 2025-04-09 00:07:09,861 tasks 69301 6213808128 Generating summary for transcript 1
+ERROR 2025-04-09 00:07:09,880 log 69301 6196981760 Internal Server Error: /videos/1/generate-summary/
+Traceback (most recent call last):
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/core/handlers/exception.py", line 55, in inner
+    response = get_response(request)
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/core/handlers/base.py", line 197, in _get_response
+    response = wrapped_callback(request, *callback_args, **callback_kwargs)
+  File "/Users/muhozayekoye/myyoutube-processor/venv/lib/python3.13/site-packages/django/views/decorators/http.py", line 64, in inner
+    return func(request, *args, **kwargs)
+  File "/Users/muhozayekoye/myyoutube-processor/src/videos/views.py", line 148, in generate_transcript_summary
+    return redirect(f"{reverse('video_detail', kwargs={'pk': video.pk})}#summary")
+                       ^^^^^^^
+NameError: name 'reverse' is not defined. Did you mean: 'reversed'?
+ERROR 2025-04-09 00:07:09,881 basehttp 69301 6196981760 "POST /videos/1/generate-summary/ HTTP/1.1" 500 70020
+INFO 2025-04-09 00:07:31,575 autoreload 69301 8643279552 /Users/muhozayekoye/myyoutube-processor/src/videos/views.py changed, reloading.
+INFO 2025-04-09 00:07:31,986 autoreload 70431 8643279552 Watching for file changes with StatReloader
