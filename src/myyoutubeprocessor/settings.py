@@ -33,10 +33,6 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # Get allowed hosts from environment variable or use default
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else ['*']
 
-# Add Railway domains to allowed hosts if environment is production
-if not DEBUG:
-    ALLOWED_HOSTS += ['.up.railway.app', '.railway.app']
-
 
 # Application definition
 
@@ -91,7 +87,7 @@ DATABASES = {
     }
 }
 
-# Use PostgreSQL if DATABASE_URL is set (e.g., in production on Railway)
+# Use PostgreSQL if DATABASE_URL is set
 if os.getenv('DATABASE_URL'):
     DATABASES['default'] = dj_database_url.config(
         default=os.getenv('DATABASE_URL'),

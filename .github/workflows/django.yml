@@ -38,22 +38,3 @@ jobs:
       run: |
         cd src
         python manage.py test
-        
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
-    
-    steps:
-    - uses: actions/checkout@v4
-    - name: Install Railway CLI
-      run: npm install -g @railway/cli
-    
-    - name: Deploy to Railway
-      env:
-        RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-        RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}
-      run: |
-        cd $GITHUB_WORKSPACE
-        echo "Deploying to Railway..."
-        railway up --service "$RAILWAY_SERVICE_NAME" --detach
