@@ -1410,3 +1410,5 @@ INFO 2025-04-11 12:42:00,340 autoreload 98624 8643279552 /Users/muhozayekoye/myy
 INFO 2025-04-11 12:42:01,171 autoreload 71715 8643279552 Watching for file changes with StatReloader
 INFO 2025-04-11 12:42:16,591 autoreload 71715 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/settings.py changed, reloading.
 INFO 2025-04-11 12:42:16,829 autoreload 71801 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-11 13:11:56,695 autoreload 71801 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/settings.py changed, reloading.
+INFO 2025-04-11 15:03:06,673 autoreload 6335 8643279552 Watching for file changes with StatReloader
