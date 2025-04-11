@@ -54,4 +54,7 @@ jobs:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
       run: |
         cd $GITHUB_WORKSPACE
+        echo "Logging in to Railway with token..."
+        railway login --token $RAILWAY_TOKEN
+        echo "Deploying to Railway..."
         railway up --detach
