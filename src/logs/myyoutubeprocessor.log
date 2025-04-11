@@ -1406,3 +1406,7 @@ INFO 2025-04-09 17:44:18,269 basehttp 98624 6192164864 "GET /videos/13/ HTTP/1.1
 INFO 2025-04-09 17:44:54,445 basehttp 98624 6208991232 "GET /videos/ HTTP/1.1" 200 12777
 INFO 2025-04-09 17:44:56,600 basehttp 98624 6208991232 "GET /videos/3/ HTTP/1.1" 200 42724
 INFO 2025-04-09 18:29:46,253 basehttp 98624 6225817600 "GET /videos/ HTTP/1.1" 200 12777
+INFO 2025-04-11 12:42:00,340 autoreload 98624 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/settings.py changed, reloading.
+INFO 2025-04-11 12:42:01,171 autoreload 71715 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-11 12:42:16,591 autoreload 71715 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/settings.py changed, reloading.
+INFO 2025-04-11 12:42:16,829 autoreload 71801 8643279552 Watching for file changes with StatReloader
