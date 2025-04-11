@@ -52,7 +52,8 @@ jobs:
     - name: Deploy to Railway
       env:
         RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+        RAILWAY_SERVICE_NAME: ${{ secrets.RAILWAY_SERVICE_NAME }}
       run: |
         cd $GITHUB_WORKSPACE
         echo "Deploying to Railway..."
-        railway up --detach
+        railway up --service "$RAILWAY_SERVICE_NAME" --detach
