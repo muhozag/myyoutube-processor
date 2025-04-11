@@ -1428,3 +1428,12 @@ INFO 2025-04-11 19:16:20,468 autoreload 61487 8643279552 Watching for file chang
 INFO 2025-04-11 21:49:19,815 autoreload 94375 8643279552 Watching for file changes with StatReloader
 INFO 2025-04-11 21:50:16,760 autoreload 94375 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/settings.py changed, reloading.
 INFO 2025-04-11 21:50:16,957 autoreload 94723 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-11 21:51:46,849 autoreload 95325 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-11 21:52:24,950 autoreload 95606 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-11 21:53:31,446 autoreload 95981 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-11 21:53:51,610 basehttp 95981 6205403136 "GET / HTTP/1.1" 302 0
+INFO 2025-04-11 21:53:51,630 basehttp 95981 6205403136 "GET /videos/ HTTP/1.1" 200 12777
+INFO 2025-04-11 21:53:54,696 basehttp 95981 6205403136 "GET /videos/submit/ HTTP/1.1" 200 4823
+INFO 2025-04-11 22:49:01,075 autoreload 95981 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/settings.py changed, reloading.
+INFO 2025-04-11 22:49:01,342 autoreload 7583 8643279552 Watching for file changes with StatReloader
+INFO 2025-04-11 22:49:25,879 autoreload 7583 8643279552 /Users/muhozayekoye/myyoutube-processor/src/myyoutubeprocessor/settings.py changed, reloading.
