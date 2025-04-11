@@ -33,6 +33,11 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 # Get allowed hosts from environment variable or use default
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else ['*']
 
+# Ensure Railway domains are allowed
+if os.environ.get('RAILWAY_STATIC_URL') or os.environ.get('RAILWAY_SERVICE_NAME'):
+    # We're on Railway - add specific railway domains
+    ALLOWED_HOSTS.extend(['.up.railway.app', 'railway.app'])
+
 
 # Application definition
 
