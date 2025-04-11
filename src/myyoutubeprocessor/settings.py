@@ -38,7 +38,11 @@ if os.environ.get('RAILWAY_STATIC_URL') or os.environ.get('RAILWAY_SERVICE_NAME'
     # We're on Railway - add specific railway domains
     ALLOWED_HOSTS.extend(['.up.railway.app', 'railway.app'])
 
-
+# CSRF trusted origins
+CSRF_TRUSTED_ORIGINS = [
+    'https://*.railway.app',
+    'https://*.up.railway.app',
+]
 # Application definition
 
 INSTALLED_APPS = [
