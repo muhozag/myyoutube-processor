@@ -96,6 +96,10 @@ WSGI_APPLICATION = 'myyoutubeprocessor.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
+# Check if we're running locally with the railway CLI
+IS_RAILWAY_CLI = os.environ.get('RAILWAY_SERVICE_NAME') and not os.environ.get('RAILWAY_STATIC_URL')
+
+# Default to SQLite for local development
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -103,8 +107,8 @@ DATABASES = {
     }
 }
 
-# Use PostgreSQL if DATABASE_URL is set
-if os.getenv('DATABASE_URL'):
+# Use PostgreSQL if DATABASE_URL is set and we're not running the Railway CLI locally
+if os.getenv('DATABASE_URL') and not IS_RAILWAY_CLI:
     DATABASES['default'] = dj_database_url.config(
         default=os.getenv('DATABASE_URL'),
         conn_max_age=600,
