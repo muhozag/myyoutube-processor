@@ -1,0 +1,159 @@
+{% extends "admin/index.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div class="app-index-dashboard module">
+    <h2>Dashboard</h2>
+    <div class="app-index-dashboard-content">
+        <div class="dashboard-stats">
+            <div class="stat-box">
+                <h3>Videos</h3>
+                <div class="stat-count">{{ video_count }}</div>
+                <div class="stat-detail">
+                    <span class="stat-badge pending">{{ pending_count }} Pending</span>
+                    <span class="stat-badge processing">{{ processing_count }} Processing</span>
+                    <span class="stat-badge completed">{{ completed_count }} Completed</span>
+                    <span class="stat-badge failed">{{ failed_count }} Failed</span>
+                </div>
+            </div>
+            <div class="stat-box">
+                <h3>Transcripts</h3>
+                <div class="stat-count">{{ transcript_count }}</div>
+                <div class="stat-detail">
+                    <span>{{ transcript_words_avg }} words on average</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="dashboard-recent">
+            <h3>Recent Videos</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Added</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for video in recent_videos %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'admin:videos_video_change' video.id %}">
+                                {{ video.title|truncatechars:50 }}
+                            </a>
+                        </td>
+                        <td>{{ video.get_status_display }}</td>
+                        <td>{{ video.created_at|timesince }} ago</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="3">No videos yet</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    .app-index-dashboard {
+        margin-bottom: 20px;
+        background: white;
+        border-radius: 4px;
+        border: 1px solid #eaeaea;
+        overflow: hidden;
+    }
+    
+    .app-index-dashboard h2 {
+        background: var(--primary);
+        color: white;
+        padding: 8px 15px;
+        margin: 0;
+    }
+    
+    .app-index-dashboard-content {
+        padding: 15px;
+    }
+    
+    .dashboard-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        margin-bottom: 20px;
+    }
+    
+    .stat-box {
+        flex: 1;
+        min-width: 200px;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 5px;
+        border: 1px solid #eaeaea;
+    }
+    
+    .stat-box h3 {
+        margin-top: 0;
+        color: var(--primary);
+        font-size: 16px;
+    }
+    
+    .stat-count {
+        font-size: 32px;
+        font-weight: bold;
+        margin: 10px 0;
+    }
+    
+    .stat-detail {
+        font-size: 12px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+    }
+    
+    .stat-badge {
+        padding: 3px 8px;
+        border-radius: 10px;
+        color: white;
+        font-size: 11px;
+    }
+    
+    .stat-badge.pending { background-color: #f39c12; }
+    .stat-badge.processing { background-color: #3498db; }
+    .stat-badge.completed { background-color: #2ecc71; }
+    .stat-badge.failed { background-color: #e74c3c; }
+    
+    .dashboard-recent {
+        background: #f8f9fa;
+        border-radius: 5px;
+        border: 1px solid #eaeaea;
+        padding: 15px;
+    }
+    
+    .dashboard-recent h3 {
+        margin-top: 0;
+        color: var(--primary);
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+    
+    .dashboard-recent table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .dashboard-recent th, .dashboard-recent td {
+        padding: 8px 12px;
+        border-bottom: 1px solid #eaeaea;
+        text-align: left;
+    }
+    
+    .dashboard-recent th {
+        border-bottom: 2px solid #eaeaea;
+        font-weight: bold;
+    }
+</style>
+
+{{ block.super }}
+{% endblock %}

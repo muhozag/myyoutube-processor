@@ -1,0 +1,63 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} | YouTube Processor Admin{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">
+    <a href="{% url 'admin:index' %}">
+        YouTube Processor Administration
+    </a>
+</h1>
+{% endblock %}
+
+{% block extrastyle %}
+{{ block.super }}
+<style>
+    :root {
+        --primary: #2c3e50;
+        --secondary: #34495e;
+        --accent: #e74c3c;
+        --primary-fg: #fff;
+    }
+    
+    #header {
+        background: var(--primary);
+        color: var(--primary-fg);
+    }
+    
+    #branding h1 {
+        color: var(--primary-fg);
+    }
+    
+    a:link, a:visited {
+        color: var(--primary);
+    }
+    
+    .module h2, .module caption, .inline-group h2 {
+        background: var(--secondary);
+    }
+    
+    div.breadcrumbs {
+        background: var(--secondary);
+    }
+    
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+        background: var(--primary);
+    }
+    
+    .button:hover, input[type=submit]:hover, input[type=button]:hover, .submit-row input:hover, a.button:hover {
+        background: var(--secondary);
+    }
+    
+    .button.default, input[type=submit].default, .submit-row input.default {
+        background: var(--accent);
+    }
+    
+    .button.default:hover, input[type=submit].default:hover, .submit-row input.default:hover {
+        background: #c0392b;
+    }
+</style>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

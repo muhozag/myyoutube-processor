@@ -14,12 +14,29 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from django.contrib.auth import views as auth_views
+from django.contrib import admin
+
+# Customize the admin site
+from .admin import CustomAdminSite
+
+# Set up the admin site with our customizations
+admin.site = CustomAdminSite(name="admin")
+admin.sites.site = admin.site
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('videos/', include('videos.urls')),
     path('', RedirectView.as_view(pattern_name='video_list', permanent=False)),
+    
+    # Authentication URLs
+    path('accounts/login/', auth_views.LoginView.as_view(template_name='auth/login.html'), name='login'),
+    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='video_list'), name='logout'),
+    path('accounts/password_change/', auth_views.PasswordChangeView.as_view(template_name='auth/password_change.html', 
+                                                                         success_url='/accounts/password_change/done/'), 
+         name='password_change'),
+    path('accounts/password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='auth/password_change_done.html'), 
+         name='password_change_done'),
 ]
