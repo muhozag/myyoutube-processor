@@ -7,7 +7,8 @@ import datetime
 import os
 from typing import Optional, Dict, Any, Tuple
 
-# Import only the client class, which should be stable across versions
+# Update to the new Mistral client
+from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
 
 logger = logging.getLogger(__name__)
@@ -111,7 +112,7 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             logger.error("Mistral API key not found in environment variables")
             return None
             
-        # Initialize Mistral client
+        # Initialize Mistral client with new client
         client = MistralClient(api_key=api_key)
         
         # Trim text if needed to avoid exceeding token limits
@@ -147,7 +148,7 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Use simple dictionary format for messages which works with all API versions
+        # Create messages array in format compatible with the new client
         messages = [
             {"role": "user", "content": prompt}
         ]
@@ -157,24 +158,20 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             model_name = "mistral-small-latest"
             logger.info(f"Calling Mistral API with model: {model_name}")
             
-            response = client.chat(
+            # Updated API call format
+            chat_response = client.chat(
                 model=model_name,
                 messages=messages,
                 temperature=0.2,
                 max_tokens=1024
             )
             
-            # Extract content from response
-            if hasattr(response, 'choices') and len(response.choices) > 0:
-                if hasattr(response.choices[0], 'message') and hasattr(response.choices[0].message, 'content'):
-                    return response.choices[0].message.content.strip()
-            
-            # If we get here, try to access response as dictionary
-            if isinstance(response, dict) and 'choices' in response:
-                if len(response['choices']) > 0 and 'message' in response['choices'][0]:
-                    return response['choices'][0]['message']['content'].strip()
+            # Extract content from the response (new client has different response structure)
+            if hasattr(chat_response, 'choices') and len(chat_response.choices) > 0:
+                if hasattr(chat_response.choices[0], 'message') and hasattr(chat_response.choices[0].message, 'content'):
+                    return chat_response.choices[0].message.content.strip()
                     
-            logger.warning(f"Unexpected response format: {response}")
+            logger.warning(f"Unexpected response format: {chat_response}")
             return None
             
         except Exception as e:
@@ -186,24 +183,20 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
                 model_name = "mistral-small"
                 logger.info(f"Calling Mistral API with fallback model: {model_name}")
                 
-                response = client.chat(
+                # Updated API call format for fallback
+                chat_response = client.chat(
                     model=model_name,
                     messages=messages,
                     temperature=0.2,
                     max_tokens=1024
                 )
                 
-                # Extract content using the same approach
-                if hasattr(response, 'choices') and len(response.choices) > 0:
-                    if hasattr(response.choices[0], 'message') and hasattr(response.choices[0].message, 'content'):
-                        return response.choices[0].message.content.strip()
+                # Extract content with new client response structure
+                if hasattr(chat_response, 'choices') and len(chat_response.choices) > 0:
+                    if hasattr(chat_response.choices[0], 'message') and hasattr(chat_response.choices[0].message, 'content'):
+                        return chat_response.choices[0].message.content.strip()
                 
-                # If we get here, try to access response as dictionary
-                if isinstance(response, dict) and 'choices' in response:
-                    if len(response['choices']) > 0 and 'message' in response['choices'][0]:
-                        return response['choices'][0]['message']['content'].strip()
-                
-                logger.warning(f"Unexpected response format from fallback: {response}")
+                logger.warning(f"Unexpected response format from fallback: {chat_response}")
                 return None
                 
             except Exception as e2:
