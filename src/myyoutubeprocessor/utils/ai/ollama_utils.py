@@ -29,8 +29,23 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             
         # Construct a prompt for summarization
         prompt = f"""
+        You are a video summarization expert. Your task is to summarize the content of a video transcript.
         Please provide a concise summary of the following transcript.
-        Focus on the main topics discussed, the key points, and any conclusions or important insights.
+        The summary should be structured and easy to read.
+        The summary should be in English and should not include any personal opinions or interpretations.
+        The summary should be suitable for someone who has not watched the video.
+        Please include:
+        1. The main topic and purpose of the video
+        2. Key points and arguments presented
+        3. Important facts, statistics, or examples mentioned
+        4. Any conclusions or takeaways
+        5. The overall structure of the presentation
+        6. Timestamps for major topic transitions (if apparent from the transcript)
+
+        Format the summary in clear paragraphs with appropriate headings for each section. 
+        Keep the summary concise but include all essential information. 
+        Aim for approximately 200-300 words depending on the video length and complexity.
+        If the transcript appears to be truncated, summarize what is available:
         If the transcript appears to be truncated, summarize what is available:
         
         {text}
