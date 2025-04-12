@@ -9,13 +9,17 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
 import logging
 import threading
+import os
 
 from .models import Video, Transcript
 from .forms import VideoSubmissionForm
-from .tasks import process_video_async, generate_summary
+from .tasks import process_video_async, generate_summary, process_video as process_video_task
 
 # Set up logger
 logger = logging.getLogger(__name__)
+
+# Check if we're running on Railway or other production environment
+IS_PRODUCTION = bool(os.environ.get('RAILWAY_SERVICE_NAME') or not os.environ.get('DEBUG', '').lower() == 'true')
 
 class VideoListView(ListView):
     """Display list of videos with their processing status"""
@@ -60,14 +64,20 @@ class VideoCreateView(CreateView):
             response = super().form_valid(form)
             messages.success(self.request, f"Video '{self.object.title or self.object.youtube_id}' has been submitted for processing.")
             
-            # Start processing in background thread
-            # In production, this would be handled by Celery
-            thread = threading.Thread(
-                target=process_video_async,
-                args=(self.object.pk,),
-                daemon=True
-            )
-            thread.start()
+            # In production environments, we'll process synchronously to avoid thread issues
+            if IS_PRODUCTION:
+                try:
+                    process_video_task(self.object.pk)
+                except Exception as e:
+                    logger.exception(f"Error processing video synchronously: {str(e)}")
+            else:
+                # Only use threading in development
+                thread = threading.Thread(
+                    target=process_video_async,
+                    args=(self.object.pk,),
+                    daemon=True
+                )
+                thread.start()
             
             return response
         except ValidationError as e:
@@ -87,14 +97,21 @@ def process_video(request, pk):
         # Mark as processing first so the UI shows the right status
         video.mark_processing()
         
-        # Start processing in background thread
-        # In production, this would be handled by Celery
-        thread = threading.Thread(
-            target=process_video_async,
-            args=(video.pk,),
-            daemon=True
-        )
-        thread.start()
+        # In production environments, we'll process synchronously to avoid thread issues
+        if IS_PRODUCTION:
+            try:
+                process_video_task(video.pk)
+            except Exception as e:
+                logger.exception(f"Error processing video synchronously: {str(e)}")
+                video.mark_failed(str(e))
+        else:
+            # Only use threading in development
+            thread = threading.Thread(
+                target=process_video_async,
+                args=(video.pk,),
+                daemon=True
+            )
+            thread.start()
         
         messages.success(request, f"Video '{video.title or video.youtube_id}' is being processed.")
     except Exception as e:
@@ -131,13 +148,20 @@ def generate_transcript_summary(request, pk):
             messages.error(request, "Cannot generate summary: No transcript found for this video.")
             return redirect('video_detail', pk=video.pk)
         
-        # Start summary generation in background thread
-        thread = threading.Thread(
-            target=generate_summary,
-            args=(video.transcript.pk,),
-            daemon=True
-        )
-        thread.start()
+        # In production environments, we'll process synchronously to avoid thread issues
+        if IS_PRODUCTION:
+            try:
+                generate_summary(video.transcript.pk)
+            except Exception as e:
+                logger.exception(f"Error generating summary synchronously: {str(e)}")
+        else:
+            # Only use threading in development
+            thread = threading.Thread(
+                target=generate_summary,
+                args=(video.transcript.pk,),
+                daemon=True
+            )
+            thread.start()
         
         messages.success(request, f"Generating summary for '{video.title or video.youtube_id}'. Please refresh in a few moments.")
     except Exception as e:

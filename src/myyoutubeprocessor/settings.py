@@ -41,6 +41,14 @@ CSRF_TRUSTED_ORIGINS = [
     'https://*.railway.app',
     'https://*.up.railway.app',
 ]
+
+# Add any local development domains if needed
+if DEBUG:
+    CSRF_TRUSTED_ORIGINS.extend([
+        'http://localhost:8000',
+        'http://127.0.0.1:8000',
+    ])
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -177,15 +185,19 @@ LOGGING = {
         },
         'file': {
             'level': 'INFO',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/myyoutubeprocessor.log'),
+            'class': 'logging.handlers.RotatingFileHandler' if os.path.exists(os.path.join(BASE_DIR, 'logs')) else 'logging.StreamHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/myyoutubeprocessor.log') if os.path.exists(os.path.join(BASE_DIR, 'logs')) else None,
             'formatter': 'verbose',
+            'maxBytes': 10485760,  # 10MB
+            'backupCount': 3,
         },
         'error_file': {
             'level': 'ERROR',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs/error.log'),
+            'class': 'logging.handlers.RotatingFileHandler' if os.path.exists(os.path.join(BASE_DIR, 'logs')) else 'logging.StreamHandler',
+            'filename': os.path.join(BASE_DIR, 'logs/error.log') if os.path.exists(os.path.join(BASE_DIR, 'logs')) else None,
             'formatter': 'verbose',
+            'maxBytes': 10485760,  # 10MB
+            'backupCount': 3,
         },
     },
     'loggers': {
