@@ -58,6 +58,16 @@ class Video(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     error_message = models.TextField(blank=True)
+    processing_started_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Processing Started At"
+    )
+    processing_completed_at = models.DateTimeField(
+        null=True,
+        blank=True,
+        verbose_name="Processing Completed At"
+    )
     
     class Meta:
         ordering = ['-created_at']
@@ -90,18 +100,21 @@ class Video(models.Model):
     def mark_processing(self):
         """Mark the video as currently being processed"""
         self.status = 'processing'
-        self.save(update_fields=['status', 'updated_at'])
+        self.processing_started_at = timezone.now()
+        self.save(update_fields=['status', 'processing_started_at', 'updated_at'])
     
     def mark_completed(self):
         """Mark the video as successfully processed"""
         self.status = 'completed'
-        self.save(update_fields=['status', 'updated_at'])
+        self.processing_completed_at = timezone.now()
+        self.save(update_fields=['status', 'processing_completed_at', 'updated_at'])
     
     def mark_failed(self, error_message=""):
         """Mark the video as failed processing with error message"""
         self.status = 'failed'
         self.error_message = error_message
-        self.save(update_fields=['status', 'error_message', 'updated_at'])
+        self.processing_completed_at = timezone.now()
+        self.save(update_fields=['status', 'error_message', 'processing_completed_at', 'updated_at'])
     
     @property
     def is_processed(self):
@@ -111,7 +124,10 @@ class Video(models.Model):
     @property
     def processing_time(self):
         """Get the processing time if completed"""
-        if self.status in ['completed', 'failed'] and self.updated_at and self.created_at:
+        if self.status in ['completed', 'failed'] and self.processing_completed_at and self.processing_started_at:
+            return (self.processing_completed_at - self.processing_started_at).total_seconds()
+        # Fallback to the old method if specific timestamps aren't available
+        elif self.status in ['completed', 'failed'] and self.updated_at and self.created_at:
             return (self.updated_at - self.created_at).total_seconds()
         return None
 
