@@ -7,9 +7,16 @@ import datetime
 import os
 from typing import Optional, Dict, Any, Tuple
 from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+from mistralai.models.chat_completion import ChatMessage  # Try updated import path
 
 logger = logging.getLogger(__name__)
+
+# Fallback definition in case the import fails
+if 'ChatMessage' not in locals():
+    class ChatMessage:
+        def __init__(self, role, content):
+            self.role = role
+            self.content = content
 
 def validate_youtube_id(youtube_id: str) -> bool:
     """
@@ -146,26 +153,55 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Create chat messages
-        messages = [
-            ChatMessage(role="user", content=prompt)
-        ]
+        # Try to use the imported ChatMessage class if available
+        try:
+            messages = [
+                ChatMessage(role="user", content=prompt)
+            ]
+        except (TypeError, AttributeError):
+            # If that fails, try the direct dictionary format which most LLM APIs support
+            messages = [
+                {"role": "user", "content": prompt}
+            ]
         
         # Call the Mistral API with the mistral-small-latest model
         # Using mistral-small-latest as equivalent to mistral-small3.1 in Ollama
-        response = client.chat(
-            model="mistral-small-latest",
-            messages=messages,
-            temperature=0.2,
-            max_tokens=1024  # Equivalent to num_predict in Ollama
-        )
-        
-        # Extract the summary from the response
-        if response and response.choices and len(response.choices) > 0:
-            return response.choices[0].message.content.strip()
-        else:
-            logger.error(f"Unexpected response format from Mistral API: {response}")
-            return None
+        try:
+            response = client.chat(
+                model="mistral-small-latest",
+                messages=messages,
+                temperature=0.2,
+                max_tokens=1024  # Equivalent to num_predict in Ollama
+            )
+            
+            # Extract the summary from the response
+            if response and hasattr(response, 'choices') and len(response.choices) > 0:
+                return response.choices[0].message.content.strip()
+            else:
+                logger.error(f"Unexpected response format from Mistral API: {response}")
+                return None
+        except AttributeError:
+            # Fallback approach for older versions of the Mistral API
+            try:
+                # Try alternative API format that might be used in older versions
+                response = client.chat_completions(
+                    model="mistral-small",  # Try with this model name if -latest isn't available
+                    messages=messages,
+                    temperature=0.2,
+                    max_tokens=1024
+                )
+                
+                # Try different response structures
+                if hasattr(response, 'choices') and len(response.choices) > 0:
+                    return response.choices[0].message.content.strip()
+                elif isinstance(response, dict) and 'choices' in response:
+                    return response['choices'][0]['message']['content'].strip()
+                else:
+                    logger.error(f"Could not extract content from Mistral API response")
+                    return None
+            except Exception as e:
+                logger.error(f"Error in fallback Mistral API call: {str(e)}")
+                return None
     except Exception as e:
         logger.error(f"Error generating summary with Mistral API: {str(e)}")
         return None
