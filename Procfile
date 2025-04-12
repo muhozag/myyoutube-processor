@@ -1,2 +1,2 @@
-web: cd src && python manage.py migrate && if [ ! -z "$DJANGO_SUPERUSER_PASSWORD" ]; then python manage.py ensure_superuser; else echo "Skipping superuser creation: DJANGO_SUPERUSER_PASSWORD not set"; fi && python manage.py collectstatic --noinput && gunicorn myyoutubeprocessor.wsgi:application --log-file -
+web: cd src && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn myyoutubeprocessor.wsgi:application --log-file -
 # worker: cd src && celery -A myyoutubeprocessor worker --loglevel=info
