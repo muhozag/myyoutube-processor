@@ -8,6 +8,10 @@ class CustomAdminSite(admin.AdminSite):
     """
     Custom admin site that provides dashboard statistics
     """
+    site_header = "YouTube Processor Admin"
+    site_title = "YouTube Processor Admin Portal"
+    index_title = "YouTube Processor Administration"
+    
     def index(self, request, extra_context=None):
         extra_context = extra_context or {}
         
@@ -67,6 +71,9 @@ class CustomAdminSite(admin.AdminSite):
         
         return super().index(request, extra_context)
 
-
 # Create a custom admin site instance
-custom_admin_site = CustomAdminSite(name='custom_admin')
+custom_admin_site = CustomAdminSite(name='admin')
+
+# Replace the default admin site with our custom one
+admin.site = custom_admin_site
+admin.sites.site = admin.site

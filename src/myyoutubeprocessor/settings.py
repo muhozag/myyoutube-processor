@@ -34,7 +34,7 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_
 # Ensure Railway domains are allowed
 if os.environ.get('RAILWAY_STATIC_URL') or os.environ.get('RAILWAY_SERVICE_NAME'):
     # We're on Railway - add specific railway domains
-    ALLOWED_HOSTS.extend(['.up.railway.app', 'railway.app'])
+    ALLOWED_HOSTS.extend(['.up.railway.app', 'railway.app', '*'])
 
 # CSRF trusted origins
 CSRF_TRUSTED_ORIGINS = [
@@ -48,6 +48,13 @@ if DEBUG:
         'http://localhost:8000',
         'http://127.0.0.1:8000',
     ])
+
+# If RAILWAY_CUSTOM_DOMAIN is set, add it to CSRF_TRUSTED_ORIGINS
+railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
+if railway_domain:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{railway_domain}')
+    # Also add it to ALLOWED_HOSTS
+    ALLOWED_HOSTS.append(railway_domain)
 
 # Application definition
 

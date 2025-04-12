@@ -143,8 +143,3 @@ class TranscriptAdmin(admin.ModelAdmin):
             return mark_safe(embed_code)
         return "No YouTube ID available"
     video_embed.short_description = "Video Preview"
-
-# Register custom admin site header and title
-admin.site.site_header = "YouTube Processor Admin"
-admin.site.site_title = "YouTube Processor Admin Portal"
-admin.site.index_title = "YouTube Processor Administration"
