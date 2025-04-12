@@ -14,6 +14,7 @@ import os
 from .models import Video, Transcript
 from .forms import VideoSubmissionForm
 from .tasks import process_video_async, generate_summary, process_video as process_video_task
+from myyoutubeprocessor.utils.ai.ollama_utils import format_metadata
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -49,7 +50,17 @@ class VideoDetailView(DetailView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        # Add additional context here if needed
+        video = self.object
+        
+        # Generate formatted metadata using our utility function
+        # Using created_at (when video was added to our app) for processed_time
+        processed_time = video.created_at.isoformat() if video.created_at else None
+        context['formatted_metadata'] = format_metadata(
+            youtube_id=video.youtube_id,
+            processed_time=processed_time,
+            processing_time=video.processing_time
+        )
+        
         return context
 
 class VideoCreateView(CreateView):

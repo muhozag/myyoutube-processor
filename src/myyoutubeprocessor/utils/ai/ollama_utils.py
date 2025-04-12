@@ -3,9 +3,92 @@ AI utilities module for interacting with Ollama models.
 """
 import logging
 import ollama
-from typing import Optional, Dict, Any
+import re
+import datetime
+from typing import Optional, Dict, Any, Tuple
 
 logger = logging.getLogger(__name__)
+
+def validate_youtube_id(youtube_id: str) -> bool:
+    """
+    Validates if a string is a properly formatted YouTube ID.
+    
+    Args:
+        youtube_id: The YouTube ID to validate
+        
+    Returns:
+        True if valid YouTube ID format, False otherwise
+    """
+    if not youtube_id:
+        return False
+    
+    # YouTube IDs are 11 characters long and contain only alphanumeric chars, underscores and hyphens
+    return bool(re.match(r'^[a-zA-Z0-9_-]{11}$', youtube_id))
+
+def validate_processing_time(processing_time: float) -> float:
+    """
+    Validates and corrects processing time to ensure realistic values.
+    
+    Args:
+        processing_time: The processing time in seconds
+        
+    Returns:
+        A realistic processing time value
+    """
+    # Maximum reasonable processing time (30 minutes)
+    MAX_REASONABLE_TIME = 30 * 60
+    
+    # If processing time is unrealistically high, cap it at a reasonable value
+    if processing_time is None or processing_time < 0:
+        return 0.0
+    elif processing_time > MAX_REASONABLE_TIME:
+        logger.warning(f"Unrealistic processing time detected: {processing_time} seconds. Capping at {MAX_REASONABLE_TIME} seconds.")
+        return float(MAX_REASONABLE_TIME)
+    
+    return float(processing_time)
+
+def format_metadata(youtube_id: str, processed_time: Optional[str] = None, 
+                   processing_time: Optional[float] = None) -> str:
+    """
+    Format metadata about video processing into a clean string with validated values.
+    Uses the app's database timestamps, not the video's original timestamp.
+    
+    Args:
+        youtube_id: YouTube video ID
+        processed_time: When the video was processed by our app (timestamp from database)
+        processing_time: How long our processing took in seconds
+        
+    Returns:
+        Formatted metadata string with validated values
+    """
+    # Validate YouTube ID
+    if not validate_youtube_id(youtube_id):
+        youtube_id = "Invalid ID"
+    
+    # Format the processed time using the database timestamp
+    now = datetime.datetime.now()
+    if processed_time:
+        try:
+            # Try to parse the string into a datetime
+            dt = datetime.datetime.fromisoformat(processed_time.replace('Z', '+00:00'))
+            # Ensure we're not showing future dates
+            if dt > now:
+                dt = now
+            processed_time = dt.strftime("%B %d, %Y %I:%M %p")
+        except (ValueError, TypeError):
+            # If parsing fails, use current time
+            processed_time = now.strftime("%B %d, %Y %I:%M %p")
+    else:
+        processed_time = now.strftime("%B %d, %Y %I:%M %p")
+    
+    # Validate and format processing time
+    if processing_time is not None:
+        valid_time = validate_processing_time(processing_time)
+        processing_time_str = f"{valid_time:.2f}"
+    else:
+        processing_time_str = "N/A"
+    
+    return f"YouTube ID: {youtube_id}\nProcessed: {processed_time}\nProcessing Time: {processing_time_str} seconds"
 
 def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
     """
