@@ -6,17 +6,11 @@ import re
 import datetime
 import os
 from typing import Optional, Dict, Any, Tuple
+
+# Import only the client class, which should be stable across versions
 from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage  # Try updated import path
 
 logger = logging.getLogger(__name__)
-
-# Fallback definition in case the import fails
-if 'ChatMessage' not in locals():
-    class ChatMessage:
-        def __init__(self, role, content):
-            self.role = role
-            self.content = content
 
 def validate_youtube_id(youtube_id: str) -> bool:
     """
@@ -137,7 +131,7 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Please include:
         1. The main topic and purpose of the video
         2. Key points and arguments presented
-        3. Key people, pleces or organizations mentioned
+        3. Key people, places or organizations mentioned
         4. Important facts, statistics, or examples mentioned
         5. Any conclusions or takeaways
         6. The overall structure of the presentation
@@ -153,55 +147,69 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Try to use the imported ChatMessage class if available
-        try:
-            messages = [
-                ChatMessage(role="user", content=prompt)
-            ]
-        except (TypeError, AttributeError):
-            # If that fails, try the direct dictionary format which most LLM APIs support
-            messages = [
-                {"role": "user", "content": prompt}
-            ]
+        # Use simple dictionary format for messages which works with all API versions
+        messages = [
+            {"role": "user", "content": prompt}
+        ]
         
-        # Call the Mistral API with the mistral-small-latest model
-        # Using mistral-small-latest as equivalent to mistral-small3.1 in Ollama
         try:
+            # Try with mistral-small-latest first
+            model_name = "mistral-small-latest"
+            logger.info(f"Calling Mistral API with model: {model_name}")
+            
             response = client.chat(
-                model="mistral-small-latest",
+                model=model_name,
                 messages=messages,
                 temperature=0.2,
-                max_tokens=1024  # Equivalent to num_predict in Ollama
+                max_tokens=1024
             )
             
-            # Extract the summary from the response
-            if response and hasattr(response, 'choices') and len(response.choices) > 0:
-                return response.choices[0].message.content.strip()
-            else:
-                logger.error(f"Unexpected response format from Mistral API: {response}")
-                return None
-        except AttributeError:
-            # Fallback approach for older versions of the Mistral API
+            # Extract content from response
+            if hasattr(response, 'choices') and len(response.choices) > 0:
+                if hasattr(response.choices[0], 'message') and hasattr(response.choices[0].message, 'content'):
+                    return response.choices[0].message.content.strip()
+            
+            # If we get here, try to access response as dictionary
+            if isinstance(response, dict) and 'choices' in response:
+                if len(response['choices']) > 0 and 'message' in response['choices'][0]:
+                    return response['choices'][0]['message']['content'].strip()
+                    
+            logger.warning(f"Unexpected response format: {response}")
+            return None
+            
+        except Exception as e:
+            # Fall back to a different model name if the first one fails
+            logger.warning(f"First API call failed: {str(e)}. Trying fallback model.")
+            
             try:
-                # Try alternative API format that might be used in older versions
-                response = client.chat_completions(
-                    model="mistral-small",  # Try with this model name if -latest isn't available
+                # Try with mistral-small (without -latest)
+                model_name = "mistral-small"
+                logger.info(f"Calling Mistral API with fallback model: {model_name}")
+                
+                response = client.chat(
+                    model=model_name,
                     messages=messages,
                     temperature=0.2,
                     max_tokens=1024
                 )
                 
-                # Try different response structures
+                # Extract content using the same approach
                 if hasattr(response, 'choices') and len(response.choices) > 0:
-                    return response.choices[0].message.content.strip()
-                elif isinstance(response, dict) and 'choices' in response:
-                    return response['choices'][0]['message']['content'].strip()
-                else:
-                    logger.error(f"Could not extract content from Mistral API response")
-                    return None
-            except Exception as e:
-                logger.error(f"Error in fallback Mistral API call: {str(e)}")
+                    if hasattr(response.choices[0], 'message') and hasattr(response.choices[0].message, 'content'):
+                        return response.choices[0].message.content.strip()
+                
+                # If we get here, try to access response as dictionary
+                if isinstance(response, dict) and 'choices' in response:
+                    if len(response['choices']) > 0 and 'message' in response['choices'][0]:
+                        return response['choices'][0]['message']['content'].strip()
+                
+                logger.warning(f"Unexpected response format from fallback: {response}")
                 return None
+                
+            except Exception as e2:
+                logger.error(f"Both API call attempts failed. Final error: {str(e2)}")
+                return None
+                
     except Exception as e:
         logger.error(f"Error generating summary with Mistral API: {str(e)}")
         return None
