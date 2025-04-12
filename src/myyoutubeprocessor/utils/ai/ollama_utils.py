@@ -37,15 +37,15 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Please include:
         1. The main topic and purpose of the video
         2. Key points and arguments presented
-        3. Important facts, statistics, or examples mentioned
-        4. Any conclusions or takeaways
-        5. The overall structure of the presentation
-        6. Timestamps for major topic transitions (if apparent from the transcript)
+        3. Key people, pleces or organizations mentioned
+        4. Important facts, statistics, or examples mentioned
+        5. Any conclusions or takeaways
+        6. The overall structure of the presentation
+        7. Timestamps for major topic transitions (if apparent from the transcript)
 
         Format the summary in clear paragraphs with appropriate headings for each section. 
         Keep the summary concise but include all essential information. 
         Aim for approximately 200-300 words depending on the video length and complexity.
-        If the transcript appears to be truncated, summarize what is available:
         If the transcript appears to be truncated, summarize what is available:
         
         {text}
