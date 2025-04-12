@@ -170,6 +170,9 @@ LOGIN_REDIRECT_URL = 'video_list'
 LOGOUT_REDIRECT_URL = 'login'
 LOGIN_URL = 'login'
 
+# API Keys
+MISTRAL_API_KEY = os.getenv('MISTRAL_API_KEY', '')
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 

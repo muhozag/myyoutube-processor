@@ -13,7 +13,8 @@ import threading
 import concurrent.futures
 from django.utils import timezone
 from myyoutubeprocessor.utils.youtube_utils import extract_transcript
-from myyoutubeprocessor.utils.ai.ollama_utils import get_mistral_summary
+# Replace direct Ollama import with our AI service
+from myyoutubeprocessor.utils.ai.ai_service import get_ai_summary
 
 from .models import Video, Transcript
 
@@ -100,10 +101,10 @@ def process_video_with_timeout(video_id):
             # Generate beautified content
             transcript.beautify_transcript(raw_data)
             
-            # Generate summary using Ollama Mistral model
+            # Generate summary using our AI service (which will use either Ollama or Mistral API)
             try:
                 logger.info(f"Generating summary for transcript of {video.youtube_id}")
-                summary = get_mistral_summary(transcript_text)
+                summary = get_ai_summary(transcript_text)
                 if summary:
                     transcript.summary = summary
                     transcript.save(update_fields=['summary', 'updated_at'])
@@ -187,7 +188,7 @@ def process_video_async(video_id):
 
 def generate_summary(transcript_id):
     """
-    Generate a summary for an existing transcript using Ollama.
+    Generate a summary for an existing transcript using our AI service.
     
     Args:
         transcript_id (int): The database ID of the transcript
@@ -199,7 +200,7 @@ def generate_summary(transcript_id):
         transcript = Transcript.objects.get(pk=transcript_id)
         logger.info(f"Generating summary for transcript {transcript_id}")
         
-        summary = get_mistral_summary(transcript.content)
+        summary = get_ai_summary(transcript.content)
         if summary:
             transcript.summary = summary
             transcript.save(update_fields=['summary', 'updated_at'])
