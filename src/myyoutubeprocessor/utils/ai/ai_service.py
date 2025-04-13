@@ -40,15 +40,6 @@ def is_railway_environment() -> bool:
     return bool(os.getenv('RAILWAY_ENVIRONMENT') or 
                 os.getenv('RAILWAY_PROJECT_ID') or 
                 os.getenv('RAILWAY_SERVICE_ID'))
-                
-def use_remote_ollama() -> bool:
-    """
-    Detect if we should use Ollama in remote mode.
-    
-    Returns:
-        True if we should use Ollama remotely, False otherwise
-    """
-    return bool(os.getenv('USE_OLLAMA_REMOTE'))
 
 def get_ai_summary(text: str, max_length: int = 25000) -> Optional[str]:
     """
@@ -72,34 +63,10 @@ def get_ai_summary(text: str, max_length: int = 25000) -> Optional[str]:
         
     # Determine the environment
     running_on_railway = is_railway_environment()
-    use_ollama_remote = use_remote_ollama()
     logger.info(f"Detected environment: {'Railway' if running_on_railway else 'Local'}")
     
-    # For Railway deployment with remote Ollama option
-    if running_on_railway and use_ollama_remote:
-        # Try using Ollama in containerized environment
-        ollama_available = is_ollama_available()
-        logger.info(f"Remote Ollama service available: {ollama_available}")
-        
-        if ollama_available and get_ollama_summary:
-            try:
-                logger.info("Using Ollama for Railway deployment")
-                # For remote Ollama, we use the local address since it's in the same container
-                ollama_summary = get_ollama_summary(text, max_length, host="localhost")
-                if ollama_summary:
-                    elapsed = time.time() - start_time
-                    logger.info(f"Summary generated with remote Ollama in {elapsed:.2f} seconds")
-                    return ollama_summary
-                logger.warning("Remote Ollama summary generation failed")
-            except Exception as e:
-                logger.exception(f"Error using remote Ollama for summary: {str(e)}")
-                
-        # Fallback to Mistral API if we have the API key
-        if not ollama_available and os.getenv('MISTRAL_API_KEY'):
-            logger.warning("Remote Ollama not available, falling back to Mistral API")
-    
-    # For Railway deployment with Mistral API (default behavior)
-    if running_on_railway and not use_ollama_remote:
+    # For Railway deployment, use Mistral API
+    if running_on_railway:
         # First try the requests-based implementation for better Railway compatibility
         if get_mistral_summary_with_requests and os.getenv('MISTRAL_API_KEY'):
             try:
@@ -126,7 +93,7 @@ def get_ai_summary(text: str, max_length: int = 25000) -> Optional[str]:
             except Exception as e:
                 logger.exception(f"Error using Mistral API for summary: {str(e)}")
         else:
-            logger.error("Mistral API unavailable or API key not found - required for Railway deployment without Ollama")
+            logger.error("Mistral API unavailable or API key not found - required for Railway deployment")
     # For local development, use Ollama
     else:
         # Check if Ollama is available (should check service connection)
