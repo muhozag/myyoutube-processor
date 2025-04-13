@@ -223,7 +223,7 @@ def use_vps_model() -> bool:
 
 def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
     """
-    Generate a summary of the given text using Ollama models.
+    Generate a summary of the given text using Ollama models according to the prompt.
     Uses a smaller model on Railway and a larger model locally,
     or connects to a VPS-hosted Ollama if configured.
     
