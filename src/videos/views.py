@@ -132,6 +132,13 @@ def process_video(request, pk):
     
     return redirect('video_detail', pk=video.pk)
 
+@require_POST
+def process_video_by_id(request, video_id):
+    """Alternative entry point for processing a video, using video_id instead of pk"""
+    # This is just a wrapper around the main process_video function
+    logger.info(f"process_video_by_id called with video_id={video_id}")
+    return process_video(request, video_id)
+
 def video_status(request, pk):
     """API endpoint to check video processing status"""
     try:
