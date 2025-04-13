@@ -7,9 +7,31 @@ import re
 import datetime
 import time
 import socket
+import os
+import requests
 from typing import Optional, Dict, Any, Tuple
 
 logger = logging.getLogger(__name__)
+
+# Get Ollama host from environment variable with default to localhost
+OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
+# Get API key for VPS authentication if needed
+OLLAMA_API_KEY = os.getenv('OLLAMA_API_KEY', '')
+
+# Configure Ollama client to use the specified host
+if OLLAMA_HOST and OLLAMA_HOST != 'http://localhost:11434':
+    logger.info(f"Configuring Ollama to use remote host: {OLLAMA_HOST}")
+    # Set the Ollama API base URL
+    ollama.host = OLLAMA_HOST
+
+# Default model for local development (larger model)
+LOCAL_MODEL = os.getenv('OLLAMA_LOCAL_MODEL', 'mistral-small:22b')
+
+# Model to use on your VPS - now configurable via env var
+VPS_MODEL = os.getenv('OLLAMA_VPS_MODEL', 'mistral:7b')
+
+# Smaller model for Railway deployment to fit within standard resources
+RAILWAY_MODEL = os.getenv('OLLAMA_RAILWAY_MODEL', 'mistral:7b')
 
 def validate_youtube_id(youtube_id: str) -> bool:
     """
@@ -94,26 +116,68 @@ def format_metadata(youtube_id: str, processed_time: Optional[str] = None,
 
 def is_ollama_available() -> bool:
     """
-    Check if Ollama service is available by trying to connect to its default port.
+    Check if Ollama service is available by trying to connect to its endpoint.
+    Works with both local and remote Ollama instances.
     
     Returns:
         bool: True if Ollama appears to be available, False otherwise
     """
     try:
-        # Try to ping the Ollama service
-        models = ollama.list()
-        if models:
+        # Check if Ollama API is accessible
+        if not OLLAMA_HOST.startswith(('http://', 'https://')):
+            url = f"http://{OLLAMA_HOST}/api/tags"
+        else:
+            url = f"{OLLAMA_HOST}/api/tags"
+            
+        # Add simple check if remote host is available
+        headers = {}
+        if OLLAMA_API_KEY:
+            headers['Authorization'] = f'Bearer {OLLAMA_API_KEY}'
+            
+        response = requests.get(url, headers=headers, timeout=5)
+        if response.status_code == 200:
+            logger.info("Ollama service is available")
             return True
-    except (ConnectionRefusedError, socket.error) as e:
+        else:
+            logger.warning(f"Ollama service returned status code {response.status_code}")
+            return False
+    except requests.exceptions.RequestException as e:
         logger.warning(f"Ollama connection failed: {str(e)}")
+        return False
     except Exception as e:
         logger.warning(f"Unexpected error checking Ollama availability: {str(e)}")
     
     return False
 
+def is_railway_environment() -> bool:
+    """
+    Detect if code is running in Railway environment.
+    
+    Returns:
+        True if running on Railway, False otherwise
+    """
+    return bool(os.getenv('RAILWAY_ENVIRONMENT') or 
+                os.getenv('RAILWAY_PROJECT_ID') or 
+                os.getenv('RAILWAY_SERVICE_ID'))
+
+def use_vps_model() -> bool:
+    """
+    Determine if we should use the VPS model based on configuration.
+    
+    Returns:
+        True if VPS model should be used, False otherwise
+    """
+    # If OLLAMA_HOST points to a non-localhost address and USE_VPS_MODEL is set to true
+    use_vps = os.getenv('USE_VPS_MODEL', 'false').lower() in ('true', 'yes', '1', 't')
+    remote_host = OLLAMA_HOST != 'http://localhost:11434'
+    
+    return use_vps and remote_host
+
 def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
     """
-    Generate a summary of the given text using the Ollama Mistral 22B model.
+    Generate a summary of the given text using Ollama models.
+    Uses a smaller model on Railway and a larger model locally,
+    or connects to a VPS-hosted Ollama if configured.
     
     Args:
         text: The text to summarize
@@ -165,35 +229,18 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Use mistral-small:22b model as specified for local development
-        model_name = 'mistral-small:22b'
-        logger.info(f"Using Ollama with model: {model_name}")
+        # Choose model based on environment and configuration
+        if use_vps_model():
+            model_name = VPS_MODEL
+            logger.info(f"Using VPS-hosted model: {model_name}")
+        elif is_railway_environment():
+            model_name = RAILWAY_MODEL
+            logger.info(f"Railway environment detected - using smaller model: {model_name}")
+        else:
+            model_name = LOCAL_MODEL
+            logger.info(f"Local environment detected - using larger model: {model_name}")
         
-        # Check if the specified model exists
-        try:
-            models = ollama.list()
-            models_data = models.get('models', [])
-            model_names = [model.get('name') for model in models_data]
-            
-            if model_name not in model_names:
-                logger.error(f"Model {model_name} not found in Ollama. Available models: {model_names}")
-                # Try with mistral:latest as fallback
-                if 'mistral:latest' in model_names:
-                    model_name = 'mistral:latest'
-                    logger.info(f"Falling back to {model_name}")
-                elif 'mistral' in model_names:
-                    model_name = 'mistral'
-                    logger.info(f"Falling back to {model_name}")
-                else:
-                    available_models = ", ".join(model_names)
-                    logger.error(f"No Mistral model found. Available models: {available_models}")
-                    return None
-        except Exception as e:
-            logger.warning(f"Error checking available models: {str(e)}")
-            # Continue with the original model name as a best effort
-            pass
-        
-        # Call the Ollama API with the mistral model
+        # Call the Ollama API with the selected model
         response = ollama.chat(
             model=model_name,
             messages=[{'role': 'user', 'content': prompt}],
