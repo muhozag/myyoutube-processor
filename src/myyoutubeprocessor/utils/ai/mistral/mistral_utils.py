@@ -5,11 +5,13 @@ import logging
 import re
 import datetime
 import os
+import time
 from typing import Optional, Dict, Any, Tuple
 
 # Update to the new Mistral client
 from mistralai.async_client import MistralAsyncClient
 from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
 
 logger = logging.getLogger(__name__)
 
@@ -105,6 +107,7 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
     Returns:
         A summary of the text, or None if an error occurred
     """
+    start_time = time.time()
     try:
         # Get API key from environment
         api_key = os.getenv('MISTRAL_API_KEY')
@@ -115,7 +118,7 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             logger.error("Mistral API key not found in environment variables")
             return None
             
-        # Initialize Mistral client with new client
+        # Initialize Mistral client
         client = MistralClient(api_key=api_key)
         logger.info("Successfully initialized Mistral client")
         
@@ -153,45 +156,46 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Create messages array in format compatible with the new client
+        # Create messages for the API call
         messages = [
-            {"role": "user", "content": prompt}
+            ChatMessage(role="user", content=prompt)
         ]
         
-        # Try with different models in order of preference
-        model_options = ["mistral-small-latest", "mistral-small", "mistral-tiny", "open-mistral-7b"]
+        # Use mistral-small-3.1 model for API calls
+        model_name = "mistral-small-3.1"
         
-        for model_name in model_options:
-            try:
-                logger.info(f"Trying Mistral API with model: {model_name}")
-                
-                # API call format
-                chat_response = client.chat(
-                    model=model_name,
-                    messages=messages,
-                    temperature=0.2,
-                    max_tokens=1024
-                )
-                
-                logger.info(f"Received response from Mistral API with model {model_name}, status: Success")
-                
-                # Extract content from the response
-                if hasattr(chat_response, 'choices') and len(chat_response.choices) > 0:
-                    if hasattr(chat_response.choices[0], 'message') and hasattr(chat_response.choices[0].message, 'content'):
-                        logger.info(f"Successfully extracted content from response using model {model_name}")
-                        return chat_response.choices[0].message.content.strip()
-                
-                logger.warning(f"Unexpected response format from model {model_name}: {chat_response}")
-                # Continue to try the next model
-                
-            except Exception as e:
-                logger.warning(f"API call with model {model_name} failed: {str(e)}. Trying next model if available.")
-                # Continue to try the next model
-        
-        # If we've tried all models and none worked
-        logger.error("All Mistral API model attempts failed")
-        return None
+        try:
+            logger.info(f"Using Mistral API with model: {model_name}")
+            
+            # Make the API call
+            chat_response = client.chat(
+                model=model_name,
+                messages=messages,
+                temperature=0.2,
+                max_tokens=1024
+            )
+            
+            logger.info(f"Received response from Mistral API with model {model_name}, status: Success")
+            
+            # Extract content from the response
+            if chat_response and chat_response.choices and len(chat_response.choices) > 0:
+                summary_content = chat_response.choices[0].message.content
+                if summary_content:
+                    elapsed = time.time() - start_time
+                    logger.info(f"Successfully extracted content from response in {elapsed:.2f} seconds")
+                    return summary_content.strip()
+                else:
+                    logger.warning("Empty content received from Mistral API")
+            else:
+                logger.warning(f"Unexpected response format from model {model_name}: {str(chat_response)}")
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"API call with model {model_name} failed: {str(e)}")
+            return None
             
     except Exception as e:
-        logger.error(f"Error generating summary with Mistral API: {str(e)}")
+        elapsed = time.time() - start_time
+        logger.error(f"Error generating summary with Mistral API after {elapsed:.2f} seconds: {str(e)}")
         return None

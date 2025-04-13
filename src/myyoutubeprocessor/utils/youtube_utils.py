@@ -101,7 +101,20 @@ def extract_transcript(youtube_id: str, language_code: str = 'en', return_raw: b
         logging.error(f"Invalid YouTube ID: {youtube_id}")
         return ("", False, "") if not return_raw else ("", False, "", None)
     
+    # Verify YouTubeTranscriptApi is available
+    if 'YouTubeTranscriptApi' not in globals():
+        try:
+            global YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
+            from youtube_transcript_api import YouTubeTranscriptApi, TranscriptsDisabled, NoTranscriptFound
+            logging.info("Successfully imported YouTube Transcript API on demand")
+        except ImportError:
+            logging.error("youtube_transcript_api not installed. Cannot extract transcript.")
+            return ("", False, "") if not return_raw else ("", False, "", None)
+    
     try:
+        # Add timeout to the transcript API calls
+        start_time = time.time()
+        
         # Get a list of all available transcripts
         logging.info(f"Attempting to list all available transcripts for video {youtube_id}")
         transcript_list = YouTubeTranscriptApi.list_transcripts(youtube_id)
@@ -174,7 +187,22 @@ def extract_transcript(youtube_id: str, language_code: str = 'en', return_raw: b
                     logging.warning(f"No transcripts found after listing them (unusual situation)")
                     return ("", False, "") if not return_raw else ("", False, "", None)
         
+        # Log the time it took to fetch the transcript
+        elapsed_time = time.time() - start_time
+        logging.info(f"Transcript fetch time: {elapsed_time:.2f} seconds")
+        
+        # Format the transcript into plain text
         formatted_text = _format_transcript(transcript_data)
+        
+        if not formatted_text:
+            logging.warning(f"Failed to format transcript for video {youtube_id}")
+            
+        # Check if transcript is empty after formatting
+        if not formatted_text.strip():
+            logging.warning(f"Transcript for video {youtube_id} is empty after formatting")
+            
+        # Log completion
+        logging.info(f"Successfully extracted transcript for video {youtube_id} in {actual_language}")
         
         if return_raw:
             return formatted_text, is_generated, actual_language, transcript_data
