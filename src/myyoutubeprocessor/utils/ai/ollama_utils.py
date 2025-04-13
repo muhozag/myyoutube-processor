@@ -23,6 +23,21 @@ if OLLAMA_HOST and OLLAMA_HOST != 'http://localhost:11434':
     logger.info(f"Configuring Ollama to use remote host: {OLLAMA_HOST}")
     # Set the Ollama API base URL
     ollama.host = OLLAMA_HOST
+else:
+    # Check if IPv6 is preferred by attempting a connection
+    try:
+        # Try IPv6 connection
+        session = requests.Session()
+        ipv6_url = "http://[::1]:11434/api/tags"
+        response = session.get(ipv6_url, timeout=2)
+        if response.status_code == 200:
+            logger.info("IPv6 connection successful, configuring Ollama to use [::1]")
+            ollama.host = "http://[::1]:11434"
+        else:
+            logger.info("Using default IPv4 Ollama connection")
+    except requests.exceptions.RequestException:
+        logger.info("IPv6 connection failed, using default IPv4 Ollama connection")
+        # Just use the default (IPv4)
 
 # Default model for local development (larger model)
 LOCAL_MODEL = os.getenv('OLLAMA_LOCAL_MODEL', 'mistral-small:22b')
@@ -118,22 +133,24 @@ def is_ollama_available() -> bool:
     """
     Check if Ollama service is available by trying to connect to its endpoint.
     Works with both local and remote Ollama instances.
+    Supports both IPv4 and IPv6 connections.
     
     Returns:
         bool: True if Ollama appears to be available, False otherwise
     """
     try:
-        # Check if Ollama API is accessible
-        if not OLLAMA_HOST.startswith(('http://', 'https://')):
-            url = f"http://{OLLAMA_HOST}/api/tags"
+        # Extract the host from OLLAMA_HOST
+        host_url = OLLAMA_HOST
+        if not host_url.startswith(('http://', 'https://')):
+            url = f"http://{host_url}/api/tags"
         else:
-            url = f"{OLLAMA_HOST}/api/tags"
+            url = f"{host_url}/api/tags"
             
         logger.info(f"Checking Ollama availability at: {url}")
         
         # Add detailed error handling for connection issues
         try:
-            # Add simple check if remote host is available
+            # Set up headers if API key is provided
             headers = {}
             if OLLAMA_API_KEY:
                 headers['Authorization'] = f'Bearer {OLLAMA_API_KEY}'
@@ -141,7 +158,29 @@ def is_ollama_available() -> bool:
             # Print detailed connection information for debugging
             logger.debug(f"Connecting to Ollama with: URL={url}, Headers={headers}")
             
-            response = requests.get(url, headers=headers, timeout=5)  # Reduced timeout for faster feedback
+            # Configure requests to handle both IPv4 and IPv6
+            session = requests.Session()
+            # Force IPv6 if we're connecting to localhost and IPv6 is likely being used
+            if 'localhost' in host_url or '127.0.0.1' in host_url:
+                # Try to connect via IPv6 localhost
+                ipv6_url = url.replace('localhost', '[::1]').replace('127.0.0.1', '[::1]')
+                logger.info(f"Trying IPv6 connection: {ipv6_url}")
+                try:
+                    response = session.get(ipv6_url, headers=headers, timeout=5)
+                    if response.status_code == 200:
+                        logger.info("Successfully connected via IPv6")
+                        url = ipv6_url  # Use IPv6 URL for subsequent operations
+                    else:
+                        # Fall back to the original URL (IPv4)
+                        logger.info(f"IPv6 connection failed with status {response.status_code}, falling back to IPv4")
+                        response = session.get(url, headers=headers, timeout=5)
+                except requests.exceptions.RequestException:
+                    # Fall back to the original URL (IPv4)
+                    logger.info("IPv6 connection failed, falling back to IPv4")
+                    response = session.get(url, headers=headers, timeout=5)
+            else:
+                # For non-localhost URLs, just use the provided URL
+                response = session.get(url, headers=headers, timeout=5)
             
             if response.status_code == 200:
                 models = response.json().get('models', [])
