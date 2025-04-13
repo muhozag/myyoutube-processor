@@ -75,20 +75,30 @@ class VideoCreateView(CreateView):
             response = super().form_valid(form)
             messages.success(self.request, f"Video '{self.object.title or self.object.youtube_id}' has been submitted for processing.")
             
-            # In production environments, we'll process synchronously to avoid thread issues
-            if IS_PRODUCTION:
+            # Don't process immediately - only mark as pending and redirect
+            # This prevents timeouts during the submission process
+            logger.info(f"Video '{self.object.youtube_id}' submitted. Processing will start separately.")
+            
+            # Create a background thread to process the video after the response is sent
+            # This is a workaround until we implement a proper task queue
+            def delayed_processing():
                 try:
+                    # Wait a few seconds to ensure the response has been sent
+                    import time
+                    time.sleep(2)
+                    
+                    # Start processing
+                    logger.info(f"Starting delayed processing for video {self.object.pk}")
                     process_video_task(self.object.pk)
                 except Exception as e:
-                    logger.exception(f"Error processing video synchronously: {str(e)}")
-            else:
-                # Only use threading in development
-                thread = threading.Thread(
-                    target=process_video_async,
-                    args=(self.object.pk,),
-                    daemon=True
-                )
-                thread.start()
+                    logger.exception(f"Error in delayed processing of video {self.object.pk}: {str(e)}")
+            
+            # Start delayed processing thread
+            processing_thread = threading.Thread(
+                target=delayed_processing,
+                daemon=True
+            )
+            processing_thread.start()
             
             return response
         except ValidationError as e:
@@ -108,21 +118,29 @@ def process_video(request, pk):
         # Mark as processing first so the UI shows the right status
         video.mark_processing()
         
-        # In production environments, we'll process synchronously to avoid thread issues
-        if IS_PRODUCTION:
+        # Always use asynchronous processing to prevent request timeouts
+        def delayed_processing():
             try:
+                # Wait a few seconds to ensure the response has been sent
+                import time
+                time.sleep(2)
+                
+                # Start processing
+                logger.info(f"Starting delayed processing for video {video.pk}")
                 process_video_task(video.pk)
             except Exception as e:
-                logger.exception(f"Error processing video synchronously: {str(e)}")
-                video.mark_failed(str(e))
-        else:
-            # Only use threading in development
-            thread = threading.Thread(
-                target=process_video_async,
-                args=(video.pk,),
-                daemon=True
-            )
-            thread.start()
+                logger.exception(f"Error in delayed processing of video {video.pk}: {str(e)}")
+                try:
+                    video.mark_failed(str(e))
+                except Exception:
+                    pass
+        
+        # Start delayed processing thread
+        processing_thread = threading.Thread(
+            target=delayed_processing,
+            daemon=True
+        )
+        processing_thread.start()
         
         messages.success(request, f"Video '{video.title or video.youtube_id}' is being processed.")
     except Exception as e:
@@ -179,25 +197,25 @@ def generate_transcript_summary(request, pk):
             logger.error("Summary generation failed: No AI services available")
             return redirect('video_detail', pk=video.pk)
         
-        # In production environments, we'll process synchronously to avoid thread issues
-        if IS_PRODUCTION:
+        # Always use asynchronous processing to prevent request timeouts
+        def delayed_summary_generation():
             try:
-                summary_result = generate_summary(video.transcript.pk)
-                if not summary_result:
-                    messages.error(request, "Failed to generate summary. Check application logs for details.")
-                    return redirect('video_detail', pk=video.pk)
+                # Wait a few seconds to ensure the response has been sent
+                import time
+                time.sleep(2)
+                
+                # Start summary generation
+                logger.info(f"Starting delayed summary generation for transcript of video {video.pk}")
+                generate_summary(video.transcript.pk)
             except Exception as e:
-                logger.exception(f"Error generating summary synchronously: {str(e)}")
-                messages.error(request, f"Error generating summary: {str(e)}")
-                return redirect('video_detail', pk=video.pk)
-        else:
-            # Only use threading in development
-            thread = threading.Thread(
-                target=generate_summary,
-                args=(video.transcript.pk,),
-                daemon=True
-            )
-            thread.start()
+                logger.exception(f"Error in delayed summary generation for video {video.pk}: {str(e)}")
+        
+        # Start delayed processing thread
+        processing_thread = threading.Thread(
+            target=delayed_summary_generation,
+            daemon=True
+        )
+        processing_thread.start()
         
         messages.success(request, f"Generating summary for '{video.title or video.youtube_id}'. Please refresh in a few moments.")
     except Exception as e:

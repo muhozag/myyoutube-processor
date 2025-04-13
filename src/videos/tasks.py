@@ -48,83 +48,116 @@ def process_video_with_timeout(video_id):
         # In a real implementation, this would call the YouTube API
         # For now, we'll simulate a successful metadata update
         
-        # Simulate processing delay
-        time.sleep(2)
+        # Add more detailed logging to help diagnose Railway deployment issues
+        logger.info(f"Extracting transcript for {video.youtube_id}")
         
-        # Extract transcript using our utility function
-        transcript_result = extract_transcript(video.youtube_id, return_raw=True)
-        
-        if transcript_result:
-            transcript_text, is_auto_generated, language_code, raw_data = transcript_result
+        try:
+            # Extract transcript using our utility function
+            transcript_result = extract_transcript(video.youtube_id, return_raw=True)
             
-            # Convert raw_data to a serializable format if necessary
-            serializable_data = None
-            if raw_data is not None:
-                if isinstance(raw_data, list):
-                    # If it's already a list, it should be serializable
-                    serializable_data = raw_data
-                elif hasattr(raw_data, '__dict__'):
-                    # If it's an object with attributes, try to convert to dict
+            if transcript_result:
+                transcript_text, is_auto_generated, language_code, raw_data = transcript_result
+                
+                # Log transcript details
+                logger.info(f"Got transcript for {video.youtube_id}: {len(transcript_text)} chars, language: {language_code}")
+                
+                # Convert raw_data to a serializable format if necessary
+                serializable_data = None
+                if raw_data is not None:
+                    if isinstance(raw_data, list):
+                        # If it's already a list, it should be serializable
+                        serializable_data = raw_data
+                    elif hasattr(raw_data, '__dict__'):
+                        # If it's an object with attributes, try to convert to dict
+                        try:
+                            # Convert object to dictionary of its attributes
+                            serializable_data = []
+                            for item in raw_data:
+                                if hasattr(item, '__dict__'):
+                                    item_dict = item.__dict__.copy()
+                                    # Remove any non-serializable items
+                                    for key, value in list(item_dict.items()):
+                                        if not isinstance(value, (str, int, float, bool, list, dict, type(None))):
+                                            item_dict[key] = str(value)
+                                    serializable_data.append(item_dict)
+                                else:
+                                    serializable_data.append({"text": str(item)})
+                        except Exception as e:
+                            logger.warning(f"Could not convert transcript data to serializable format: {str(e)}")
+                            serializable_data = None
+                    else:
+                        # If we can't figure out how to convert it, just store as string
+                        try:
+                            serializable_data = str(raw_data)
+                        except Exception as e:
+                            logger.warning(f"Failed to convert raw_data to string: {str(e)}")
+                            serializable_data = None
+                
+                # Save transcript to database
+                logger.info(f"Saving transcript for {video.youtube_id}")
+                transcript, created = Transcript.objects.update_or_create(
+                    video=video,
+                    defaults={
+                        'content': transcript_text,
+                        'language': language_code,
+                        'is_auto_generated': is_auto_generated,
+                        'raw_transcript_data': serializable_data
+                    }
+                )
+                
+                # Generate beautified content
+                logger.info(f"Beautifying transcript for {video.youtube_id}")
+                transcript.beautify_transcript(raw_data)
+                
+                # Generate summary using our AI service (which will use either Ollama or Mistral API)
+                try:
+                    logger.info(f"Generating summary for transcript of {video.youtube_id}")
+                    
+                    # Add more detailed AI service logging
+                    from myyoutubeprocessor.utils.ai.ollama_utils import (
+                        OLLAMA_HOST, OLLAMA_API_KEY, is_ollama_available, 
+                        is_railway_environment, LOCAL_MODEL
+                    )
+                    
+                    # Check if Ollama is available
+                    ollama_available = is_ollama_available()
+                    logger.info(f"Ollama available: {ollama_available}, Host: {OLLAMA_HOST}, Railway env: {is_railway_environment()}")
+                    
+                    # Check if Mistral API is configured
+                    mistral_api_key = os.environ.get('MISTRAL_API_KEY')
+                    logger.info(f"Mistral API configured: {'Yes' if mistral_api_key else 'No'}")
+                    
+                    # Try to generate summary with proper error catching
+                    summary = None
                     try:
-                        # Convert object to dictionary of its attributes
-                        serializable_data = []
-                        for item in raw_data:
-                            if hasattr(item, '__dict__'):
-                                item_dict = item.__dict__.copy()
-                                # Remove any non-serializable items
-                                for key, value in list(item_dict.items()):
-                                    if not isinstance(value, (str, int, float, bool, list, dict, type(None))):
-                                        item_dict[key] = str(value)
-                                serializable_data.append(item_dict)
-                            else:
-                                serializable_data.append({"text": str(item)})
+                        summary = get_ai_summary(transcript_text)
                     except Exception as e:
-                        logger.warning(f"Could not convert transcript data to serializable format: {str(e)}")
-                        serializable_data = None
-                else:
-                    # If we can't figure out how to convert it, just store as string
-                    try:
-                        serializable_data = str(raw_data)
-                    except Exception:
-                        serializable_data = None
-            
-            # Save transcript to database
-            transcript, created = Transcript.objects.update_or_create(
-                video=video,
-                defaults={
-                    'content': transcript_text,
-                    'language': language_code,
-                    'is_auto_generated': is_auto_generated,
-                    'raw_transcript_data': serializable_data
-                }
-            )
-            
-            # Generate beautified content
-            transcript.beautify_transcript(raw_data)
-            
-            # Generate summary using our AI service (which will use either Ollama or Mistral API)
-            try:
-                logger.info(f"Generating summary for transcript of {video.youtube_id}")
-                summary = get_ai_summary(transcript_text)
-                if summary:
-                    transcript.summary = summary
-                    transcript.save(update_fields=['summary', 'updated_at'])
-                    logger.info(f"Summary generated for {video.youtube_id}")
-                else:
-                    logger.warning(f"Failed to generate summary for {video.youtube_id}")
-            except Exception as e:
-                logger.error(f"Error generating summary for {video.youtube_id}: {str(e)}")
-                # Continue processing even if summary generation fails
+                        logger.error(f"Error in get_ai_summary: {str(e)}")
+                    
+                    if summary:
+                        transcript.summary = summary
+                        transcript.save(update_fields=['summary', 'updated_at'])
+                        logger.info(f"Summary generated for {video.youtube_id}")
+                    else:
+                        logger.warning(f"Failed to generate summary for {video.youtube_id} - summary is None")
+                except Exception as e:
+                    logger.error(f"Error generating summary for {video.youtube_id}: {str(e)}")
+                    # Continue processing even if summary generation fails
 
-            logger.info(f"Saved transcript for {video.youtube_id} ({language_code}, auto-generated: {is_auto_generated})")
-            
-            # Successfully processed
-            video.mark_completed()
-            logger.info(f"Successfully processed video {video.youtube_id}")
-            return True
-        else:
-            error_msg = f"No transcript available for {video.youtube_id}"
-            logger.warning(error_msg)
+                logger.info(f"Saved transcript for {video.youtube_id} ({language_code}, auto-generated: {is_auto_generated})")
+                
+                # Successfully processed
+                video.mark_completed()
+                logger.info(f"Successfully processed video {video.youtube_id}")
+                return True
+            else:
+                error_msg = f"No transcript available for {video.youtube_id}"
+                logger.warning(error_msg)
+                video.mark_failed(error_msg)
+                return False
+        except Exception as transcript_error:
+            error_msg = f"Error extracting transcript: {str(transcript_error)}"
+            logger.exception(error_msg)
             video.mark_failed(error_msg)
             return False
             
