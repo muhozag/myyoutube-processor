@@ -158,41 +158,40 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             {"role": "user", "content": prompt}
         ]
         
-        try:
-            # Try with different models in order of preference
-            model_options = ["mistral-small-latest", "mistral-small", "mistral-tiny", "open-mistral-7b"]
-            
-            for model_name in model_options:
-                try:
-                    logger.info(f"Trying Mistral API with model: {model_name}")
-                    
-                    # API call format
-                    chat_response = client.chat(
-                        model=model_name,
-                        messages=messages,
-                        temperature=0.2,
-                        max_tokens=1024
-                    )
-                    
-                    logger.info(f"Received response from Mistral API with model {model_name}, status: Success")
-                    
-                    # Extract content from the response
-                    if hasattr(chat_response, 'choices') and len(chat_response.choices) > 0:
-                        if hasattr(chat_response.choices[0], 'message') and hasattr(chat_response.choices[0].message, 'content'):
-                            logger.info(f"Successfully extracted content from response using model {model_name}")
-                            return chat_response.choices[0].message.content.strip()
-                    
-                    logger.warning(f"Unexpected response format from model {model_name}: {chat_response}")
-                    # Continue to try the next model
-                    
-                except Exception as e:
-                    logger.warning(f"API call with model {model_name} failed: {str(e)}. Trying next model if available.")
-                    # Continue to try the next model
-            
-            # If we've tried all models and none worked
-            logger.error("All Mistral API model attempts failed")
-            return None
+        # Try with different models in order of preference
+        model_options = ["mistral-small-latest", "mistral-small", "mistral-tiny", "open-mistral-7b"]
+        
+        for model_name in model_options:
+            try:
+                logger.info(f"Trying Mistral API with model: {model_name}")
                 
+                # API call format
+                chat_response = client.chat(
+                    model=model_name,
+                    messages=messages,
+                    temperature=0.2,
+                    max_tokens=1024
+                )
+                
+                logger.info(f"Received response from Mistral API with model {model_name}, status: Success")
+                
+                # Extract content from the response
+                if hasattr(chat_response, 'choices') and len(chat_response.choices) > 0:
+                    if hasattr(chat_response.choices[0], 'message') and hasattr(chat_response.choices[0].message, 'content'):
+                        logger.info(f"Successfully extracted content from response using model {model_name}")
+                        return chat_response.choices[0].message.content.strip()
+                
+                logger.warning(f"Unexpected response format from model {model_name}: {chat_response}")
+                # Continue to try the next model
+                
+            except Exception as e:
+                logger.warning(f"API call with model {model_name} failed: {str(e)}. Trying next model if available.")
+                # Continue to try the next model
+        
+        # If we've tried all models and none worked
+        logger.error("All Mistral API model attempts failed")
+        return None
+            
     except Exception as e:
         logger.error(f"Error generating summary with Mistral API: {str(e)}")
         return None
