@@ -8,9 +8,8 @@ import os
 import time
 from typing import Optional, Dict, Any, Tuple
 
-# Import the correct Mistral client with the proper path for Railway deployment
-from mistralai.client.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+# Update to the new Mistral client structure
+from mistralai import Mistral, UserMessage
 from mistralai.exceptions import MistralAPIException
 
 logger = logging.getLogger(__name__)
@@ -113,18 +112,14 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         api_key = os.getenv('MISTRAL_API_KEY')
         
         # Add debug logging to check if API key exists
-        logger.info(f"Mistral API key present: {'Yes' if api_key else 'No'}")
+        logger.info(f"Mistral API key found: {'Yes' if api_key else 'No'}")
         if not api_key:
-            logger.error("MISTRAL_API_KEY environment variable is missing or empty. Please set it in Railway environment variables.")
+            logger.error("Mistral API key not found in environment variables")
             return None
             
-        # Initialize the new Mistral client (for version 1.6.0+)
-        try:
-            client = MistralClient(api_key=api_key)
-            logger.info("Successfully initialized Mistral client")
-        except Exception as e:
-            logger.error(f"Failed to initialize Mistral client: {str(e)}")
-            return None
+        # Initialize Mistral client
+        client = Mistral(api_key=api_key)
+        logger.info("Successfully initialized Mistral client")
         
         # Trim text if needed to avoid exceeding token limits
         if len(text) > max_length:
@@ -134,7 +129,7 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             text = first_part + "\n...[content in the middle omitted for length]...\n" + last_part
             logger.info(f"Trimmed text from {len(text)} characters to fit within token limits")
             
-        # Construct a prompt for summarization 
+        # Construct a prompt for summarization (same as Ollama to maintain consistency)
         prompt = f"""
         You are a video summarization expert. Your task is to summarize the content of a video transcript.
         Please provide a concise summary of the following transcript.
@@ -160,18 +155,18 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Create messages for the API call using the new structure with ChatMessage
+        # Create messages for the API call using UserMessage
         messages = [
-            ChatMessage(role="user", content=prompt)
+            UserMessage(content=prompt)
         ]
         
         # Use mistral-small-3.1 model for API calls
         model_name = "mistral-small-3.1"
         
         try:
-            logger.info(f"Sending request to Mistral API with model: {model_name}")
+            logger.info(f"Using Mistral API with model: {model_name}")
             
-            # Make the API call using the new client structure
+            # Make the API call
             chat_response = client.chat(
                 model=model_name,
                 messages=messages,
@@ -179,10 +174,10 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
                 max_tokens=1024
             )
             
-            logger.info(f"Received response from Mistral API: {type(chat_response)}")
+            logger.info(f"Received response from Mistral API with model {model_name}, status: Success")
             
             # Extract content from the response
-            if chat_response and hasattr(chat_response, 'choices') and len(chat_response.choices) > 0:
+            if chat_response and chat_response.choices and len(chat_response.choices) > 0:
                 summary_content = chat_response.choices[0].message.content
                 if summary_content:
                     elapsed = time.time() - start_time
@@ -191,22 +186,15 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
                 else:
                     logger.warning("Empty content received from Mistral API")
             else:
-                logger.warning(f"Unexpected response format: {str(chat_response)}")
+                logger.warning(f"Unexpected response format from model {model_name}: {str(chat_response)}")
             
             return None
             
-        except MistralAPIException as api_err:
-            logger.error(f"Mistral API error: {str(api_err)}")
-            return None
-        except Exception as e:
-            logger.error(f"Error calling Mistral API: {str(e)}")
-            import traceback
-            logger.error(f"Traceback: {traceback.format_exc()}")
+        except MistralAPIException as e:
+            logger.error(f"API call with model {model_name} failed: {str(e)}")
             return None
             
     except Exception as e:
         elapsed = time.time() - start_time
         logger.error(f"Error generating summary with Mistral API after {elapsed:.2f} seconds: {str(e)}")
-        import traceback
-        logger.error(f"Traceback: {traceback.format_exc()}")
         return None
