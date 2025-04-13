@@ -291,8 +291,26 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         return None
     
     try:
-        # Trim text if needed to avoid exceeding token limits
-        if len(text) > max_length:
+        # Choose model based on environment and configuration
+        if use_vps_model():
+            model_name = VPS_MODEL
+            logger.info(f"Using VPS-hosted model: {model_name}")
+            # For remote VPS model, use a more aggressive trim limit of 1000 chars
+            remote_max_length = 1000
+            if len(text) > remote_max_length:
+                first_part = text[:int(remote_max_length * 0.7)]
+                last_part = text[-int(remote_max_length * 0.3):]
+                text = first_part + "\n...[content in the middle omitted for length]...\n" + last_part
+                logger.info(f"Using stricter trim limit for remote model: trimmed to {len(text)} characters")
+        elif is_railway_environment():
+            model_name = RAILWAY_MODEL
+            logger.info(f"Railway environment detected - using smaller model: {model_name}")
+        else:
+            model_name = LOCAL_MODEL
+            logger.info(f"Local environment detected - using larger model: {model_name}")
+        
+        # Trim text if needed to avoid exceeding token limits (for non-VPS cases)
+        if not use_vps_model() and len(text) > max_length:
             # Get the first portion and the last portion to preserve context
             first_part = text[:int(max_length * 0.8)]
             last_part = text[-int(max_length * 0.2):]
@@ -324,17 +342,6 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         
         Summary:
         """
-        
-        # Choose model based on environment and configuration
-        if use_vps_model():
-            model_name = VPS_MODEL
-            logger.info(f"Using VPS-hosted model: {model_name}")
-        elif is_railway_environment():
-            model_name = RAILWAY_MODEL
-            logger.info(f"Railway environment detected - using smaller model: {model_name}")
-        else:
-            model_name = LOCAL_MODEL
-            logger.info(f"Local environment detected - using larger model: {model_name}")
         
         # Try with exception handling specifically for IPv6 issues
         try:
