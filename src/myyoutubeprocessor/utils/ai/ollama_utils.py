@@ -130,36 +130,53 @@ def is_ollama_available() -> bool:
             url = f"{OLLAMA_HOST}/api/tags"
             
         logger.info(f"Checking Ollama availability at: {url}")
+        
+        # Add detailed error handling for connection issues
+        try:
+            # Add simple check if remote host is available
+            headers = {}
+            if OLLAMA_API_KEY:
+                headers['Authorization'] = f'Bearer {OLLAMA_API_KEY}'
+                
+            response = requests.get(url, headers=headers, timeout=15)  # Increased timeout for slower networks
             
-        # Add simple check if remote host is available
-        headers = {}
-        if OLLAMA_API_KEY:
-            headers['Authorization'] = f'Bearer {OLLAMA_API_KEY}'
-            
-        response = requests.get(url, headers=headers, timeout=10)  # Increased timeout
-        if response.status_code == 200:
-            models = response.json().get('models', [])
-            model_names = [model.get('name') for model in models if 'name' in model]
-            logger.info(f"Ollama service is available with models: {', '.join(model_names) if model_names else 'No models found'}")
-            
-            # Check if our models are available
-            if running_in_railway_env():
-                if not any(model.lower().startswith(RAILWAY_MODEL.split(':')[0].lower()) for model in model_names):
-                    logger.warning(f"Required Railway model {RAILWAY_MODEL} not found on Ollama server")
-            elif use_vps_model():
-                if not any(model.lower().startswith(VPS_MODEL.split(':')[0].lower()) for model in model_names):
-                    logger.warning(f"Required VPS model {VPS_MODEL} not found on Ollama server")
+            if response.status_code == 200:
+                models = response.json().get('models', [])
+                model_names = [model.get('name') for model in models if 'name' in model]
+                logger.info(f"Ollama service is available with models: {', '.join(model_names) if model_names else 'No models found'}")
+                
+                # Check if our models are available
+                if running_in_railway_env():
+                    if not any(model.lower().startswith(RAILWAY_MODEL.split(':')[0].lower()) for model in model_names):
+                        logger.warning(f"Required Railway model {RAILWAY_MODEL} not found on Ollama server")
+                        logger.info(f"Available models: {', '.join(model_names)}")
+                        return False
+                elif use_vps_model():
+                    if not any(model.lower().startswith(VPS_MODEL.split(':')[0].lower()) for model in model_names):
+                        logger.warning(f"Required VPS model {VPS_MODEL} not found on Ollama server")
+                        logger.info(f"Available models: {', '.join(model_names)}")
+                        return False
+                else:
+                    if not any(model.lower().startswith(LOCAL_MODEL.split(':')[0].lower()) for model in model_names):
+                        logger.warning(f"Required local model {LOCAL_MODEL} not found on Ollama server")
+                        logger.info(f"Available models: {', '.join(model_names)}")
+                        return False
+                
+                return True
             else:
-                if not any(model.lower().startswith(LOCAL_MODEL.split(':')[0].lower()) for model in model_names):
-                    logger.warning(f"Required local model {LOCAL_MODEL} not found on Ollama server")
-            
-            return True
-        else:
-            logger.warning(f"Ollama service returned status code {response.status_code}: {response.text}")
+                logger.warning(f"Ollama service returned status code {response.status_code}: {response.text}")
+                return False
+                
+        except requests.exceptions.ConnectTimeout:
+            logger.warning(f"Connection to Ollama at {url} timed out after 15 seconds")
             return False
-    except requests.exceptions.RequestException as e:
-        logger.warning(f"Ollama connection failed: {str(e)}")
-        return False
+        except requests.exceptions.ConnectionError as e:
+            logger.warning(f"Connection error to Ollama at {url}: {str(e)}")
+            return False
+        except requests.exceptions.RequestException as e:
+            logger.warning(f"Request error to Ollama at {url}: {str(e)}")
+            return False
+            
     except Exception as e:
         logger.warning(f"Unexpected error checking Ollama availability: {str(e)}")
     

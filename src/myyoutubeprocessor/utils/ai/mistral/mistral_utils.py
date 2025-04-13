@@ -221,6 +221,16 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         A summary of the text, or None if an error occurred
     """
     start_time = time.time()
+    
+    # Try with requests-based implementation first as it's more reliable on Railway
+    logger.info("Starting with requests-based Mistral API implementation for reliability")
+    requests_summary = get_mistral_summary_with_requests(text, max_length)
+    if requests_summary:
+        elapsed = time.time() - start_time
+        logger.info(f"Successfully generated summary with requests-based Mistral API in {elapsed:.2f} seconds")
+        return requests_summary
+    
+    # If requests implementation fails, try the official client as fallback
     try:
         # Get API key from environment
         api_key = os.getenv('MISTRAL_API_KEY')
@@ -306,13 +316,9 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             
         except Exception as e:
             logger.error(f"API call with model {model_name} failed: {str(e)}")
-            # Try with requests-based implementation as fallback
-            logger.info("Trying requests-based implementation as fallback")
-            return get_mistral_summary_with_requests(text, max_length)
+            return None
             
     except Exception as e:
         elapsed = time.time() - start_time
         logger.error(f"Error generating summary with Mistral API after {elapsed:.2f} seconds: {str(e)}")
-        # Try with requests-based implementation as fallback
-        logger.info("Trying requests-based implementation as fallback")
-        return get_mistral_summary_with_requests(text, max_length)
+        return None
