@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.urls import reverse_lazy
 from django.views.generic import CreateView
 from django.contrib.auth.views import LoginView
+from django.contrib.auth import logout
+from django.http import HttpResponseRedirect
 
 from .forms import UserRegistrationForm, CustomAuthenticationForm
 
@@ -28,3 +30,11 @@ class CustomLoginView(LoginView):
     """
     form_class = CustomAuthenticationForm
     template_name = 'auth/login.html'  # Using existing template
+
+
+def custom_logout(request):
+    """
+    Custom logout view that ensures proper redirection to login page
+    """
+    logout(request)
+    return HttpResponseRedirect(reverse_lazy('login'))

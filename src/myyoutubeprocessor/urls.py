@@ -18,6 +18,7 @@ from django.urls import path, include
 from django.views.generic import RedirectView
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
+from accounts.views import custom_logout
 
 # Import the custom admin site instance directly
 from .admin import custom_admin_site
@@ -33,7 +34,7 @@ urlpatterns = [
     
     # Authentication URLs
     path('accounts/login/', auth_views.LoginView.as_view(template_name='auth/login.html'), name='login'),
-    path('accounts/logout/', auth_views.LogoutView.as_view(next_page='video_list'), name='logout'),
+    path('accounts/logout/', custom_logout, name='logout'),
     path('accounts/password_change/', auth_views.PasswordChangeView.as_view(template_name='auth/password_change.html', 
                                                                          success_url='/accounts/password_change/done/'), 
          name='password_change'),
