@@ -8,10 +8,23 @@ import os
 import time
 from typing import Optional, Dict, Any, Tuple
 
-# Update to the new Mistral client
-from mistralai.async_client import MistralAsyncClient
+# Import Mistral client with version compatibility handling
 from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatMessage
+
+# Handle different import paths for ChatMessage based on mistralai version
+try:
+    # Newer versions use this path
+    from mistralai.models.chat_completion import ChatMessage
+except ImportError:
+    try:
+        # Older versions might use this path
+        from mistralai.models.chat import ChatMessage
+    except ImportError:
+        # If all else fails, define our own ChatMessage class
+        class ChatMessage:
+            def __init__(self, role, content):
+                self.role = role
+                self.content = content
 
 logger = logging.getLogger(__name__)
 
@@ -171,27 +184,67 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         try:
             logger.info(f"Sending request to Mistral API with model: {model_name}")
             
-            # Make the API call
-            chat_response = client.chat(
-                model=model_name,
-                messages=messages,
-                temperature=0.2,
-                max_tokens=1024
-            )
+            # Handle different API versions for the chat call
+            try:
+                # Try the standard format first
+                chat_response = client.chat(
+                    model=model_name,
+                    messages=messages,
+                    temperature=0.2,
+                    max_tokens=1024
+                )
+            except TypeError as e:
+                # If that fails, try the older format that expects different parameters
+                logger.info(f"Standard chat call failed, trying alternative format: {str(e)}")
+                
+                # Convert ChatMessage objects to dictionaries if needed
+                if hasattr(ChatMessage, 'role'):
+                    # Our custom ChatMessage class or newer mistralai versions
+                    message_dicts = [{"role": msg.role, "content": msg.content} for msg in messages]
+                else:
+                    # Just use the messages directly, assuming they're already in right format
+                    message_dicts = messages
+                
+                chat_response = client.chat(
+                    model=model_name,
+                    messages=message_dicts,
+                    temperature=0.2,
+                    max_tokens=1024
+                )
             
             logger.info(f"Received response from Mistral API with model {model_name}, status: Success")
             
-            # Extract content from the response
-            if chat_response and chat_response.choices and len(chat_response.choices) > 0:
-                summary_content = chat_response.choices[0].message.content
+            # Extract content from the response (handle different response formats)
+            try:
+                if hasattr(chat_response, 'choices') and len(chat_response.choices) > 0:
+                    if hasattr(chat_response.choices[0], 'message'):
+                        summary_content = chat_response.choices[0].message.content
+                    elif hasattr(chat_response.choices[0], 'text'):
+                        summary_content = chat_response.choices[0].text
+                    else:
+                        # Try accessing as dictionary
+                        summary_content = chat_response.choices[0].get('message', {}).get('content')
+                elif isinstance(chat_response, dict):
+                    # Handle dictionary response format
+                    choices = chat_response.get('choices', [])
+                    if choices and len(choices) > 0:
+                        message = choices[0].get('message', {})
+                        summary_content = message.get('content')
+                    else:
+                        summary_content = None
+                else:
+                    summary_content = None
+                
                 if summary_content:
                     elapsed = time.time() - start_time
                     logger.info(f"Successfully extracted content from response in {elapsed:.2f} seconds")
                     return summary_content.strip()
                 else:
                     logger.warning("Empty content received from Mistral API")
-            else:
-                logger.warning(f"Unexpected response format from model {model_name}: {str(chat_response)}")
+                    logger.warning(f"Response structure: {str(chat_response)}")
+            except Exception as extract_err:
+                logger.error(f"Error extracting content from response: {str(extract_err)}")
+                logger.error(f"Response structure: {str(chat_response)}")
             
             return None
             
