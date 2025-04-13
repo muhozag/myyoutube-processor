@@ -8,9 +8,9 @@ import os
 import time
 from typing import Optional, Dict, Any, Tuple
 
-# Import the new Mistral client (compatible with version 1.6.0+)
-from mistralai.client import MistralClient
-from mistralai.models.chat_completion import ChatCompletionResponse
+# Import the correct Mistral client with the proper path for Railway deployment
+from mistralai.client.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
 from mistralai.exceptions import MistralAPIException
 
 logger = logging.getLogger(__name__)
@@ -160,9 +160,9 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Create messages for the API call using the new structure
+        # Create messages for the API call using the new structure with ChatMessage
         messages = [
-            {"role": "user", "content": prompt}
+            ChatMessage(role="user", content=prompt)
         ]
         
         # Use mistral-small-3.1 model for API calls
