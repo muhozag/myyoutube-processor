@@ -113,14 +113,18 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         api_key = os.getenv('MISTRAL_API_KEY')
         
         # Add debug logging to check if API key exists
-        logger.info(f"Mistral API key found: {'Yes' if api_key else 'No'}")
+        logger.info(f"Mistral API key present: {'Yes' if api_key else 'No'}")
         if not api_key:
-            logger.error("Mistral API key not found in environment variables")
+            logger.error("MISTRAL_API_KEY environment variable is missing or empty. Please set it in Railway environment variables.")
             return None
             
         # Initialize Mistral client
-        client = MistralClient(api_key=api_key)
-        logger.info("Successfully initialized Mistral client")
+        try:
+            client = MistralClient(api_key=api_key)
+            logger.info("Successfully initialized Mistral client")
+        except Exception as e:
+            logger.error(f"Failed to initialize Mistral client: {str(e)}")
+            return None
         
         # Trim text if needed to avoid exceeding token limits
         if len(text) > max_length:
@@ -165,7 +169,7 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         model_name = "mistral-small-3.1"
         
         try:
-            logger.info(f"Using Mistral API with model: {model_name}")
+            logger.info(f"Sending request to Mistral API with model: {model_name}")
             
             # Make the API call
             chat_response = client.chat(
@@ -192,10 +196,16 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             return None
             
         except Exception as e:
-            logger.error(f"API call with model {model_name} failed: {str(e)}")
+            logger.error(f"Mistral API call failed with model {model_name}: {str(e)}")
+            # Print more detailed error information
+            import traceback
+            logger.error(f"Traceback: {traceback.format_exc()}")
             return None
             
     except Exception as e:
         elapsed = time.time() - start_time
         logger.error(f"Error generating summary with Mistral API after {elapsed:.2f} seconds: {str(e)}")
+        # Print more detailed error information
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
         return None
