@@ -13,3 +13,4 @@ db.sqlite3
 .vscode/
 .instructions.md
 .DS_Store
+.current-functionality.md
