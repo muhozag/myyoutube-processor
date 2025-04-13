@@ -6,11 +6,13 @@ import re
 import datetime
 import os
 import time
+import requests
 from typing import Optional, Dict, Any, Tuple
 
-# Update to the new Mistral client structure
-from mistralai import Mistral, UserMessage
-from mistralai.exceptions import MistralAPIException
+# Update to the new Mistral client
+from mistralai.async_client import MistralAsyncClient
+from mistralai.client import MistralClient
+from mistralai.models.chat_completion import ChatMessage
 
 logger = logging.getLogger(__name__)
 
@@ -95,6 +97,118 @@ def format_metadata(youtube_id: str, processed_time: Optional[str] = None,
     
     return f"YouTube ID: {youtube_id}\nProcessed: {processed_time}\nProcessing Time: {processing_time_str} seconds"
 
+def get_mistral_summary_with_requests(text: str, max_length: int = 25000) -> Optional[str]:
+    """
+    Generate a summary of the given text using the Mistral API with direct HTTP requests.
+    This method uses requests library instead of the official client for Railway compatibility.
+    
+    Args:
+        text: The text to summarize
+        max_length: The maximum length of text to send to the model (to avoid token limits)
+        
+    Returns:
+        A summary of the text, or None if an error occurred
+    """
+    start_time = time.time()
+    try:
+        # Get API key from environment
+        api_key = os.getenv('MISTRAL_API_KEY')
+        
+        # Add debug logging to check if API key exists
+        logger.info(f"Mistral API key found: {'Yes' if api_key else 'No'}")
+        if not api_key:
+            logger.error("Mistral API key not found in environment variables")
+            return None
+            
+        # Define headers and endpoint
+        headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        
+        endpoint = "https://api.mistral.ai/v1/chat/completions"
+        logger.info("Prepared HTTP request for Mistral API")
+        
+        # Trim text if needed to avoid exceeding token limits
+        if len(text) > max_length:
+            # Get the first portion and the last portion to preserve context
+            first_part = text[:int(max_length * 0.8)]
+            last_part = text[-int(max_length * 0.2):]
+            text = first_part + "\n...[content in the middle omitted for length]...\n" + last_part
+            logger.info(f"Trimmed text from {len(text)} characters to fit within token limits")
+            
+        # Construct a prompt for summarization (same as Ollama to maintain consistency)
+        prompt = f"""
+        You are a video summarization expert. Your task is to summarize the content of a video transcript.
+        Please provide a concise summary of the following transcript.
+        The summary should be structured and easy to read.
+        The summary should be in English and should not include any personal opinions or interpretations.
+        The summary should be suitable for someone who has not watched the video.
+        Please include:
+        1. The main topic and purpose of the video
+        2. Key points and arguments presented
+        3. Key people, places or organizations mentioned
+        4. Important facts, statistics, or examples mentioned
+        5. Any conclusions or takeaways
+        6. The overall structure of the presentation
+        7. Timestamps for major topic transitions (if apparent from the transcript)
+
+        Format the summary in clear paragraphs with appropriate headings for each section. 
+        Keep the summary concise but include all essential information. 
+        Aim for approximately 200-300 words depending on the video length and complexity.
+        If the transcript appears to be truncated, summarize what is available:
+        
+        {text}
+        
+        Summary:
+        """
+        
+        # Prepare the request payload
+        data = {
+            "model": "mistral-small-3.1",  # Use mistral-small-3.1 for API calls
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.2,
+            "max_tokens": 1024
+        }
+        
+        try:
+            logger.info("Sending request to Mistral API")
+            
+            # Make the POST request to the API endpoint
+            response = requests.post(endpoint, json=data, headers=headers)
+            
+            # Check if the request was successful
+            if response.status_code == 200:
+                logger.info(f"Received successful response from Mistral API, status code: {response.status_code}")
+                
+                # Parse the JSON response
+                json_response = response.json()
+                
+                # Extract content from the response
+                if json_response and "choices" in json_response and len(json_response["choices"]) > 0:
+                    summary_content = json_response["choices"][0]["message"]["content"]
+                    if summary_content:
+                        elapsed = time.time() - start_time
+                        logger.info(f"Successfully extracted content from response in {elapsed:.2f} seconds")
+                        return summary_content.strip()
+                    else:
+                        logger.warning("Empty content received from Mistral API")
+                else:
+                    logger.warning(f"Unexpected response format from Mistral API: {str(json_response)}")
+            else:
+                logger.error(f"Mistral API request failed with status code {response.status_code}: {response.text}")
+            
+            return None
+            
+        except Exception as e:
+            logger.error(f"API request failed: {str(e)}")
+            return None
+            
+    except Exception as e:
+        elapsed = time.time() - start_time
+        logger.error(f"Error generating summary with Mistral API after {elapsed:.2f} seconds: {str(e)}")
+        return None
+
 def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
     """
     Generate a summary of the given text using the Mistral API.
@@ -118,7 +232,7 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             return None
             
         # Initialize Mistral client
-        client = Mistral(api_key=api_key)
+        client = MistralClient(api_key=api_key)
         logger.info("Successfully initialized Mistral client")
         
         # Trim text if needed to avoid exceeding token limits
@@ -155,9 +269,9 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Create messages for the API call using UserMessage
+        # Create messages for the API call
         messages = [
-            UserMessage(content=prompt)
+            ChatMessage(role="user", content=prompt)
         ]
         
         # Use mistral-small-3.1 model for API calls
@@ -190,11 +304,15 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             
             return None
             
-        except MistralAPIException as e:
+        except Exception as e:
             logger.error(f"API call with model {model_name} failed: {str(e)}")
-            return None
+            # Try with requests-based implementation as fallback
+            logger.info("Trying requests-based implementation as fallback")
+            return get_mistral_summary_with_requests(text, max_length)
             
     except Exception as e:
         elapsed = time.time() - start_time
         logger.error(f"Error generating summary with Mistral API after {elapsed:.2f} seconds: {str(e)}")
-        return None
+        # Try with requests-based implementation as fallback
+        logger.info("Trying requests-based implementation as fallback")
+        return get_mistral_summary_with_requests(text, max_length)
