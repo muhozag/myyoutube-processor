@@ -166,12 +166,30 @@ def generate_transcript_summary(request, pk):
             messages.error(request, "Cannot generate summary: No transcript found for this video.")
             return redirect('video_detail', pk=video.pk)
         
+        # First, check if Ollama is available by importing and using the function
+        from myyoutubeprocessor.utils.ai.ollama_utils import is_ollama_available
+        ollama_available = is_ollama_available()
+        
+        # Check for Mistral API key if we might need to use that service
+        mistral_api_key = os.environ.get('MISTRAL_API_KEY')
+        
+        # If no AI services are available, show a clear error message
+        if not ollama_available and not mistral_api_key:
+            messages.error(request, "Cannot generate summary: No AI services are available. Please ensure Ollama is running or Mistral API key is configured.")
+            logger.error("Summary generation failed: No AI services available")
+            return redirect('video_detail', pk=video.pk)
+        
         # In production environments, we'll process synchronously to avoid thread issues
         if IS_PRODUCTION:
             try:
-                generate_summary(video.transcript.pk)
+                summary_result = generate_summary(video.transcript.pk)
+                if not summary_result:
+                    messages.error(request, "Failed to generate summary. Check application logs for details.")
+                    return redirect('video_detail', pk=video.pk)
             except Exception as e:
                 logger.exception(f"Error generating summary synchronously: {str(e)}")
+                messages.error(request, f"Error generating summary: {str(e)}")
+                return redirect('video_detail', pk=video.pk)
         else:
             # Only use threading in development
             thread = threading.Thread(

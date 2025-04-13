@@ -200,17 +200,39 @@ def generate_summary(transcript_id):
         transcript = Transcript.objects.get(pk=transcript_id)
         logger.info(f"Generating summary for transcript {transcript_id}")
         
+        # Log detailed environment information to help debug AI connection issues
+        from myyoutubeprocessor.utils.ai.ollama_utils import (
+            OLLAMA_HOST, OLLAMA_API_KEY, is_ollama_available, 
+            is_railway_environment, LOCAL_MODEL
+        )
+        
+        # Check if Ollama is available
+        ollama_available = is_ollama_available()
+        logger.info(f"Ollama available: {ollama_available}, Host: {OLLAMA_HOST}, Has API Key: {'Yes' if OLLAMA_API_KEY else 'No'}")
+        
+        # Check if Mistral API is configured
+        mistral_api_key = os.environ.get('MISTRAL_API_KEY')
+        logger.info(f"Mistral API configured: {'Yes' if mistral_api_key else 'No'}")
+        
+        # Log environment information
+        logger.info(f"Railway environment: {is_railway_environment()}, Production mode: {bool(os.environ.get('RAILWAY_SERVICE_NAME') or not os.environ.get('DEBUG', '').lower() == 'true')}")
+        
+        # Attempt to generate summary with additional error details
         summary = get_ai_summary(transcript.content)
+        
         if summary:
             transcript.summary = summary
             transcript.save(update_fields=['summary', 'updated_at'])
             logger.info(f"Summary generated for transcript {transcript_id}")
             return True
         else:
-            logger.warning(f"Failed to generate summary for transcript {transcript_id}")
+            logger.warning(f"Failed to generate summary for transcript {transcript_id} - AI service returned None")
             return False
     except Transcript.DoesNotExist:
         logger.error(f"Transcript with ID {transcript_id} not found")
+        return False
+    except ImportError as e:
+        logger.error(f"Import error while generating summary: {str(e)}")
         return False
     except Exception as e:
         logger.exception(f"Error generating summary for transcript {transcript_id}: {str(e)}")

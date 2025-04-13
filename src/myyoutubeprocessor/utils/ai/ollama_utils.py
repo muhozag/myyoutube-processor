@@ -138,7 +138,10 @@ def is_ollama_available() -> bool:
             if OLLAMA_API_KEY:
                 headers['Authorization'] = f'Bearer {OLLAMA_API_KEY}'
                 
-            response = requests.get(url, headers=headers, timeout=15)  # Increased timeout for slower networks
+            # Print detailed connection information for debugging
+            logger.debug(f"Connecting to Ollama with: URL={url}, Headers={headers}")
+            
+            response = requests.get(url, headers=headers, timeout=5)  # Reduced timeout for faster feedback
             
             if response.status_code == 200:
                 models = response.json().get('models', [])
@@ -168,7 +171,7 @@ def is_ollama_available() -> bool:
                 return False
                 
         except requests.exceptions.ConnectTimeout:
-            logger.warning(f"Connection to Ollama at {url} timed out after 15 seconds")
+            logger.warning(f"Connection to Ollama at {url} timed out after 5 seconds")
             return False
         except requests.exceptions.ConnectionError as e:
             logger.warning(f"Connection error to Ollama at {url}: {str(e)}")
