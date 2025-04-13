@@ -53,10 +53,10 @@ else:
 LOCAL_MODEL = os.getenv('OLLAMA_LOCAL_MODEL', 'mistral-small:22b')
 
 # Model to use on your VPS - now configurable via env var
-VPS_MODEL = os.getenv('OLLAMA_VPS_MODEL', 'mistral:7b')
+VPS_MODEL = os.getenv('OLLAMA_VPS_MODEL', 'mistral-small:22b')
 
 # Smaller model for Railway deployment to fit within standard resources
-RAILWAY_MODEL = os.getenv('OLLAMA_RAILWAY_MODEL', 'mistral:7b')
+RAILWAY_MODEL = os.getenv('OLLAMA_RAILWAY_MODEL', 'mistral')
 
 def validate_youtube_id(youtube_id: str) -> bool:
     """
