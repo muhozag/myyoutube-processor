@@ -254,3 +254,14 @@ class Transcript(models.Model):
         self.save(update_fields=['beautified_content', 'updated_at'])
         
         return beautified
+
+    def save(self, *args, **kwargs):
+        """Override save to ensure beautified content is generated"""
+        is_new = not self.pk  # Check if this is a new record
+        
+        # Call the standard save method first
+        super().save(*args, **kwargs)
+        
+        # If beautified_content is empty and we have raw_transcript_data, generate it
+        if not self.beautified_content and self.raw_transcript_data:
+            self.beautify_transcript()

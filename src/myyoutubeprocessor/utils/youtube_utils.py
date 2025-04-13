@@ -9,6 +9,8 @@ import re
 from typing import Optional, Dict, List, Union, Tuple
 import logging
 import time
+import sys
+import platform
 
 # Adding requirement for transcript extraction
 try:
@@ -112,6 +114,14 @@ def extract_transcript(youtube_id: str, language_code: str = 'en', return_raw: b
             return ("", False, "") if not return_raw else ("", False, "", None)
     
     try:
+        # Enhanced environment logging to help diagnose differences
+        env_info = {
+            'python_version': sys.version,
+            'platform': platform.platform(),
+            'youtube_transcript_api_version': getattr(YouTubeTranscriptApi, '__version__', 'unknown')
+        }
+        logging.info(f"Environment info for transcript extraction: {env_info}")
+        
         # Add timeout to the transcript API calls
         start_time = time.time()
         
@@ -191,6 +201,14 @@ def extract_transcript(youtube_id: str, language_code: str = 'en', return_raw: b
         elapsed_time = time.time() - start_time
         logging.info(f"Transcript fetch time: {elapsed_time:.2f} seconds")
         
+        # Log detailed info about the transcript data
+        logging.info(f"Transcript data type: {type(transcript_data)}")
+        if isinstance(transcript_data, list) and transcript_data:
+            logging.info(f"First transcript segment: {transcript_data[0]}")
+            logging.info(f"Total segments: {len(transcript_data)}")
+        elif hasattr(transcript_data, 'text'):
+            logging.info(f"Text preview: {transcript_data.text[:50]}...")
+        
         # Format the transcript into plain text
         formatted_text = _format_transcript(transcript_data)
         
@@ -200,6 +218,8 @@ def extract_transcript(youtube_id: str, language_code: str = 'en', return_raw: b
         # Check if transcript is empty after formatting
         if not formatted_text.strip():
             logging.warning(f"Transcript for video {youtube_id} is empty after formatting")
+        else:
+            logging.info(f"Formatted transcript length: {len(formatted_text)} chars, preview: {formatted_text[:50]}...")
             
         # Log completion
         logging.info(f"Successfully extracted transcript for video {youtube_id} in {actual_language}")
@@ -233,20 +253,69 @@ def _format_transcript(transcript_data) -> str:
         str: Formatted transcript text
     """
     try:
+        # Enhanced logging to diagnose transcript formatting issues
+        logging.info(f"Formatting transcript data of type: {type(transcript_data)}")
+        
         # Check if transcript_data is a list (traditional API format)
         if isinstance(transcript_data, list):
-            return " ".join(item['text'].strip() for item in transcript_data if 'text' in item)
+            if not transcript_data:
+                logging.warning("Empty transcript data list")
+                return ""
+                
+            # Log sample from the data to help diagnose issues
+            if len(transcript_data) > 0:
+                logging.info(f"First transcript segment: {transcript_data[0]}")
+                if 'text' not in transcript_data[0]:
+                    logging.warning(f"First transcript segment is missing 'text' key. Keys: {transcript_data[0].keys() if hasattr(transcript_data[0], 'keys') else 'no keys method'}")
+            
+            formatted_text = " ".join(item['text'].strip() for item in transcript_data if 'text' in item)
+            logging.info(f"Formatted list transcript with {len(transcript_data)} segments into text of length {len(formatted_text)}")
+            return formatted_text
         
         # Handle FetchedTranscriptSnippet object (new API format)
         elif hasattr(transcript_data, 'text'):
-            return transcript_data.text.strip()
+            text = transcript_data.text.strip()
+            logging.info(f"Extracted text from transcript object with 'text' attribute, length: {len(text)}")
+            return text
         
-        # For any other format
+        # For any other format, try different approaches
         else:
             logging.warning(f"Unknown transcript data format type: {type(transcript_data)}")
-            # Try different approaches to extract text
+            
+            # Try to convert to dictionary if it's a custom object
+            if hasattr(transcript_data, '__dict__'):
+                data_dict = transcript_data.__dict__
+                logging.info(f"Converted to dict with keys: {list(data_dict.keys())}")
+                
+                if 'text' in data_dict:
+                    return data_dict['text'].strip()
+                    
+            # If it's iterable but not a string, try to join text elements
+            if hasattr(transcript_data, '__iter__') and not isinstance(transcript_data, str):
+                try:
+                    items = list(transcript_data)
+                    logging.info(f"Treating as iterable with {len(items)} items")
+                    
+                    # Check if items have text attribute or are dictionaries with text key
+                    texts = []
+                    for item in items:
+                        if hasattr(item, 'text'):
+                            texts.append(item.text.strip())
+                        elif isinstance(item, dict) and 'text' in item:
+                            texts.append(item['text'].strip())
+                        elif isinstance(item, str):
+                            texts.append(item.strip())
+                    
+                    if texts:
+                        return " ".join(texts)
+                except Exception as e:
+                    logging.warning(f"Failed to extract texts from iterable: {e}")
+            
+            # Last resort: try to convert to string
             try:
-                return str(transcript_data)
+                result = str(transcript_data)
+                logging.info(f"Converted to string with length: {len(result)}")
+                return result
             except Exception as e:
                 logging.error(f"Failed to convert transcript to string: {e}")
                 return ""
