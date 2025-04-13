@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8000:8000"  # Django app
+      - "11434:11434"  # Ollama API
+    volumes:
+      - ../:/app
+    environment:
+      - DEBUG=True
+      - USE_OLLAMA_REMOTE=True

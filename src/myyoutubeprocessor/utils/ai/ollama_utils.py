@@ -7,9 +7,29 @@ import re
 import datetime
 import time
 import socket
+import os
 from typing import Optional, Dict, Any, Tuple
 
 logger = logging.getLogger(__name__)
+
+# Default Ollama settings
+DEFAULT_OLLAMA_HOST = "localhost"
+DEFAULT_OLLAMA_PORT = 11434
+
+# Configure ollama client with custom host/port
+def configure_ollama(host=DEFAULT_OLLAMA_HOST, port=DEFAULT_OLLAMA_PORT):
+    """
+    Configure the Ollama client with custom host and port.
+    
+    Args:
+        host: Hostname or IP address where Ollama is running
+        port: Port on which Ollama is listening
+        
+    Returns:
+        None
+    """
+    ollama.host = f"http://{host}:{port}"
+    logger.info(f"Configured Ollama client to use host: {ollama.host}")
 
 def validate_youtube_id(youtube_id: str) -> bool:
     """
@@ -92,41 +112,54 @@ def format_metadata(youtube_id: str, processed_time: Optional[str] = None,
     
     return f"YouTube ID: {youtube_id}\nProcessed: {processed_time}\nProcessing Time: {processing_time_str} seconds"
 
-def is_ollama_available() -> bool:
+def is_ollama_available(host=DEFAULT_OLLAMA_HOST, port=DEFAULT_OLLAMA_PORT) -> bool:
     """
     Check if Ollama service is available by trying to connect to its default port.
     
+    Args:
+        host: Hostname or IP where Ollama is running
+        port: Port on which Ollama is listening
+        
     Returns:
         bool: True if Ollama appears to be available, False otherwise
     """
     try:
+        # Configure Ollama to use the specified host/port
+        configure_ollama(host, port)
+        
         # Try to ping the Ollama service
         models = ollama.list()
         if models:
             return True
     except (ConnectionRefusedError, socket.error) as e:
-        logger.warning(f"Ollama connection failed: {str(e)}")
+        logger.warning(f"Ollama connection failed at {host}:{port}: {str(e)}")
     except Exception as e:
-        logger.warning(f"Unexpected error checking Ollama availability: {str(e)}")
+        logger.warning(f"Unexpected error checking Ollama availability at {host}:{port}: {str(e)}")
     
     return False
 
-def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
+def get_mistral_summary(text: str, max_length: int = 25000, host=DEFAULT_OLLAMA_HOST, port=DEFAULT_OLLAMA_PORT) -> Optional[str]:
     """
-    Generate a summary of the given text using the Ollama Mistral 22B model.
+    Generate a summary of the given text using the Ollama Mistral model.
     
     Args:
         text: The text to summarize
         max_length: The maximum length of text to send to the model (to avoid token limits)
+        host: Hostname or IP where Ollama is running
+        port: Port on which Ollama is listening
         
     Returns:
         A summary of the text, or None if an error occurred
     """
     start_time = time.time()
     
+    # Configure Ollama with the specified host/port
+    configure_ollama(host, port)
+    logger.info(f"Using Ollama at {host}:{port}")
+    
     # First check if Ollama is actually available
-    if not is_ollama_available():
-        logger.error("Ollama service is not available")
+    if not is_ollama_available(host, port):
+        logger.error(f"Ollama service is not available at {host}:{port}")
         return None
     
     try:
@@ -165,35 +198,47 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         Summary:
         """
         
-        # Use mistral-small:22b model as specified for local development
-        model_name = 'mistral-small:22b'
-        logger.info(f"Using Ollama with model: {model_name}")
+        # Check if we're running in a container/Railway environment
+        is_railway = bool(os.getenv('USE_OLLAMA_REMOTE'))
         
-        # Check if the specified model exists
+        # Different model preferences based on environment
+        if is_railway:
+            # For Railway, prefer the smaller quantized model
+            model_candidates = ['mistral:7b-instruct-q4_0', 'mistral:7b-instruct-q4_K_M', 'mistral:7b-instruct', 'mistral']
+            logger.info("Using Railway deployment model preferences")
+        else:
+            # For local development, prefer Mistral 3.1
+            model_candidates = ['mistral:3.1', 'mistral:7b-instruct', 'mistral:latest', 'mistral-small', 'mistral-small:22b', 'mistral']
+            logger.info("Using local development model preferences")
+        
+        # Check if any of the specified models exists
         try:
             models = ollama.list()
             models_data = models.get('models', [])
-            model_names = [model.get('name') for model in models_data]
+            available_models = [model.get('name') for model in models_data]
+            logger.info(f"Available Ollama models: {available_models}")
             
-            if model_name not in model_names:
-                logger.error(f"Model {model_name} not found in Ollama. Available models: {model_names}")
-                # Try with mistral:latest as fallback
-                if 'mistral:latest' in model_names:
-                    model_name = 'mistral:latest'
-                    logger.info(f"Falling back to {model_name}")
-                elif 'mistral' in model_names:
-                    model_name = 'mistral'
-                    logger.info(f"Falling back to {model_name}")
-                else:
-                    available_models = ", ".join(model_names)
-                    logger.error(f"No Mistral model found. Available models: {available_models}")
-                    return None
+            # Find the first available model from our candidates
+            model_name = None
+            for candidate in model_candidates:
+                if candidate in available_models:
+                    model_name = candidate
+                    logger.info(f"Using model: {model_name}")
+                    break
+                
+            # If no suitable model was found
+            if not model_name:
+                logger.error(f"No Mistral model found. Available models: {available_models}")
+                return None
+                
         except Exception as e:
             logger.warning(f"Error checking available models: {str(e)}")
-            # Continue with the original model name as a best effort
-            pass
+            # Default to first model in our preference list as a best effort
+            model_name = model_candidates[0]
+            logger.warning(f"Defaulting to model: {model_name}")
         
         # Call the Ollama API with the mistral model
+        logger.info(f"Sending request to Ollama with model: {model_name}")
         response = ollama.chat(
             model=model_name,
             messages=[{'role': 'user', 'content': prompt}],
@@ -206,14 +251,14 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         # Extract the summary from the response
         if response and 'message' in response and 'content' in response['message']:
             elapsed = time.time() - start_time
-            logger.info(f"Successfully generated summary with Ollama in {elapsed:.2f} seconds")
+            logger.info(f"Successfully generated summary with Ollama using {model_name} in {elapsed:.2f} seconds")
             return response['message']['content'].strip()
         else:
             logger.error(f"Unexpected response format from Ollama: {response}")
             return None
     except (ConnectionRefusedError, socket.error) as e:
         elapsed = time.time() - start_time
-        logger.error(f"Error connecting to Ollama service after {elapsed:.2f} seconds: {str(e)}")
+        logger.error(f"Error connecting to Ollama service at {host}:{port} after {elapsed:.2f} seconds: {str(e)}")
         return None
     except Exception as e:
         elapsed = time.time() - start_time
