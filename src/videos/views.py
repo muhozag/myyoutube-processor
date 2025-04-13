@@ -6,7 +6,8 @@ from django.views.generic import ListView, DetailView, CreateView
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ValidationError
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import ValidationError, PermissionDenied
 import logging
 import threading
 import os
@@ -22,7 +23,8 @@ logger = logging.getLogger(__name__)
 # Check if we're running on Railway or other production environment
 IS_PRODUCTION = bool(os.environ.get('RAILWAY_SERVICE_NAME') or not os.environ.get('DEBUG', '').lower() == 'true')
 
-class VideoListView(ListView):
+@method_decorator(login_required, name='dispatch')
+class VideoListView(LoginRequiredMixin, ListView):
     """Display list of videos with their processing status"""
     model = Video
     template_name = 'videos/video_list.html'
@@ -32,6 +34,11 @@ class VideoListView(ListView):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+        
+        # If not staff/admin, only show videos for the current user
+        if not self.request.user.is_staff:
+            queryset = queryset.filter(user=self.request.user)
+            
         status = self.request.GET.get('status')
         if status:
             queryset = queryset.filter(status=status)
@@ -42,11 +49,19 @@ class VideoListView(ListView):
         context['status_filter'] = self.request.GET.get('status', '')
         return context
 
-class VideoDetailView(DetailView):
+@method_decorator(login_required, name='dispatch')
+class VideoDetailView(LoginRequiredMixin, DetailView):
     """Display detailed information about a video"""
     model = Video
     template_name = 'videos/video_detail.html'
     context_object_name = 'video'
+    
+    def get_object(self, queryset=None):
+        obj = super().get_object(queryset)
+        # Check if the user has permission to view this video
+        if not self.request.user.is_staff and obj.user and obj.user != self.request.user:
+            raise PermissionDenied("You don't have permission to view this video")
+        return obj
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -63,7 +78,8 @@ class VideoDetailView(DetailView):
         
         return context
 
-class VideoCreateView(CreateView):
+@method_decorator(login_required, name='dispatch')
+class VideoCreateView(LoginRequiredMixin, CreateView):
     """Form to submit new YouTube videos for processing"""
     model = Video
     form_class = VideoSubmissionForm
@@ -72,6 +88,9 @@ class VideoCreateView(CreateView):
     
     def form_valid(self, form):
         try:
+            # Set the current user as the owner of the video
+            form.instance.user = self.request.user
+            
             response = super().form_valid(form)
             messages.success(self.request, f"Video '{self.object.title or self.object.youtube_id}' has been submitted for processing.")
             
@@ -109,10 +128,15 @@ class VideoCreateView(CreateView):
             form.add_error(None, f"An unexpected error occurred: {str(e)}")
             return self.form_invalid(form)
 
+@login_required
 @require_POST
 def process_video(request, pk):
     """Trigger processing for a specific video"""
     video = get_object_or_404(Video, pk=pk)
+    
+    # Check permission
+    if not request.user.is_staff and video.user and video.user != request.user:
+        raise PermissionDenied("You don't have permission to process this video")
     
     try:
         # Mark as processing first so the UI shows the right status
@@ -150,6 +174,7 @@ def process_video(request, pk):
     
     return redirect('video_detail', pk=video.pk)
 
+@login_required
 @require_POST
 def process_video_by_id(request, video_id):
     """Alternative entry point for processing a video, using video_id instead of pk"""
@@ -157,10 +182,16 @@ def process_video_by_id(request, video_id):
     logger.info(f"process_video_by_id called with video_id={video_id}")
     return process_video(request, video_id)
 
+@login_required
 def video_status(request, pk):
     """API endpoint to check video processing status"""
     try:
         video = get_object_or_404(Video, pk=pk)
+        
+        # Check permission
+        if not request.user.is_staff and video.user and video.user != request.user:
+            raise PermissionDenied("You don't have permission to view this video's status")
+            
         return JsonResponse({
             'id': video.pk,
             'youtube_id': video.youtube_id,
@@ -169,14 +200,21 @@ def video_status(request, pk):
             'processing_time': video.processing_time,
             'error': video.error_message if video.status == 'failed' else None
         })
+    except PermissionDenied as e:
+        return JsonResponse({'error': str(e)}, status=403)
     except Exception as e:
         logger.exception(f"Error getting video status: {str(e)}")
         return JsonResponse({'error': str(e)}, status=500)
 
+@login_required
 @require_POST
 def generate_transcript_summary(request, pk):
     """Generate or regenerate a summary for an existing transcript"""
     video = get_object_or_404(Video, pk=pk)
+    
+    # Check permission
+    if not request.user.is_staff and video.user and video.user != request.user:
+        raise PermissionDenied("You don't have permission to generate a summary for this video")
     
     try:
         # Verify transcript exists
@@ -224,10 +262,16 @@ def generate_transcript_summary(request, pk):
     
     return redirect('video_detail', pk=video.pk)
 
+@login_required
 @require_POST
 def delete_video(request, pk):
     """Delete a video and its associated data"""
     video = get_object_or_404(Video, pk=pk)
+    
+    # Check permission
+    if not request.user.is_staff and video.user and video.user != request.user:
+        raise PermissionDenied("You don't have permission to delete this video")
+        
     video_title = video.title or video.youtube_id
     
     try:

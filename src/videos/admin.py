@@ -3,6 +3,8 @@ from django.utils.html import format_html
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from .models import Video, Transcript
+# Import the custom admin site
+from myyoutubeprocessor.admin import custom_admin_site
 
 def mark_videos_as_pending(modeladmin, request, queryset):
     queryset.update(status='pending', error_message='')
@@ -12,11 +14,11 @@ def mark_videos_as_failed(modeladmin, request, queryset):
     queryset.update(status='failed', error_message='Manually marked as failed')
 mark_videos_as_failed.short_description = "Mark selected videos as failed"
 
-@admin.register(Video)
+# Define admin classes without using the decorator
 class VideoAdmin(admin.ModelAdmin):
-    list_display = ('video_thumbnail', 'title', 'youtube_id', 'status_badge', 'has_transcript', 'created_at', 'updated_at')
-    list_filter = ('status', 'created_at', 'updated_at')
-    search_fields = ('title', 'youtube_id', 'description', 'channel_name')
+    list_display = ('video_thumbnail', 'title', 'youtube_id', 'status_badge', 'user_link', 'has_transcript', 'created_at', 'updated_at')
+    list_filter = ('status', 'user', 'created_at', 'updated_at')
+    search_fields = ('title', 'youtube_id', 'description', 'channel_name', 'user__username', 'user__email')
     readonly_fields = ('youtube_id', 'created_at', 'updated_at', 'processing_time', 'video_embed', 'transcript_link')
     actions = [mark_videos_as_pending, mark_videos_as_failed]
     list_per_page = 20
@@ -24,7 +26,7 @@ class VideoAdmin(admin.ModelAdmin):
     
     fieldsets = (
         (None, {
-            'fields': ('url', 'youtube_id', 'title', 'description')
+            'fields': ('url', 'youtube_id', 'title', 'description', 'user')
         }),
         ('Video Preview', {
             'fields': ('video_embed',),
@@ -61,6 +63,13 @@ class VideoAdmin(admin.ModelAdmin):
         )
     status_badge.short_description = "Status"
     
+    def user_link(self, obj):
+        if obj.user:
+            user_url = reverse('admin:auth_user_change', args=[obj.user.id])
+            return format_html('<a href="{}">{}</a>', user_url, obj.user.username)
+        return "No user"
+    user_link.short_description = "User"
+    
     def video_embed(self, obj):
         if obj.youtube_id:
             embed_code = (
@@ -86,24 +95,23 @@ class VideoAdmin(admin.ModelAdmin):
         try:
             if hasattr(obj, 'transcript'):
                 transcript_url = reverse('admin:videos_transcript_change', args=[obj.transcript.id])
-                return format_html('<a href="{}">View Transcript</a>', transcript_url)
+                return format_html('<a href="{}">{}</a>', transcript_url, "View Transcript")
             return "No transcript available"
         except:
             return "No transcript available"
     transcript_link.short_description = "Transcript"
 
-@admin.register(Transcript)
 class TranscriptAdmin(admin.ModelAdmin):
-    list_display = ('video_link', 'language', 'is_auto_generated', 'word_count', 'created_at')
-    list_filter = ('language', 'is_auto_generated', 'created_at', 'updated_at')
-    search_fields = ('video__youtube_id', 'video__title', 'content', 'summary')
-    readonly_fields = ('word_count', 'created_at', 'updated_at', 'video_link', 'video_embed')
+    list_display = ('video_link', 'user_info', 'language', 'is_auto_generated', 'word_count', 'created_at')
+    list_filter = ('language', 'is_auto_generated', 'video__user', 'created_at', 'updated_at')
+    search_fields = ('video__youtube_id', 'video__title', 'content', 'summary', 'video__user__username')
+    readonly_fields = ('word_count', 'created_at', 'updated_at', 'video_link', 'video_embed', 'user_info')
     list_per_page = 20
     date_hierarchy = 'created_at'
     
     fieldsets = (
         (None, {
-            'fields': ('video', 'video_link')
+            'fields': ('video', 'video_link', 'user_info')
         }),
         ('Video Preview', {
             'fields': ('video_embed',),
@@ -133,6 +141,13 @@ class TranscriptAdmin(admin.ModelAdmin):
         return "No video associated"
     video_link.short_description = "Video"
     
+    def user_info(self, obj):
+        if obj.video and obj.video.user:
+            user_url = reverse('admin:auth_user_change', args=[obj.video.user.id])
+            return format_html('<a href="{}">{}</a>', user_url, obj.video.user.username)
+        return "No user"
+    user_info.short_description = "User"
+    
     def video_embed(self, obj):
         if obj.video and obj.video.youtube_id:
             embed_code = (
@@ -143,3 +158,7 @@ class TranscriptAdmin(admin.ModelAdmin):
             return mark_safe(embed_code)
         return "No YouTube ID available"
     video_embed.short_description = "Video Preview"
+
+# Register with the custom admin site
+custom_admin_site.register(Video, VideoAdmin)
+custom_admin_site.register(Transcript, TranscriptAdmin)

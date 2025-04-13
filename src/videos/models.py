@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 from myyoutubeprocessor.utils.youtube_utils import extract_youtube_id, is_valid_youtube_id
 
 class Video(models.Model):
@@ -9,6 +10,15 @@ class Video(models.Model):
         ('processing', 'Processing'),
         ('completed', 'Completed'),
         ('failed', 'Failed'),
+    )
+    
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='videos',
+        verbose_name="Uploaded by",
+        null=True,  # Allow null for existing videos
+        blank=True
     )
     
     url = models.URLField(
@@ -151,6 +161,10 @@ class Transcript(models.Model):
         blank=True,
         verbose_name="Transcript Summary"
     )
+    content_word_count = models.IntegerField(
+        default=0,
+        verbose_name="Word Count"
+    )
     raw_transcript_data = models.JSONField(
         null=True,
         blank=True,
@@ -177,6 +191,8 @@ class Transcript(models.Model):
         
     def word_count(self):
         """Return the number of words in the transcript"""
+        if self.content_word_count > 0:
+            return self.content_word_count
         return len(self.content.split())
         
     def beautify_transcript(self, fetched_transcript=None):
@@ -256,10 +272,14 @@ class Transcript(models.Model):
         return beautified
 
     def save(self, *args, **kwargs):
-        """Override save to ensure beautified content is generated"""
+        """Override save to ensure beautified content is generated and word count is calculated"""
         is_new = not self.pk  # Check if this is a new record
         
-        # Call the standard save method first
+        # Calculate word count before saving
+        if self.content:
+            self.content_word_count = len(self.content.split())
+        
+        # Call the standard save method
         super().save(*args, **kwargs)
         
         # If beautified_content is empty and we have raw_transcript_data, generate it

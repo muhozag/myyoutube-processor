@@ -19,11 +19,11 @@ from django.views.generic import RedirectView
 from django.contrib.auth import views as auth_views
 from django.contrib import admin
 
-# Customize the admin site
-from .admin import CustomAdminSite
+# Import the custom admin site instance directly
+from .admin import custom_admin_site
 
-# Set up the admin site with our customizations
-admin.site = CustomAdminSite(name="admin")
+# Use the existing instance instead of creating a new one
+admin.site = custom_admin_site
 admin.sites.site = admin.site
 
 urlpatterns = [
@@ -39,4 +39,7 @@ urlpatterns = [
          name='password_change'),
     path('accounts/password_change/done/', auth_views.PasswordChangeDoneView.as_view(template_name='auth/password_change_done.html'), 
          name='password_change_done'),
+    
+    # Accounts app URLs
+    path('accounts/', include('accounts.urls')),
 ]
