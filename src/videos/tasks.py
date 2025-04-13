@@ -11,6 +11,7 @@ import time
 import json
 import threading
 import concurrent.futures
+import os
 from django.utils import timezone
 from myyoutubeprocessor.utils.youtube_utils import extract_transcript
 # Replace direct Ollama import with our AI service
