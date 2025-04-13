@@ -129,17 +129,33 @@ def is_ollama_available() -> bool:
         else:
             url = f"{OLLAMA_HOST}/api/tags"
             
+        logger.info(f"Checking Ollama availability at: {url}")
+            
         # Add simple check if remote host is available
         headers = {}
         if OLLAMA_API_KEY:
             headers['Authorization'] = f'Bearer {OLLAMA_API_KEY}'
             
-        response = requests.get(url, headers=headers, timeout=5)
+        response = requests.get(url, headers=headers, timeout=10)  # Increased timeout
         if response.status_code == 200:
-            logger.info("Ollama service is available")
+            models = response.json().get('models', [])
+            model_names = [model.get('name') for model in models if 'name' in model]
+            logger.info(f"Ollama service is available with models: {', '.join(model_names) if model_names else 'No models found'}")
+            
+            # Check if our models are available
+            if running_in_railway_env():
+                if not any(model.lower().startswith(RAILWAY_MODEL.split(':')[0].lower()) for model in model_names):
+                    logger.warning(f"Required Railway model {RAILWAY_MODEL} not found on Ollama server")
+            elif use_vps_model():
+                if not any(model.lower().startswith(VPS_MODEL.split(':')[0].lower()) for model in model_names):
+                    logger.warning(f"Required VPS model {VPS_MODEL} not found on Ollama server")
+            else:
+                if not any(model.lower().startswith(LOCAL_MODEL.split(':')[0].lower()) for model in model_names):
+                    logger.warning(f"Required local model {LOCAL_MODEL} not found on Ollama server")
+            
             return True
         else:
-            logger.warning(f"Ollama service returned status code {response.status_code}")
+            logger.warning(f"Ollama service returned status code {response.status_code}: {response.text}")
             return False
     except requests.exceptions.RequestException as e:
         logger.warning(f"Ollama connection failed: {str(e)}")
@@ -148,6 +164,18 @@ def is_ollama_available() -> bool:
         logger.warning(f"Unexpected error checking Ollama availability: {str(e)}")
     
     return False
+
+def running_in_railway_env() -> bool:
+    """
+    Detect if code is running in Railway environment.
+    Helper function for use within ollama_utils.py
+    
+    Returns:
+        True if running on Railway, False otherwise
+    """
+    return bool(os.getenv('RAILWAY_ENVIRONMENT') or 
+                os.getenv('RAILWAY_PROJECT_ID') or 
+                os.getenv('RAILWAY_SERVICE_ID'))
 
 def is_railway_environment() -> bool:
     """

@@ -65,7 +65,26 @@ def get_ai_summary(text: str, max_length: int = 25000) -> Optional[str]:
     running_on_railway = is_railway_environment()
     logger.info(f"Detected environment: {'Railway' if running_on_railway else 'Local'}")
     
-    # For Railway deployment, use Mistral API
+    # First, check if Ollama is available (should check service connection) - Try this first regardless of environment
+    ollama_available = is_ollama_available()
+    logger.info(f"Remote Ollama service available: {ollama_available}")
+    
+    # Try Ollama first if it's available (regardless of environment)
+    if ollama_available and get_ollama_summary:
+        try:
+            logger.info("Using remote Ollama service")
+            ollama_summary = get_ollama_summary(text, max_length)
+            if ollama_summary:
+                elapsed = time.time() - start_time
+                logger.info(f"Summary generated with Ollama in {elapsed:.2f} seconds")
+                return ollama_summary
+            logger.warning("Ollama summary generation failed")
+        except Exception as e:
+            logger.exception(f"Error using Ollama for summary: {str(e)}")
+    else:
+        logger.warning("Ollama service not available")
+    
+    # For Railway deployment, use Mistral API as fallback
     if running_on_railway:
         # First try the requests-based implementation for better Railway compatibility
         if get_mistral_summary_with_requests and os.getenv('MISTRAL_API_KEY'):
@@ -94,26 +113,8 @@ def get_ai_summary(text: str, max_length: int = 25000) -> Optional[str]:
                 logger.exception(f"Error using Mistral API for summary: {str(e)}")
         else:
             logger.error("Mistral API unavailable or API key not found - required for Railway deployment")
-    # For local development, use Ollama
+    # For local development, try Mistral API as fallback if Ollama fails
     else:
-        # Check if Ollama is available (should check service connection)
-        ollama_available = is_ollama_available()
-        logger.info(f"Ollama service available: {ollama_available}")
-        
-        if ollama_available and get_ollama_summary:
-            try:
-                logger.info("Using Ollama for local development environment")
-                ollama_summary = get_ollama_summary(text, max_length)
-                if ollama_summary:
-                    elapsed = time.time() - start_time
-                    logger.info(f"Summary generated with Ollama in {elapsed:.2f} seconds")
-                    return ollama_summary
-                logger.warning("Ollama summary generation failed")
-            except Exception as e:
-                logger.exception(f"Error using Ollama for summary: {str(e)}")
-        else:
-            logger.warning("Ollama service not available for local development")
-            
         # Only try Mistral API as fallback for local if Ollama fails and API key exists
         if get_mistral_api_summary and os.getenv('MISTRAL_API_KEY'):
             try:
