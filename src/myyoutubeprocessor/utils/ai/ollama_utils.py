@@ -18,13 +18,23 @@ OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
 # Get API key for VPS authentication if needed
 OLLAMA_API_KEY = os.getenv('OLLAMA_API_KEY', '')
 
+# Railway-specific environment detection
+IS_RAILWAY = bool(os.getenv('RAILWAY_ENVIRONMENT') or 
+                os.getenv('RAILWAY_PROJECT_ID') or 
+                os.getenv('RAILWAY_SERVICE_ID'))
+
 # Configure Ollama client to use the specified host
 if OLLAMA_HOST and OLLAMA_HOST != 'http://localhost:11434':
     logger.info(f"Configuring Ollama to use remote host: {OLLAMA_HOST}")
     # Set the Ollama API base URL
     ollama.host = OLLAMA_HOST
+elif IS_RAILWAY:
+    # In Railway, prefer IPv6 if available
+    logger.info("Running in Railway environment, configuring for IPv6 compatibility")
+    ollama.host = os.getenv('OLLAMA_HOST_IPV6', 'http://[::1]:11434')
+    logger.info(f"Configured Ollama to use IPv6 host: {ollama.host}")
 else:
-    # Check if IPv6 is preferred by attempting a connection
+    # For local development, check if IPv6 is preferred
     try:
         # Try IPv6 connection
         session = requests.Session()
@@ -282,7 +292,6 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
     
     try:
         # Trim text if needed to avoid exceeding token limits
-        # 25000 characters is a safe estimate well within Mistral's context window
         if len(text) > max_length:
             # Get the first portion and the last portion to preserve context
             first_part = text[:int(max_length * 0.8)]
@@ -327,15 +336,40 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             model_name = LOCAL_MODEL
             logger.info(f"Local environment detected - using larger model: {model_name}")
         
-        # Call the Ollama API with the selected model
-        response = ollama.chat(
-            model=model_name,
-            messages=[{'role': 'user', 'content': prompt}],
-            options={
-                'temperature': 0.2,
-                'num_predict': 1024,  # Increased to allow for more comprehensive summaries
-            }
-        )
+        # Try with exception handling specifically for IPv6 issues
+        try:
+            # Call the Ollama API with the selected model
+            response = ollama.chat(
+                model=model_name,
+                messages=[{'role': 'user', 'content': prompt}],
+                options={
+                    'temperature': 0.2,
+                    'num_predict': 1024,  # Increased to allow for more comprehensive summaries
+                }
+            )
+        except Exception as e:
+            # If we're in Railway and get a connection error, try with explicit IPv6 URL
+            if IS_RAILWAY and isinstance(e, (ConnectionRefusedError, socket.error, requests.exceptions.ConnectionError)):
+                logger.warning(f"Initial Ollama connection failed in Railway: {str(e)}. Trying with explicit IPv6.")
+                # Temporarily override the ollama.host for this request
+                original_host = ollama.host
+                try:
+                    ollama.host = os.getenv('OLLAMA_HOST_IPV6', 'http://[::1]:11434')
+                    logger.info(f"Retrying with IPv6 host: {ollama.host}")
+                    response = ollama.chat(
+                        model=model_name,
+                        messages=[{'role': 'user', 'content': prompt}],
+                        options={
+                            'temperature': 0.2,
+                            'num_predict': 1024,
+                        }
+                    )
+                finally:
+                    # Restore the original host setting
+                    ollama.host = original_host
+            else:
+                # Re-raise if not a connection issue or not in Railway
+                raise
         
         # Extract the summary from the response
         if response and 'message' in response and 'content' in response['message']:
