@@ -394,3 +394,51 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         elapsed = time.time() - start_time
         logger.error(f"Error generating summary with Ollama after {elapsed:.2f} seconds: {str(e)}")
         return None
+
+def get_current_model_info() -> str:
+    """
+    Get information about the currently used AI model based on environment and configuration.
+    This is used for displaying model information on the transcript page.
+    
+    Returns:
+        str: A user-friendly description of the current AI model being used
+    """
+    try:
+        # Determine the current model based on environment and configuration
+        if use_vps_model():
+            model_name = VPS_MODEL
+            deployment = "VPS-hosted"
+        elif is_railway_environment():
+            model_name = RAILWAY_MODEL
+            deployment = "Railway"
+        else:
+            model_name = LOCAL_MODEL
+            deployment = "Local"
+        
+        # Format the model name to be more user-friendly
+        # Convert 'mistral-small:22b' to 'Mistral-small 22B'
+        friendly_name = model_name
+        
+        # Split by colon if present
+        parts = model_name.split(':')
+        base_model = parts[0].replace('-', ' ').title()
+        
+        # Format the version if present
+        if len(parts) > 1:
+            version = parts[1].upper()
+            if version.endswith('B'):
+                friendly_name = f"{base_model} {version}"
+            else:
+                friendly_name = f"{base_model} {version}B"
+        else:
+            friendly_name = base_model
+        
+        # If using Mistral API rather than Ollama
+        mistral_api_key = os.environ.get('MISTRAL_API_KEY')
+        if mistral_api_key and not is_ollama_available():
+            return f"Mistral Cloud API"
+        
+        return friendly_name
+    except Exception as e:
+        logger.error(f"Error getting model info: {str(e)}")
+        return "Mistral AI"  # Default fallback name

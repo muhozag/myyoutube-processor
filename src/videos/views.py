@@ -15,7 +15,7 @@ import os
 from .models import Video, Transcript
 from .forms import VideoSubmissionForm
 from .tasks import process_video_async, generate_summary, process_video as process_video_task
-from myyoutubeprocessor.utils.ai.ollama_utils import format_metadata
+from myyoutubeprocessor.utils.ai.ollama_utils import format_metadata, get_current_model_info
 
 # Set up logger
 logger = logging.getLogger(__name__)
@@ -75,6 +75,9 @@ class VideoDetailView(LoginRequiredMixin, DetailView):
             processed_time=processed_time,
             processing_time=video.processing_time
         )
+        
+        # Add AI model information to the context
+        context['ai_model_info'] = get_current_model_info()
         
         return context
 
