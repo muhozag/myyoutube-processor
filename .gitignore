@@ -14,3 +14,12 @@ db.sqlite3
 .instructions.md
 .DS_Store
 .current-functionality.md
+.tutorial.md
+
+# Testing and configuration
+.coverage
+conftest.py
+coverage.xml
+pyproject.toml
+setup.cfg
+htmlcov/
