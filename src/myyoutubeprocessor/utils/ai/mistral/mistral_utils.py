@@ -114,8 +114,6 @@ def get_mistral_summary_with_requests(text: str, max_length: int = 25000) -> Opt
         # Get API key from environment
         api_key = os.getenv('MISTRAL_API_KEY')
         
-        # Add debug logging to check if API key exists
-        logger.info(f"Mistral API key found: {'Yes' if api_key else 'No'}")
         if not api_key:
             logger.error("Mistral API key not found in environment variables")
             return None
@@ -235,8 +233,6 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         # Get API key from environment
         api_key = os.getenv('MISTRAL_API_KEY')
         
-        # Add debug logging to check if API key exists
-        logger.info(f"Mistral API key found: {'Yes' if api_key else 'No'}")
         if not api_key:
             logger.error("Mistral API key not found in environment variables")
             return None

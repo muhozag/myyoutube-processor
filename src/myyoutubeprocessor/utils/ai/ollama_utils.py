@@ -165,8 +165,8 @@ def is_ollama_available() -> bool:
             if OLLAMA_API_KEY:
                 headers['Authorization'] = f'Bearer {OLLAMA_API_KEY}'
                 
-            # Print detailed connection information for debugging
-            logger.debug(f"Connecting to Ollama with: URL={url}, Headers={headers}")
+            # Print connection information for debugging (without exposing the API key)
+            logger.debug(f"Connecting to Ollama with: URL={url}, Headers={'Using auth' if OLLAMA_API_KEY else 'No auth'}")
             
             # Configure requests to handle both IPv4 and IPv6
             session = requests.Session()
