@@ -56,13 +56,6 @@ abide by)
 - **Environment Management**: python-dotenv 1.0.1
 - **Logging**: python-json-logger 3.3.0
 
-### Security (Attempted)
-- Environment-based configuration
-- CSRF protection
-- Secure API key management
-- Input validation and sanitization
-- Protection against common web vulnerabilities
-
 ## Prerequisites
 
 Before you begin, ensure you have the following installed on your system:
