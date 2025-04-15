@@ -10,7 +10,7 @@ This application is intended to extract and process YouTube video transcripts to
 - Store processing results for future retrieval
 
 This tool helps users quickly understand video content without watching entire videos, enabling efficient content consumption and analysis.
-This project was inspired by the [5 AI Projects for People in a Hurry](https://shawhin.medium.com/5-ai-projects-for-people-in-a-hurry-1220f0b27037) tutorial but I went . 
+This project was inspired by the [5 AI Projects for People in a Hurry](https://shawhin.medium.com/5-ai-projects-for-people-in-a-hurry-1220f0b27037). 
 
 ## Key Features (I have in mind--some are incomplete and others like Async have a workaround instead)
 
