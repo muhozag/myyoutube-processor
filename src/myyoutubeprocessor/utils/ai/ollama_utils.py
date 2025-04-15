@@ -270,7 +270,7 @@ def use_vps_model() -> bool:
     
     return use_vps and remote_host
 
-def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
+def get_mistral_summary(text: str, max_length: int = 32000) -> Optional[str]:
     """
     Generate a summary of the given text using Ollama models according to the prompt.
     Uses a smaller model on Railway and a larger model locally,
@@ -295,8 +295,10 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         if use_vps_model():
             model_name = VPS_MODEL
             logger.info(f"Using VPS-hosted model: {model_name}")
-            # For remote VPS model, use a more aggressive trim limit of 1000 chars
-            remote_max_length = 1000
+            # For remote VPS model, use a more aggressive trim limit of 8000 chars
+            # This is really very conservative as I am using char as token
+            # and the model is said to take up to 32k tokens
+            remote_max_length = 8000
             if len(text) > remote_max_length:
                 first_part = text[:int(remote_max_length * 0.7)]
                 last_part = text[-int(remote_max_length * 0.3):]
@@ -310,6 +312,8 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
             logger.info(f"Local environment detected - using larger model: {model_name}")
         
         # Trim text if needed to avoid exceeding token limits (for non-VPS cases)
+        # Note: This is a very conservative estimate of 4 chars per token
+        # and the non vps model should take up to take up to 32000 tokens
         if not use_vps_model() and len(text) > max_length:
             # Get the first portion and the last portion to preserve context
             first_part = text[:int(max_length * 0.8)]
