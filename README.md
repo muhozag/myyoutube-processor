@@ -44,7 +44,8 @@ This project was inspired by the [5 AI Projects for People in a Hurry](https://s
 - **Python**: Version 3.9+ (3.13 recommended)
 - **Dependency Management**: pip with requirements.txt
 - **Version Control**: Git with GitHub
-- **Code Quality**: PEP 8 guidelines, Black formatting, flake8 linting
+- **Code Quality**: PEP 8 guidelines, Black formatting, flake8 linting (try but not always
+abide by)
 - **Testing**: pytest with coverage reporting
 
 ### Deployment & DevOps
@@ -55,7 +56,7 @@ This project was inspired by the [5 AI Projects for People in a Hurry](https://s
 - **Environment Management**: python-dotenv 1.0.1
 - **Logging**: python-json-logger 3.3.0
 
-### Security
+### Security (Attempted)
 - Environment-based configuration
 - CSRF protection
 - Secure API key management
@@ -68,7 +69,7 @@ Before you begin, ensure you have the following installed on your system:
 
 - **Python 3.9+** (preferably Python 3.13)
 - **git** (for version control)
-- **A text editor or IDE** (VS Code recommended)
+- **A text editor or IDE** (I used VS Code )
 
 ## System Requirements
 
