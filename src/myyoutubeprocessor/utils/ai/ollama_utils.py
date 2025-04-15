@@ -324,6 +324,12 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
         The summary should be structured and easy to read.
         The summary should be in English and should not include any personal opinions or interpretations.
         The summary should be suitable for someone who has not watched the video.
+        
+        IMPORTANT: Do not hallucinate or invent any information that is not present in the transcript.
+        Only include facts, topics, and information that are explicitly stated in the provided text.
+        If something is unclear or ambiguous in the transcript, note that uncertainty rather than making assumptions.
+        If you're unsure about any detail, omit it rather than potentially providing incorrect information.
+        
         Please include:
         1. The main topic and purpose of the video
         2. Key points and arguments presented
