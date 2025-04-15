@@ -23,3 +23,8 @@ coverage.xml
 pyproject.toml
 setup.cfg
 htmlcov/
+
+# Logs
+logs/
+*.log
+src/logs/
