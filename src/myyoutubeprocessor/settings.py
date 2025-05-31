@@ -20,8 +20,6 @@ load_dotenv()
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
-
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 
@@ -32,30 +30,15 @@ DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', 'yes', '1', 't')
 # Get allowed hosts from environment variable or use default
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', '').split(',') if os.getenv('ALLOWED_HOSTS') else ['*']
 
-# Ensure Railway domains are allowed
-if os.environ.get('RAILWAY_STATIC_URL') or os.environ.get('RAILWAY_SERVICE_NAME'):
-    # We're on Railway - add specific railway domains
-    ALLOWED_HOSTS.extend(['.up.railway.app', 'railway.app', '*'])
-
 # CSRF trusted origins
-CSRF_TRUSTED_ORIGINS = [
-    'https://*.railway.app',
-    'https://*.up.railway.app',
-]
+CSRF_TRUSTED_ORIGINS = []
 
-# Add any local development domains if needed
+# Add local development domains
 if DEBUG:
     CSRF_TRUSTED_ORIGINS.extend([
         'http://localhost:8000',
         'http://127.0.0.1:8000',
     ])
-
-# If RAILWAY_CUSTOM_DOMAIN is set, add it to CSRF_TRUSTED_ORIGINS
-railway_domain = os.environ.get('RAILWAY_PUBLIC_DOMAIN')
-if railway_domain:
-    CSRF_TRUSTED_ORIGINS.append(f'https://{railway_domain}')
-    # Also add it to ALLOWED_HOSTS
-    ALLOWED_HOSTS.append(railway_domain)
 
 # Application definition
 
@@ -104,9 +87,6 @@ WSGI_APPLICATION = 'myyoutubeprocessor.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-# Check if we're running locally with the railway CLI
-IS_RAILWAY_CLI = os.environ.get('RAILWAY_SERVICE_NAME') and not os.environ.get('RAILWAY_STATIC_URL')
-
 # Default to SQLite for local development
 DATABASES = {
     'default': {
@@ -115,8 +95,8 @@ DATABASES = {
     }
 }
 
-# Use PostgreSQL if DATABASE_URL is set and we're not running the Railway CLI locally
-if os.getenv('DATABASE_URL') and not IS_RAILWAY_CLI:
+# Use PostgreSQL if DATABASE_URL is set
+if os.getenv('DATABASE_URL'):
     DATABASES['default'] = dj_database_url.config(
         default=os.getenv('DATABASE_URL'),
         conn_max_age=600,

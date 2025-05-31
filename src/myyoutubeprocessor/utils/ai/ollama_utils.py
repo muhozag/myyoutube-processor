@@ -18,21 +18,11 @@ OLLAMA_HOST = os.getenv('OLLAMA_HOST', 'http://localhost:11434')
 # Get API key for VPS authentication if needed
 OLLAMA_API_KEY = os.getenv('OLLAMA_API_KEY', '')
 
-# Railway-specific environment detection
-IS_RAILWAY = bool(os.getenv('RAILWAY_ENVIRONMENT') or 
-                os.getenv('RAILWAY_PROJECT_ID') or 
-                os.getenv('RAILWAY_SERVICE_ID'))
-
 # Configure Ollama client to use the specified host
 if OLLAMA_HOST and OLLAMA_HOST != 'http://localhost:11434':
     logger.info(f"Configuring Ollama to use remote host: {OLLAMA_HOST}")
     # Set the Ollama API base URL
     ollama.host = OLLAMA_HOST
-elif IS_RAILWAY:
-    # In Railway, prefer IPv6 if available
-    logger.info("Running in Railway environment, configuring for IPv6 compatibility")
-    ollama.host = os.getenv('OLLAMA_HOST_IPV6', 'http://[::1]:11434')
-    logger.info(f"Configured Ollama to use IPv6 host: {ollama.host}")
 else:
     # For local development, check if IPv6 is preferred
     try:
@@ -54,9 +44,6 @@ LOCAL_MODEL = os.getenv('OLLAMA_LOCAL_MODEL', 'mistral-small:22b')
 
 # Model to use on your VPS - now configurable via env var
 VPS_MODEL = os.getenv('OLLAMA_VPS_MODEL', 'mistral-small:22b')
-
-# Smaller model for Railway deployment to fit within standard resources
-RAILWAY_MODEL = os.getenv('OLLAMA_RAILWAY_MODEL', 'mistral')
 
 def validate_youtube_id(youtube_id: str) -> bool:
     """
@@ -198,21 +185,10 @@ def is_ollama_available() -> bool:
                 logger.info(f"Ollama service is available with models: {', '.join(model_names) if model_names else 'No models found'}")
                 
                 # Check if our models are available
-                if running_in_railway_env():
-                    if not any(model.lower().startswith(RAILWAY_MODEL.split(':')[0].lower()) for model in model_names):
-                        logger.warning(f"Required Railway model {RAILWAY_MODEL} not found on Ollama server")
-                        logger.info(f"Available models: {', '.join(model_names)}")
-                        return False
-                elif use_vps_model():
-                    if not any(model.lower().startswith(VPS_MODEL.split(':')[0].lower()) for model in model_names):
-                        logger.warning(f"Required VPS model {VPS_MODEL} not found on Ollama server")
-                        logger.info(f"Available models: {', '.join(model_names)}")
-                        return False
-                else:
-                    if not any(model.lower().startswith(LOCAL_MODEL.split(':')[0].lower()) for model in model_names):
-                        logger.warning(f"Required local model {LOCAL_MODEL} not found on Ollama server")
-                        logger.info(f"Available models: {', '.join(model_names)}")
-                        return False
+                if not any(model.lower().startswith(LOCAL_MODEL.split(':')[0].lower()) for model in model_names):
+                    logger.warning(f"Required local model {LOCAL_MODEL} not found on Ollama server")
+                    logger.info(f"Available models: {', '.join(model_names)}")
+                    return False
                 
                 return True
             else:
@@ -234,84 +210,23 @@ def is_ollama_available() -> bool:
     
     return False
 
-def running_in_railway_env() -> bool:
-    """
-    Detect if code is running in Railway environment.
-    Helper function for use within ollama_utils.py
-    
-    Returns:
-        True if running on Railway, False otherwise
-    """
-    return bool(os.getenv('RAILWAY_ENVIRONMENT') or 
-                os.getenv('RAILWAY_PROJECT_ID') or 
-                os.getenv('RAILWAY_SERVICE_ID'))
-
-def is_railway_environment() -> bool:
-    """
-    Detect if code is running in Railway environment.
-    
-    Returns:
-        True if running on Railway, False otherwise
-    """
-    return bool(os.getenv('RAILWAY_ENVIRONMENT') or 
-                os.getenv('RAILWAY_PROJECT_ID') or 
-                os.getenv('RAILWAY_SERVICE_ID'))
-
-def use_vps_model() -> bool:
-    """
-    Determine if we should use the VPS model based on configuration.
-    
-    Returns:
-        True if VPS model should be used, False otherwise
-    """
-    # If OLLAMA_HOST points to a non-localhost address and USE_VPS_MODEL is set to true
-    use_vps = os.getenv('USE_VPS_MODEL', 'false').lower() in ('true', 'yes', '1', 't')
-    remote_host = OLLAMA_HOST != 'http://localhost:11434'
-    
-    return use_vps and remote_host
-
 def get_mistral_summary(text: str, max_length: int = 32000) -> Optional[str]:
     """
-    Generate a summary of the given text using Ollama models according to the prompt.
-    Uses a smaller model on Railway and a larger model locally,
-    or connects to a VPS-hosted Ollama if configured.
+    Generate a summary using Mistral AI via API or local Ollama instance.
+    Enhanced with better foreign language support and detection.
     
     Args:
-        text: The text to summarize
-        max_length: The maximum length of text to send to the model (to avoid token limits)
+        text (str): The text to summarize
+        max_length (int): Maximum text length to process (default: 32000 characters)
         
     Returns:
-        A summary of the text, or None if an error occurred
+        Optional[str]: Generated summary or None if failed
     """
-    start_time = time.time()
-    
-    # First check if Ollama is actually available
-    if not is_ollama_available():
-        logger.error("Ollama service is not available")
+    if not text or not text.strip():
+        logger.warning("Empty text provided for summarization")
         return None
-    
-    try:
-        # Choose model based on environment and configuration
-        if use_vps_model():
-            model_name = VPS_MODEL
-            logger.info(f"Using VPS-hosted model: {model_name}")
-            # For remote VPS model, use a more aggressive trim limit of 8000 chars
-            # This is really very conservative as I am using char as token
-            # and the model is said to take up to 32k tokens
-            remote_max_length = 8000
-            if len(text) > remote_max_length:
-                first_part = text[:int(remote_max_length * 0.7)]
-                last_part = text[-int(remote_max_length * 0.3):]
-                text = first_part + "\n...[content in the middle omitted for length]...\n" + last_part
-                logger.info(f"Using stricter trim limit for remote model: trimmed to {len(text)} characters")
-        elif is_railway_environment():
-            model_name = RAILWAY_MODEL
-            logger.info(f"Railway environment detected - using smaller model: {model_name}")
-        else:
-            model_name = LOCAL_MODEL
-            logger.info(f"Local environment detected - using larger model: {model_name}")
         
-        # Trim text if needed to avoid exceeding token limits (for non-VPS cases)
+    try:
         # Note: This is a very conservative estimate of 4 chars per token
         # and the non vps model should take up to take up to 32000 tokens
         if not use_vps_model() and len(text) > max_length:
@@ -321,90 +236,244 @@ def get_mistral_summary(text: str, max_length: int = 32000) -> Optional[str]:
             text = first_part + "\n...[content in the middle omitted for length]...\n" + last_part
             logger.info(f"Trimmed text from {len(text)} characters to fit within token limits")
             
-        # Construct a prompt for summarization
-        prompt = f"""
-        You are a video summarization expert. Your task is to summarize the content of a video transcript.
-        Please provide a concise summary of the following transcript.
-        The summary should be structured and easy to read.
-        The summary should be in English and should not include any personal opinions or interpretations.
-        The summary should be suitable for someone who has not watched the video.
+        # Enhanced language detection for better foreign language support
+        detected_language, confidence = detect_text_language(text)
+        is_likely_non_english = detected_language != 'en' and confidence > 0.5
         
-        IMPORTANT: Do not hallucinate or invent any information that is not present in the transcript.
-        Only include facts, topics, and information that are explicitly stated in the provided text.
-        If something is unclear or ambiguous in the transcript, note that uncertainty rather than making assumptions.
-        If you're unsure about any detail, omit it rather than potentially providing incorrect information.
+        logger.info(f"Detected language: {detected_language} (confidence: {confidence:.2f})")
         
-        Please include:
-        1. The main topic and purpose of the video
-        2. Key points and arguments presented
-        3. Key people, places or organizations mentioned
-        4. Important facts, statistics, or examples mentioned
-        5. Any conclusions or takeaways
-        6. The overall structure of the presentation
-        7. Timestamps for major topic transitions (if apparent from the transcript)
-
-        Format the summary in clear paragraphs with appropriate headings for each section. 
-        Keep the summary concise but include all essential information. 
-        Aim for approximately 200-300 words depending on the video length and complexity.
-        If the transcript appears to be truncated, summarize what is available:
-        
-        {text}
-        
-        Summary:
-        """
-        
-        # Try with exception handling specifically for IPv6 issues
-        try:
-            # Call the Ollama API with the selected model
-            response = ollama.chat(
-                model=model_name,
-                messages=[{'role': 'user', 'content': prompt}],
-                options={
-                    'temperature': 0.2,
-                    'num_predict': 1024,  # Increased to allow for more comprehensive summaries
-                }
-            )
-        except Exception as e:
-            # If we're in Railway and get a connection error, try with explicit IPv6 URL
-            if IS_RAILWAY and isinstance(e, (ConnectionRefusedError, socket.error, requests.exceptions.ConnectionError)):
-                logger.warning(f"Initial Ollama connection failed in Railway: {str(e)}. Trying with explicit IPv6.")
-                # Temporarily override the ollama.host for this request
-                original_host = ollama.host
-                try:
-                    ollama.host = os.getenv('OLLAMA_HOST_IPV6', 'http://[::1]:11434')
-                    logger.info(f"Retrying with IPv6 host: {ollama.host}")
-                    response = ollama.chat(
-                        model=model_name,
-                        messages=[{'role': 'user', 'content': prompt}],
-                        options={
-                            'temperature': 0.2,
-                            'num_predict': 1024,
-                        }
-                    )
-                finally:
-                    # Restore the original host setting
-                    ollama.host = original_host
-            else:
-                # Re-raise if not a connection issue or not in Railway
-                raise
-        
-        # Extract the summary from the response
-        if response and 'message' in response and 'content' in response['message']:
-            elapsed = time.time() - start_time
-            logger.info(f"Successfully generated summary with Ollama in {elapsed:.2f} seconds")
-            return response['message']['content'].strip()
+        # Language-specific prompting for better multilingual support
+        if is_likely_non_english:
+            prompt = f"""
+            You are a multilingual video summarization expert. Your task is to summarize the content of a video transcript that appears to be in {get_language_name(detected_language)}.
+            
+            Please provide a comprehensive summary of the following transcript.
+            
+            IMPORTANT INSTRUCTIONS:
+            1. Provide the summary in ENGLISH, regardless of the original language
+            2. Begin your summary by identifying the original language: "This video is in {get_language_name(detected_language)}."
+            3. Do not hallucinate or invent any information that is not present in the transcript
+            4. Only include facts, topics, and information that are explicitly stated in the provided text
+            5. If something is unclear or ambiguous in the transcript, note that uncertainty rather than making assumptions
+            6. If you're unsure about any detail, omit it rather than potentially providing incorrect information
+            7. Preserve the meaning and context while translating concepts to English
+            8. Maintain cultural context and proper nouns in their original form when appropriate
+            
+            Please include in your English summary:
+            1. The main topic and purpose of the video
+            2. Key points and arguments presented
+            3. Important people, places, organizations, or concepts mentioned
+            4. Any conclusions or calls to action
+            5. The overall tone and style of the content
+            
+            If the transcript contains technical terms, cultural references, or concepts that don't translate directly to English, please provide brief explanations in parentheses.
+            
+            Transcript to summarize:
+            
+            {text}
+            
+            Please provide your summary in English:
+            """
         else:
-            logger.error(f"Unexpected response format from Ollama: {response}")
-            return None
-    except (ConnectionRefusedError, socket.error) as e:
-        elapsed = time.time() - start_time
-        logger.error(f"Error connecting to Ollama service after {elapsed:.2f} seconds: {str(e)}")
+            # Standard English prompting
+            prompt = f"""
+            You are a professional video content summarization expert. Your task is to create a comprehensive summary of the following video transcript.
+            
+            IMPORTANT INSTRUCTIONS:
+            1. Do not hallucinate or invent any information that is not present in the transcript
+            2. Only include facts, topics, and information that are explicitly stated in the provided text
+            3. If something is unclear or ambiguous in the transcript, note that uncertainty rather than making assumptions
+            4. If you're unsure about any detail, omit it rather than potentially providing incorrect information
+            5. Be accurate and factual in your summary
+            
+            Please include in your summary:
+            1. The main topic and purpose of the video
+            2. Key points and arguments presented
+            3. Important people, places, organizations, or concepts mentioned
+            4. Any conclusions or calls to action
+            5. The overall tone and style of the content
+            
+            Transcript to summarize:
+            
+            {text}
+            
+            Please provide your summary:
+            """
+        
+        # Try VPS model first if configured
+        if use_vps_model():
+            logger.info("Attempting summary generation using VPS Mistral model")
+            try:
+                summary = get_vps_mistral_summary(prompt)
+                if summary:
+                    logger.info(f"Successfully generated summary using VPS model (language: {detected_language})")
+                    return summary
+                else:
+                    logger.warning("VPS model returned empty summary, falling back to other methods")
+            except Exception as e:
+                logger.warning(f"VPS model failed: {str(e)}, falling back to other methods")
+        
+        # Try Mistral API if configured
+        mistral_api_key = os.environ.get('MISTRAL_API_KEY')
+        if mistral_api_key:
+            logger.info("Attempting summary generation using Mistral API")
+            try:
+                summary = get_mistral_api_summary(prompt, mistral_api_key)
+                if summary:
+                    logger.info(f"Successfully generated summary using Mistral API (language: {detected_language})")
+                    return summary
+                else:
+                    logger.warning("Mistral API returned empty summary, falling back to local Ollama")
+            except Exception as e:
+                logger.warning(f"Mistral API failed: {str(e)}, falling back to local Ollama")
+        
+        # Finally try local Ollama
+        if is_ollama_available():
+            logger.info("Attempting summary generation using local Ollama")
+            try:
+                summary = get_ollama_summary(prompt)
+                if summary:
+                    logger.info(f"Successfully generated summary using local Ollama (language: {detected_language})")
+                    return summary
+                else:
+                    logger.warning("Local Ollama returned empty summary")
+            except Exception as e:
+                logger.error(f"Local Ollama failed: {str(e)}")
+        
+        logger.error("All summarization methods failed")
         return None
+        
     except Exception as e:
-        elapsed = time.time() - start_time
-        logger.error(f"Error generating summary with Ollama after {elapsed:.2f} seconds: {str(e)}")
+        logger.error(f"Error in get_mistral_summary: {str(e)}", exc_info=True)
         return None
 
+
+def detect_text_language(text: str, sample_size: int = 1000) -> tuple[str, float]:
+    """
+    Detect the language of the input text with improved accuracy for various scripts.
+    
+    Args:
+        text (str): Text to analyze
+        sample_size (int): Number of characters to sample for analysis
+        
+    Returns:
+        tuple[str, float]: (language_code, confidence) where confidence is 0.0-1.0
+    """
+    if not text or len(text.strip()) < 10:
+        return 'en', 0.0
+    
+    # Use a sample for better performance on long texts
+    sample_text = text[:sample_size] if len(text) > sample_size else text
+    
+    try:
+        # Try langdetect library if available
+        try:
+            from langdetect import detect, detect_langs
+            detected = detect(sample_text)
+            
+            # Get confidence score
+            lang_probs = detect_langs(sample_text)
+            confidence = max([lang.prob for lang in lang_probs if lang.lang == detected], default=0.0)
+            
+            return detected, confidence
+        except ImportError:
+            pass
+    except:
+        pass
+    
+    # Fallback: simple heuristic-based detection
+    # Count different script types
+    latin_chars = sum(1 for char in sample_text if char.isalpha() and ord(char) < 256)
+    arabic_chars = sum(1 for char in sample_text if '\u0600' <= char <= '\u06FF')
+    chinese_chars = sum(1 for char in sample_text if '\u4e00' <= char <= '\u9fff')
+    cyrillic_chars = sum(1 for char in sample_text if '\u0400' <= char <= '\u04FF')
+    devanagari_chars = sum(1 for char in sample_text if '\u0900' <= char <= '\u097F')
+    ethiopic_chars = sum(1 for char in sample_text if '\u1200' <= char <= '\u137F')
+    
+    total_alpha = sum(1 for char in sample_text if char.isalpha())
+    
+    if total_alpha == 0:
+        return 'en', 0.0
+    
+    # Calculate script ratios
+    if ethiopic_chars / total_alpha > 0.3:
+        return 'am', 0.8  # Likely Amharic
+    elif arabic_chars / total_alpha > 0.3:
+        return 'ar', 0.8  # Likely Arabic
+    elif chinese_chars / total_alpha > 0.3:
+        return 'zh', 0.8  # Likely Chinese
+    elif cyrillic_chars / total_alpha > 0.3:
+        return 'ru', 0.7  # Likely Russian (or other Cyrillic)
+    elif devanagari_chars / total_alpha > 0.3:
+        return 'hi', 0.7  # Likely Hindi
+    elif latin_chars / total_alpha > 0.8:
+        # Could be many languages, need more analysis
+        # Simple keyword-based detection for common languages
+        text_lower = sample_text.lower()
+        
+        # Spanish indicators
+        if any(word in text_lower for word in ['que', 'con', 'una', 'para', 'como', 'por', 'del', 'las', 'los']):
+            return 'es', 0.6
+        
+        # French indicators  
+        elif any(word in text_lower for word in ['que', 'avec', 'pour', 'dans', 'une', 'des', 'les', 'sur', 'est']):
+            return 'fr', 0.6
+            
+        # German indicators
+        elif any(word in text_lower for word in ['und', 'der', 'die', 'das', 'ich', 'sie', 'mit', 'auf', 'für']):
+            return 'de', 0.6
+            
+        # Default to English for Latin script
+        return 'en', 0.5
+    else:
+        # Mixed script or unrecognized
+        return 'en', 0.3
+
+
+def get_language_name(language_code: str) -> str:
+    """
+    Get the full language name from a language code.
+    
+    Args:
+        language_code (str): ISO language code
+        
+    Returns:
+        str: Full language name
+    """
+    language_names = {
+        'am': 'Amharic',
+        'ar': 'Arabic', 
+        'zh': 'Chinese',
+        'en': 'English',
+        'es': 'Spanish',
+        'fr': 'French',
+        'de': 'German',
+        'hi': 'Hindi',
+        'ja': 'Japanese',
+        'ko': 'Korean',
+        'pt': 'Portuguese',
+        'ru': 'Russian',
+        'it': 'Italian',
+        'tr': 'Turkish',
+        'fa': 'Persian/Farsi',
+        'ur': 'Urdu',
+        'bn': 'Bengali',
+        'ta': 'Tamil',
+        'te': 'Telugu',
+        'th': 'Thai',
+        'vi': 'Vietnamese',
+        'sw': 'Swahili',
+        'rw': 'Kinyarwanda',
+        'he': 'Hebrew',
+        'ti': 'Tigrinya',
+        'om': 'Oromo',
+        'so': 'Somali',
+        'ha': 'Hausa',
+        'yo': 'Yoruba',
+        'ig': 'Igbo',
+    }
+    
+    return language_names.get(language_code, f"Language ({language_code})")
 def get_current_model_info() -> str:
     """
     Get information about the currently used AI model based on environment and configuration.
@@ -418,9 +487,6 @@ def get_current_model_info() -> str:
         if use_vps_model():
             model_name = VPS_MODEL
             deployment = "VPS-hosted"
-        elif is_railway_environment():
-            model_name = RAILWAY_MODEL
-            deployment = "Railway"
         else:
             model_name = LOCAL_MODEL
             deployment = "Local"
@@ -452,3 +518,127 @@ def get_current_model_info() -> str:
     except Exception as e:
         logger.error(f"Error getting model info: {str(e)}")
         return "Mistral AI"  # Default fallback name
+
+def use_vps_model() -> bool:
+    """
+    Determine if we should use the VPS model based on environment variables.
+    
+    Returns:
+        True if VPS model should be used, False otherwise
+    """
+    return os.getenv('USE_VPS_MODEL', 'false').lower() in ('true', 'yes', '1', 't')
+
+def get_vps_mistral_summary(prompt: str) -> Optional[str]:
+    """
+    Generate summary using VPS-hosted Ollama instance.
+    
+    Args:
+        prompt: The prompt to send to the model
+        
+    Returns:
+        Generated summary or None if failed
+    """
+    try:
+        model = VPS_MODEL
+        
+        logger.info(f"Using VPS model: {model}")
+        
+        response = ollama.generate(
+            model=model,
+            prompt=prompt,
+            options={
+                'temperature': 0.7,
+                'num_predict': 2000,
+                'top_p': 0.9,
+                'repeat_penalty': 1.1,
+            }
+        )
+        
+        summary = response.get('response', '').strip()
+        if summary:
+            logger.info(f"VPS model generated {len(summary)} character summary")
+            return summary
+        else:
+            logger.warning("VPS model returned empty response")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error with VPS Mistral model: {str(e)}")
+        return None
+
+def get_ollama_summary(prompt: str) -> Optional[str]:
+    """
+    Generate summary using local Ollama instance.
+    
+    Args:
+        prompt: The prompt to send to the model
+        
+    Returns:
+        Generated summary or None if failed
+    """
+    try:
+        model = LOCAL_MODEL
+        
+        logger.info(f"Using local model: {model}")
+        
+        response = ollama.generate(
+            model=model,
+            prompt=prompt,
+            options={
+                'temperature': 0.7,
+                'num_predict': 2000,
+                'top_p': 0.9,
+                'repeat_penalty': 1.1,
+            }
+        )
+        
+        summary = response.get('response', '').strip()
+        if summary:
+            logger.info(f"Local model generated {len(summary)} character summary")
+            return summary
+        else:
+            logger.warning("Local model returned empty response")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error with local Ollama model: {str(e)}")
+        return None
+
+def get_mistral_api_summary(prompt: str, api_key: str) -> Optional[str]:
+    """
+    Generate summary using Mistral API.
+    
+    Args:
+        prompt: The prompt to send to the model
+        api_key: Mistral API key
+        
+    Returns:
+        Generated summary or None if failed
+    """
+    try:
+        from mistralai.client import MistralClient
+        
+        client = MistralClient(api_key=api_key)
+        
+        messages = [
+            {"role": "user", "content": prompt}
+        ]
+        
+        response = client.chat(
+            model="mistral-medium",
+            messages=messages,
+            max_tokens=2000,
+            temperature=0.7,
+        )
+        
+        summary = response.choices[0].message.content.strip()
+        if summary:
+            logger.info(f"Mistral API generated {len(summary)} character summary")
+            return summary
+        else:
+            logger.warning("Mistral API returned empty response")
+            return None
+            
+    except Exception as e:
+        logger.error(f"Error with Mistral API: {str(e)}")
+        return None

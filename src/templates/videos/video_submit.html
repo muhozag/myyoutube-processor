@@ -40,6 +40,19 @@
                         <div class="form-text">{{ form.description.help_text }}</div>
                     </div>
                     
+                    <div class="mb-3">
+                        <label for="{{ form.preferred_language.id_for_label }}" class="form-label">{{ form.preferred_language.label }}</label>
+                        {{ form.preferred_language.errors }}
+                        <select name="{{ form.preferred_language.name }}" id="{{ form.preferred_language.id_for_label }}"
+                                class="form-select {% if form.preferred_language.errors %}is-invalid{% endif %}"
+                                title="{{ form.preferred_language.field.widget.attrs.title }}">
+                            {% for value, text in form.preferred_language.field.choices %}
+                            <option value="{{ value }}" {% if value == form.preferred_language.value %}selected{% endif %}>{{ text }}</option>
+                            {% endfor %}
+                        </select>
+                        <div class="form-text">{{ form.preferred_language.help_text }}</div>
+                    </div>
+                    
                     {% if form.non_field_errors %}
                     <div class="alert alert-danger">
                         {% for error in form.non_field_errors %}
@@ -65,10 +78,29 @@
                     <li>Standard: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ</code></li>
                     <li>Short: <code>https://youtu.be/dQw4w9WgXcQ</code></li>
                     <li>Shorts: <code>https://youtube.com/shorts/dQw4w9WgXcQ</code></li>
-                    <li>With timestamp: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ&t=42s</code></li>
-                    <li>From playlist: <code>https://www.youtube.com/watch?v=dQw4w9WgXcQ&list=PLNCRTSKrIMmGtCGFMJyB7pW6q-rYOD8xM</code></li>
-                    <li>Embedded: <code>https://www.youtube.com/embed/dQw4w9WgXcQ</code></li>
+                    <li>With timestamp: <code>https://youtube.com/watch?v=dQw4w9WgXcQ&t=30s</code></li>
+                    <li>Embedded: <code>https://youtube.com/embed/dQw4w9WgXcQ</code></li>
                 </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Language Support</h5>
+            </div>
+            <div class="card-body">
+                <p>The system supports transcript extraction in multiple languages including:</p>
+                <ul class="row">
+                    <li class="col-md-4">English, Spanish, French</li>
+                    <li class="col-md-4">German, Portuguese, Russian</li>
+                    <li class="col-md-4">Arabic, Chinese, Japanese</li>
+                    <li class="col-md-4">Amharic, Swahili, Kinyarwanda</li>
+                    <li class="col-md-4">Hindi, Bengali, Urdu</li>
+                    <li class="col-md-4">And many more...</li>
+                </ul>
+                <p class="mb-0 text-muted">
+                    <small>Select "Auto-detect" if you're not sure about the video language. The system will try to find the best available transcript.</small>
+                </p>
             </div>
         </div>
     </div>

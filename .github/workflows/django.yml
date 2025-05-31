@@ -1,4 +1,4 @@
-name: Django CI/CD
+name: Django CI
 
 on:
   push:
@@ -20,35 +20,35 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
+      uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-version }}
+        
+    - name: Create and activate virtual environment
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        echo "VIRTUAL_ENV=$(pwd)/venv" >> $GITHUB_ENV
+        echo "$(pwd)/venv/bin" >> $GITHUB_PATH
+        
     - name: Install Dependencies
       run: |
+        source venv/bin/activate
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        
     - name: Create logs directory and set up environment
       run: |
+        source venv/bin/activate
         cd src
         mkdir -p logs
         echo "SECRET_KEY=${SECRET_KEY}" >> .env
         echo "DEBUG=${DEBUG}" >> .env
+        
     - name: Run Tests
       run: |
+        source venv/bin/activate
         cd src
         python manage.py test
-
-  deploy:
-    needs: build
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        
-      - name: Deploy to Railway
-        uses: bervProject/railway-deploy@main
-        with:
-          railway_token: ${{ secrets.RAILWAY_TOKEN }}
-          service: "myyoutube-processor"

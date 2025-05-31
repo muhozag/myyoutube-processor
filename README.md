@@ -17,7 +17,7 @@ This project was inspired by the [5 AI Projects for People in a Hurry](https://s
 - **Transcript Extraction**: Automatically extract and clean transcripts from YouTube videos
 - **AI-Powered Summaries**: Generate concise, informative summaries of video content using Mistral AI models
 - **Flexible AI Integration**: Multiple AI backend options (local Ollama, Mistral API, or self-hosted VPS)
-- **Multi-Environment Support**: Works in local development, Railway deployment, or custom server setups
+- **Local Development Support**: Works in local development environments with SQLite or PostgreSQL
 - **Asynchronous Processing**: Background video processing with Celery and Redis
 - **User-Friendly Interface**: Clean, responsive UI for submitting and viewing processed videos
 - **Advanced IPv6/IPv4 Support**: Automatic handling of different network configurations
@@ -49,10 +49,10 @@ abide by)
 - **Testing**: pytest with coverage reporting
 
 ### Deployment & DevOps
-- **Hosting**: Railway (primary) with support for other platforms
-- **Containerization**: Docker
-- **WSGI Server**: Gunicorn 23.0.0
-- **CI/CD**: GitHub Actions
+- **Local Hosting**: Django development server for local use
+- **Containerization**: Docker support available
+- **WSGI Server**: Gunicorn 23.0.0 for production deployments
+- **CI/CD**: GitHub Actions for continuous integration
 - **Environment Management**: python-dotenv 1.0.1
 - **Logging**: python-json-logger 3.3.0
 
@@ -66,22 +66,22 @@ Before you begin, ensure you have the following installed on your system:
 
 ## System Requirements
 
-### For Railway Deployment
+### For Local Development
 
 | Component | Minimum | Recommended |
 |-----------|---------|-------------|
 | CPU       | 2 cores | 4+ cores    |
 | RAM       | 4GB     | 8GB+        |
 | Disk      | 1GB     | 5GB+        |
-| OS        | Ubuntu 20.04+ | Ubuntu 22.04+ |
+| OS        | Any OS supporting Python | macOS, Linux, Windows |
 
 ### For Local AI Model Usage
 
 When running Mistral AI models locally with Ollama:
 - **Mistral 7B**: At least 8GB RAM recommended
 - **Mistral-small 22B**: At least 32GB RAM required (tested on macOS with 36GB RAM).
-This is probably the only deployment I am confident I can stabilize. Remote deployment
-was trickier with database issues and stuff like that. 
+This is probably the only deployment I am confident I can stabilize. Local deployment
+works well for development and personal use.
 
 ## Quick Start Guide
 
@@ -317,9 +317,6 @@ OLLAMA_LOCAL_MODEL=mistral
 # USE_VPS_MODEL=true
 # OLLAMA_VPS_MODEL=mistral
 # Or: OLLAMA_VPS_MODEL=mistral-small:22b
-
-# Railway-specific settings (optional)
-# OLLAMA_HOST_IPV6=http://[::1]:11434
 ```
 
 Generate a Django secret key:
@@ -395,7 +392,7 @@ The admin dashboard provides:
 - Processing status monitoring
 
 ## Potential Future Features If Time Allows
-As time allows (which I cannot guarantee), I  keep playing with this. And with resources, I think I can make it
+As time allows (which I cannot guarantee), I keep playing with this. And with resources, I think I can make it
 more useful
 
 ### What I think I Can Add
@@ -437,4 +434,4 @@ This project is open-source software licensed under the MIT license.
 
 - Special thanks to the Mistral AI and Ollama teams for their outstanding open-source AI models
 - Thanks to the Django community for the robust web framework
-- Inspiration from [5 AI Projects for People in a Hurry](https://shawhin.medium.com/5-ai-projects-for-people-in-a-hurry-1220f0b27037). He does great work and I wouldn't have gone in this rabbit hole without seeing his work. 
+- Inspiration from [5 AI Projects for People in a Hurry](https://shawhin.medium.com/5-ai-projects-for-people-in-a-hurry-1220f0b27037). He does great work and I wouldn't have gone in this rabbit hole without seeing his work.

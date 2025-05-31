@@ -163,19 +163,26 @@
                 <!-- Tabbed interface for different transcript views -->
                 <ul class="nav nav-tabs mb-3" id="transcriptTab" role="tablist">
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="beautified-tab" data-bs-toggle="tab" data-bs-target="#beautified" type="button" role="tab" aria-controls="beautified" aria-selected="true">Enhanced Transcript</button>
+                        <button class="nav-link active" id="raw-tab" data-bs-toggle="tab" data-bs-target="#raw" type="button" role="tab" aria-controls="raw" aria-selected="true">Raw Transcript</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="beautified-tab" data-bs-toggle="tab" data-bs-target="#beautified" type="button" role="tab" aria-controls="beautified" aria-selected="false">Enhanced Transcript</button>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="summary-tab" data-bs-toggle="tab" data-bs-target="#summary" type="button" role="tab" aria-controls="summary" aria-selected="false">Summary</button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="raw-tab" data-bs-toggle="tab" data-bs-target="#raw" type="button" role="tab" aria-controls="raw" aria-selected="false">Raw Transcript</button>
-                    </li>
                 </ul>
                 
                 <div class="tab-content" id="transcriptTabContent">
+                    <!-- Raw transcript -->
+                    <div class="tab-pane fade show active" id="raw" role="tabpanel" aria-labelledby="raw-tab">
+                        <div class="transcript-content" style="max-height: 400px; overflow-y: auto;">
+                            {{ video.transcript.content|linebreaks }}
+                        </div>
+                    </div>
+                    
                     <!-- Enhanced transcript with timestamps -->
-                    <div class="tab-pane fade show active" id="beautified" role="tabpanel" aria-labelledby="beautified-tab">
+                    <div class="tab-pane fade" id="beautified" role="tabpanel" aria-labelledby="beautified-tab">
                         {% if video.transcript.beautified_content %}
                             <div class="transcript-content" style="max-height: 400px; overflow-y: auto;">
                                 <div class="row">
@@ -230,13 +237,6 @@
                                     </form>
                                 </div>
                             {% endif %}
-                        </div>
-                    </div>
-                    
-                    <!-- Raw transcript -->
-                    <div class="tab-pane fade" id="raw" role="tabpanel" aria-labelledby="raw-tab">
-                        <div class="transcript-content" style="max-height: 400px; overflow-y: auto;">
-                            {{ video.transcript.content|linebreaks }}
                         </div>
                     </div>
                 </div>

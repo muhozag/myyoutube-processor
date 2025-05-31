@@ -6,7 +6,7 @@ class VideoSubmissionForm(forms.ModelForm):
     
     class Meta:
         model = Video
-        fields = ['url', 'title', 'description']
+        fields = ['url', 'title', 'description', 'preferred_language']
         widgets = {
             'url': forms.URLInput(attrs={'placeholder': 'Enter YouTube URL'}),
             'title': forms.TextInput(attrs={'placeholder': 'Video title (optional)'}),
@@ -14,11 +14,16 @@ class VideoSubmissionForm(forms.ModelForm):
                 'placeholder': 'Video description (optional)',
                 'rows': 4
             }),
+            'preferred_language': forms.Select(attrs={
+                'class': 'form-select',
+                'title': 'Select the expected language of the video to improve transcript accuracy'
+            }),
         }
         help_texts = {
             'url': 'Enter a valid YouTube video URL (e.g., https://www.youtube.com/watch?v=...).',
             'title': 'Leave blank to use the YouTube video title (will be fetched later)',
             'description': 'Leave blank to use the YouTube video description (will be fetched later)',
+            'preferred_language': 'Select the expected language of the video. Auto-detect will try to find the best available transcript.',
         }
 
     def clean_url(self):

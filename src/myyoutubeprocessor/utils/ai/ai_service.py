@@ -6,7 +6,6 @@ This module provides a unified interface for different AI backends.
 import logging
 import os
 import time
-import socket
 from typing import Optional
 
 # Import specific AI service modules
@@ -30,100 +29,84 @@ except ImportError:
 
 logger = logging.getLogger(__name__)
 
-def is_railway_environment() -> bool:
+def get_mistral_summary(text: str, max_length: int = 32000) -> Optional[str]:
     """
-    Detect if code is running in Railway environment.
+    Main entry point for AI-powered text summarization.
+    Automatically selects the best available AI backend based on configuration.
     
-    Returns:
-        True if running on Railway, False otherwise
-    """
-    return bool(os.getenv('RAILWAY_ENVIRONMENT') or 
-                os.getenv('RAILWAY_PROJECT_ID') or 
-                os.getenv('RAILWAY_SERVICE_ID'))
-
-def get_ai_summary(text: str, max_length: int = 25000) -> Optional[str]:
-    """
-    Generate an AI summary of the given text using available services.
-    Tries multiple approaches based on the deployment environment:
-    1. Ollama (if available)
-    2. Mistral API (as fallback or primary on Railway)
+    This function provides a unified interface that tries multiple AI backends
+    in order of preference:
+    1. Mistral API (if MISTRAL_API_KEY is set)
+    2. Local Ollama (if available)
     
     Args:
-        text: The text to summarize
-        max_length: The maximum length of text to send to the model
+        text (str): The text to summarize
+        max_length (int): Maximum text length to process
         
     Returns:
-        The generated summary, or None if all attempts failed
+        Optional[str]: Generated summary or None if all backends fail
     """
-    start_time = time.time()
+    if not text or not text.strip():
+        logger.warning("Empty text provided for summarization")
+        return None
     
-    # Check environment
-    railway_env = is_railway_environment()
-    
-    # Log the environment
-    logger.info(f"Running in Railway environment: {railway_env}")
-    
-    # For Railway, prioritize Mistral API over Ollama
-    if railway_env:
-        logger.info("Railway environment detected, prioritizing Mistral API for reliability")
-        if get_mistral_api_summary:
-            try:
-                logger.info("Using Mistral API for summary generation")
-                mistral_summary = get_mistral_api_summary(text, max_length)
-                if mistral_summary:
-                    elapsed = time.time() - start_time
-                    logger.info(f"Summary generated with Mistral API in {elapsed:.2f} seconds")
-                    return mistral_summary
-                logger.warning("Mistral API summary generation failed")
-            except Exception as e:
-                logger.exception(f"Error using Mistral API for summary: {str(e)}")
-                
-            # If standard Mistral API call fails, try the requests-based approach
-            if get_mistral_summary_with_requests:
-                try:
-                    logger.info("Falling back to requests-based Mistral API implementation")
-                    requests_summary = get_mistral_summary_with_requests(text, max_length)
-                    if requests_summary:
-                        elapsed = time.time() - start_time
-                        logger.info(f"Summary generated with requests-based Mistral API in {elapsed:.2f} seconds")
-                        return requests_summary
-                    logger.warning("Requests-based Mistral API summary generation failed")
-                except Exception as e:
-                    logger.exception(f"Error using requests-based Mistral API for summary: {str(e)}")
-        else:
-            logger.error("Mistral API utilities not available - required for Railway deployment")
-    
-    # For all environments, try Ollama if it's available
-    ollama_available = is_ollama_available()
-    logger.info(f"Remote Ollama service available: {ollama_available}")
-    
-    if ollama_available and get_ollama_summary:
+    # Try Mistral API first if configured
+    mistral_api_key = os.environ.get('MISTRAL_API_KEY')
+    if mistral_api_key and get_mistral_api_summary:
+        logger.info("Attempting summary generation using Mistral API")
         try:
-            logger.info("Using remote Ollama service")
-            ollama_summary = get_ollama_summary(text, max_length)
-            if ollama_summary:
-                elapsed = time.time() - start_time
-                logger.info(f"Summary generated with Ollama in {elapsed:.2f} seconds")
-                return ollama_summary
-            logger.warning("Ollama summary generation failed")
+            summary = get_mistral_api_summary(text, max_length)
+            if summary:
+                logger.info("Successfully generated summary using Mistral API")
+                return summary
+            else:
+                logger.warning("Mistral API returned empty summary, falling back to Ollama")
         except Exception as e:
-            logger.exception(f"Error using Ollama for summary: {str(e)}")
-    else:
-        logger.warning("Ollama service not available")
+            logger.warning(f"Mistral API failed: {str(e)}, falling back to Ollama")
     
-    # For non-Railway environments, try Mistral API as fallback
-    if not railway_env and get_mistral_api_summary and os.getenv('MISTRAL_API_KEY'):
+    # Try Ollama if available
+    if get_ollama_summary and is_ollama_available():
+        logger.info("Attempting summary generation using Ollama")
         try:
-            logger.info("Using Mistral API as fallback")
-            mistral_summary = get_mistral_api_summary(text, max_length)
-            if mistral_summary:
-                elapsed = time.time() - start_time
-                logger.info(f"Summary generated with Mistral API in {elapsed:.2f} seconds")
-                return mistral_summary
-            logger.warning("Mistral API summary generation failed")
+            summary = get_ollama_summary(text, max_length)
+            if summary:
+                logger.info("Successfully generated summary using Ollama")
+                return summary
+            else:
+                logger.warning("Ollama returned empty summary")
         except Exception as e:
-            logger.exception(f"Error using Mistral API for summary: {str(e)}")
+            logger.error(f"Ollama failed: {str(e)}")
     
-    # If all methods failed, return a placeholder or null
-    logger.error("All summary generation methods failed")
+    logger.error("All AI backends failed or are unavailable")
     return None
+
+def get_available_backends() -> list[str]:
+    """
+    Get a list of currently available AI backends.
+    
+    Returns:
+        list[str]: List of available backend names
+    """
+    backends = []
+    
+    # Check Mistral API
+    if os.environ.get('MISTRAL_API_KEY') and get_mistral_api_summary:
+        backends.append("Mistral API")
+    
+    # Check Ollama
+    if get_ollama_summary and is_ollama_available():
+        backends.append("Ollama")
+    
+    return backends
+
+def get_current_backend() -> str:
+    """
+    Get the name of the currently preferred AI backend.
+    
+    Returns:
+        str: Name of the current backend or "None" if none available
+    """
+    available = get_available_backends()
+    if available:
+        return available[0]  # First one is preferred
+    return "None"

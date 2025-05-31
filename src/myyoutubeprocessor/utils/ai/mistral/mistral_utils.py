@@ -209,48 +209,89 @@ def get_mistral_summary_with_requests(text: str, max_length: int = 25000) -> Opt
 
 def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
     """
-    Generate a summary of the given text using the Mistral API.
+    Generate a summary using the Mistral API client with improved language support.
     
     Args:
         text: The text to summarize
-        max_length: The maximum length of text to send to the model (to avoid token limits)
+        max_length: Maximum length of text to send to the model (default: 25000)
         
     Returns:
-        A summary of the text, or None if an error occurred
+        The generated summary, or None if generation failed
     """
+    if not text or not text.strip():
+        logger.warning("Empty or whitespace-only text provided for summarization")
+        return None
+        
     start_time = time.time()
     
-    # Try with requests-based implementation first as it's more reliable on Railway
-    logger.info("Starting with requests-based Mistral API implementation for reliability")
-    requests_summary = get_mistral_summary_with_requests(text, max_length)
-    if requests_summary:
-        elapsed = time.time() - start_time
-        logger.info(f"Successfully generated summary with requests-based Mistral API in {elapsed:.2f} seconds")
-        return requests_summary
-    
-    # If requests implementation fails, try the official client as fallback
     try:
-        # Get API key from environment
-        api_key = os.getenv('MISTRAL_API_KEY')
-        
+        # Get the API key
+        api_key = os.environ.get('MISTRAL_API_KEY')
         if not api_key:
-            logger.error("Mistral API key not found in environment variables")
+            logger.error("MISTRAL_API_KEY environment variable not set")
             return None
-            
-        # Initialize Mistral client
-        client = MistralClient(api_key=api_key)
-        logger.info("Successfully initialized Mistral client")
         
-        # Trim text if needed to avoid exceeding token limits
+        # Initialize the client
+        client = Mistral(api_key=api_key)
+        
+        # Trim text if it's too long
         if len(text) > max_length:
-            # Get the first portion and the last portion to preserve context
+            # Get the first 80% and last 20% to preserve context
             first_part = text[:int(max_length * 0.8)]
             last_part = text[-int(max_length * 0.2):]
             text = first_part + "\n...[content in the middle omitted for length]...\n" + last_part
-            logger.info(f"Trimmed text from {len(text)} characters to fit within token limits")
-            
-        # Construct a prompt for summarization (same as Ollama to maintain consistency)
-        prompt = f"""
+            logger.info(f"Trimmed text to {len(text)} characters for Mistral API")
+        
+        # Detect if the content appears to be in a non-English language
+        # Simple heuristic: if the text contains non-Latin characters, it might be non-English
+        non_latin_chars = sum(1 for char in text[:500] if not char.isascii() and char.isalpha())
+        total_alpha_chars = sum(1 for char in text[:500] if char.isalpha())
+        
+        is_likely_non_english = False
+        if total_alpha_chars > 0:
+            non_latin_ratio = non_latin_chars / total_alpha_chars
+            is_likely_non_english = non_latin_ratio > 0.3  # More than 30% non-Latin characters
+        
+        # Construct a language-aware prompt for summarization
+        if is_likely_non_english:
+            prompt = f"""
+        You are a multilingual video summarization expert. Your task is to summarize the content of a video transcript that appears to be in a non-English language.
+        
+        Please provide a comprehensive summary of the following transcript.
+        
+        IMPORTANT INSTRUCTIONS:
+        1. If the transcript is in a language other than English (such as Amharic, Arabic, Chinese, etc.), provide the summary in ENGLISH
+        2. Identify the language of the original transcript at the beginning of your summary
+        3. Do not hallucinate or invent any information that is not present in the transcript
+        4. Only include facts, topics, and information that are explicitly stated in the provided text
+        5. If something is unclear or ambiguous in the transcript, note that uncertainty rather than making assumptions
+        6. If you're unsure about any detail, omit it rather than potentially providing incorrect information
+        7. Preserve the meaning and context while translating concepts to English
+        
+        Please include in your English summary:
+        1. The detected language of the original transcript
+        2. The main topic and purpose of the video
+        3. Key points and arguments presented
+        4. Key people, places or organizations mentioned
+        5. Important facts, statistics, or examples mentioned
+        6. Any conclusions or takeaways
+        7. The overall structure of the presentation
+        8. Timestamps for major topic transitions (if apparent from the transcript)
+        
+        Format the summary in clear paragraphs with appropriate headings for each section. 
+        Keep the summary concise but include all essential information. 
+        Aim for approximately 300-500 words depending on the video length and complexity.
+        If the transcript appears to be truncated, summarize what is available and note the limitation.
+        
+        Transcript to summarize:
+        
+        {text}
+        
+        Summary in English:
+        """
+        else:
+            # Standard English prompt
+            prompt = f"""
         You are a video summarization expert. Your task is to summarize the content of a video transcript.
         Please provide a concise summary of the following transcript.
         The summary should be structured and easy to read.
@@ -294,24 +335,18 @@ def get_mistral_summary(text: str, max_length: int = 25000) -> Optional[str]:
                 max_tokens=1024
             )
             
-            logger.info(f"Received response from Mistral API with model {model_name}, status: Success")
-            
-            # Extract content from the response
+            # Extract the response content
             if chat_response and chat_response.choices and len(chat_response.choices) > 0:
-                summary_content = chat_response.choices[0].message.content
-                if summary_content:
-                    elapsed = time.time() - start_time
-                    logger.info(f"Successfully extracted content from response in {elapsed:.2f} seconds")
-                    return summary_content.strip()
-                else:
-                    logger.warning("Empty content received from Mistral API")
+                summary = chat_response.choices[0].message.content.strip()
+                elapsed = time.time() - start_time
+                logger.info(f"Successfully generated summary with Mistral API in {elapsed:.2f} seconds")
+                return summary
             else:
-                logger.warning(f"Unexpected response format from model {model_name}: {str(chat_response)}")
-            
-            return None
-            
+                logger.error("Unexpected response format from Mistral API")
+                return None
+                
         except Exception as e:
-            logger.error(f"API call with model {model_name} failed: {str(e)}")
+            logger.error(f"Error calling Mistral API: {str(e)}")
             return None
             
     except Exception as e:

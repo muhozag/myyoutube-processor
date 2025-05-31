@@ -12,6 +12,58 @@ class Video(models.Model):
         ('failed', 'Failed'),
     )
     
+    # Language choices for transcript extraction
+    LANGUAGE_CHOICES = [
+        ('auto', 'Auto-detect'),
+        ('en', 'English'),
+        ('es', 'Spanish'),
+        ('fr', 'French'),
+        ('de', 'German'),
+        ('pt', 'Portuguese'),
+        ('ru', 'Russian'),
+        ('it', 'Italian'),
+        ('ja', 'Japanese'),
+        ('ko', 'Korean'),
+        ('zh', 'Chinese'),
+        ('ar', 'Arabic'),
+        ('hi', 'Hindi'),
+        ('bn', 'Bengali'),
+        ('ur', 'Urdu'),
+        ('fa', 'Persian/Farsi'),
+        ('th', 'Thai'),
+        ('vi', 'Vietnamese'),
+        ('tr', 'Turkish'),
+        ('he', 'Hebrew'),
+        ('am', 'Amharic'),
+        ('sw', 'Swahili'),
+        ('rw', 'Kinyarwanda'),
+        ('ti', 'Tigrinya'),
+        ('om', 'Oromo'),
+        ('so', 'Somali'),
+        ('ha', 'Hausa'),
+        ('yo', 'Yoruba'),
+        ('ig', 'Igbo'),
+        ('ta', 'Tamil'),
+        ('te', 'Telugu'),
+        ('ml', 'Malayalam'),
+        ('kn', 'Kannada'),
+        ('gu', 'Gujarati'),
+        ('mr', 'Marathi'),
+        ('ne', 'Nepali'),
+        ('si', 'Sinhala'),
+        ('my', 'Myanmar/Burmese'),
+        ('km', 'Khmer'),
+        ('lo', 'Lao'),
+        ('ka', 'Georgian'),
+        ('hy', 'Armenian'),
+        ('az', 'Azerbaijani'),
+        ('kk', 'Kazakh'),
+        ('ky', 'Kyrgyz'),
+        ('uz', 'Uzbek'),
+        ('tg', 'Tajik'),
+        ('mn', 'Mongolian'),
+    ]
+    
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -58,6 +110,13 @@ class Video(models.Model):
         null=True,
         blank=True,
         verbose_name="Publication Date"
+    )
+    preferred_language = models.CharField(
+        max_length=10,
+        choices=LANGUAGE_CHOICES,
+        default='auto',
+        verbose_name="Preferred Language",
+        help_text="Select the expected language of the video to improve transcript accuracy"
     )
     status = models.CharField(
         max_length=20,
