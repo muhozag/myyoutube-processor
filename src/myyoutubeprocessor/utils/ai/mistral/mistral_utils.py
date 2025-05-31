@@ -100,7 +100,7 @@ def format_metadata(youtube_id: str, processed_time: Optional[str] = None,
 def get_mistral_summary_with_requests(text: str, max_length: int = 25000) -> Optional[str]:
     """
     Generate a summary of the given text using the Mistral API with direct HTTP requests.
-    This method uses requests library instead of the official client for Railway compatibility.
+    This method uses requests library instead of the official client for compatibility.
     
     Args:
         text: The text to summarize

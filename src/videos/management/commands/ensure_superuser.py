@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 
 
 class Command(BaseCommand):
-    help = 'Creates a superuser if none exists or resets admin password on Railway'
+    help = 'Creates a superuser if none exists or resets admin password'
 
     def generate_secure_password(self, length=16):
         """Generate a cryptographically secure password"""
@@ -18,8 +18,8 @@ class Command(BaseCommand):
         username = os.environ.get('DJANGO_SUPERUSER_USERNAME', 'admin')
         email = os.environ.get('DJANGO_SUPERUSER_EMAIL', 'admin@example.com')
         
-        # Check if we're on Railway
-        on_railway = bool(os.environ.get('RAILWAY_STATIC_URL') or os.environ.get('RAILWAY_SERVICE_NAME'))
+        # Check if we're in production environment
+        is_production = not os.environ.get('DEBUG', '').lower() == 'true'
         
         # Get password from environment - NEVER use a default password
         password = os.environ.get('DJANGO_SUPERUSER_PASSWORD')
@@ -27,7 +27,7 @@ class Command(BaseCommand):
         if User.objects.filter(is_superuser=True).count() == 0:
             # Create a new superuser if none exists
             if not password:
-                if on_railway:
+                if is_production:
                     # Generate a secure random password for production
                     password = self.generate_secure_password()
                     self.stdout.write(

@@ -642,3 +642,12 @@ def get_mistral_api_summary(prompt: str, api_key: str) -> Optional[str]:
     except Exception as e:
         logger.error(f"Error with Mistral API: {str(e)}")
         return None
+
+def is_production_environment() -> bool:
+    """
+    Check if we're running in a production environment
+    
+    Returns:
+        bool: True if in production environment, False otherwise
+    """
+    return not os.environ.get('DEBUG', '').lower() == 'true'

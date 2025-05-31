@@ -493,12 +493,12 @@ def process_video_with_timeout(video_id):
                 # Add more detailed AI service logging
                 from myyoutubeprocessor.utils.ai.ollama_utils import (
                     OLLAMA_HOST, OLLAMA_API_KEY, is_ollama_available, 
-                    is_railway_environment, LOCAL_MODEL
+                    is_production_environment, LOCAL_MODEL
                 )
                 
                 # Check if Ollama is available
                 ollama_available = is_ollama_available()
-                logger.info(f"Ollama available: {ollama_available}, Host: {OLLAMA_HOST}, Railway env: {is_railway_environment()}")
+                logger.info(f"Ollama available: {ollama_available}, Host: {OLLAMA_HOST}")
                 
                 # Check if Mistral API is configured
                 mistral_api_key = os.environ.get('MISTRAL_API_KEY')
@@ -614,7 +614,7 @@ def generate_summary(transcript_id):
         # Log detailed environment information to help debug AI connection issues
         from myyoutubeprocessor.utils.ai.ollama_utils import (
             OLLAMA_HOST, OLLAMA_API_KEY, is_ollama_available, 
-            is_railway_environment, LOCAL_MODEL
+            is_production_environment, LOCAL_MODEL
         )
         
         # Check if Ollama is available
@@ -626,7 +626,7 @@ def generate_summary(transcript_id):
         logger.info(f"Mistral API configured: {'Yes' if mistral_api_key else 'No'}")
         
         # Log environment information
-        logger.info(f"Railway environment: {is_railway_environment()}, Production mode: {bool(os.environ.get('RAILWAY_SERVICE_NAME') or not os.environ.get('DEBUG', '').lower() == 'true')}")
+        logger.info(f"Production environment: {is_production_environment()}, Production mode: {bool(os.environ.get('RAILWAY_SERVICE_NAME') or not os.environ.get('DEBUG', '').lower() == 'true')}")
         
         # Attempt to generate summary with additional error details
         summary = get_ai_summary(transcript.content)

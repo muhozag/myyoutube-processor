@@ -20,8 +20,8 @@ from myyoutubeprocessor.utils.ai.ollama_utils import format_metadata, get_curren
 # Set up logger
 logger = logging.getLogger(__name__)
 
-# Check if we're running on Railway or other production environment
-IS_PRODUCTION = bool(os.environ.get('RAILWAY_SERVICE_NAME') or not os.environ.get('DEBUG', '').lower() == 'true')
+# Check if we're in production environment
+IS_PRODUCTION = not os.environ.get('DEBUG', '').lower() == 'true'
 
 @method_decorator(login_required, name='dispatch')
 class VideoListView(LoginRequiredMixin, ListView):
